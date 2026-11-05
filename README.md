@@ -2,6 +2,10 @@
 
 An independent, dependency-free Node.js EIP-8141 admission-test runner and local results dashboard. This is a working **engine scaffold**, not a finished Uniswap paymaster or a verified Ethereum protocol vulnerability.
 
+## Resume in Codex or Cursor
+
+Open this repository folder and read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](CURRENT_STATUS.md), and [UP_NEXT.md](UP_NEXT.md). Cursor loads `.cursor/rules/framefuzz.mdc` automatically. The complete supplied task is preserved in [docs/BUILD_BRIEF.md](docs/BUILD_BRIEF.md); verified commands and limitations are in [BUILD_STATUS.md](BUILD_STATUS.md). Keep these checkpoint files current and commit each coherent verified change with a short conventional subject.
+
 ## Already implemented
 
 - JSON-RPC transport for `eth_sendFrameTransaction` and `eth_sendRawTransaction`.
