@@ -21,4 +21,16 @@ The runner preflights every endpoint before invoking any builder or setup. It bu
 
 Replay metadata exports only adapter ID, sender, decimal nonce, checked chain ID, case/path ID, and explicit MOCK/LIVE mode. Signed bytes are included in a separate replay fixture; they may become stale and are not safe to rebroadcast automatically. Prefer rebuilding through the original adapter with isolated accounts. RPC credentials and keys must be supplied separately.
 
-Missing live imports: the known-good workshop encoder and signer, paymaster contract ABIs/sources, funding/deployment/stake receipt logic, authorized network configuration, full deployed addresses and original evidence, pinned sidecar rule provenance. See `UP_NEXT.md`. No compatible signer exists in the supplied archive.
+## Structured alternative submissions
+
+`sign` may return `{ raw, submission: { method, params }, evidence }`. `raw` is always the canonical signed encoding used for fingerprint/duplicate checks. `submission` must match the selected method and contain exactly one parameter. The integrated workshop adapter uses structured `toWire(signed)` for `eth_sendFrameTransaction` and raw type-0x06 bytes for canonical `eth_sendRawTransaction`; passing raw bytes to the former is not compatible with this devnet.
+
+Optional `evidence` is allowlisted to hash, payer, payer/sender balances, verification gas, StateView and pool ID under `metadata.transaction`. Account objects and private keys never enter evidence. The plugin is responsible for ensuring structured and raw representations describe the same signed transaction; the integration tests recover its actual signature and check the codec roundtrip.
+
+## Working LIVE integration
+
+`workshop-codec.mjs` reuses the actual pinned upstream encoding/signing library and PoC frame construction. `workshop-live.mjs` allocates ephemeral sender keys and verifies configured sponsors' code hash, balance, stake and Uniswap reads. `workshop-setup.mjs` deploys the supplied original paymaster artifact from a funding key supplied through the process environment. It waits for a successful receipt before updating the configuration; no automatic restaking or genesis fallback is performed.
+
+Use the individual `examples/live/*.mjs` fixtures for the verified snapshot. The default LIVE plugin factory also accepts `FRAMEFUZZ_LIVE_CONFIG` for custom configurations. Endpoint authorization and chain1337 are mandatory; tests use dependency injection to verify behavior without contacting live infrastructure. Sponsor contracts need no new setup for each path when existing state already matches the scenario.
+
+Source/artifact imports are now present under `vendor/`. Exact execution-client commit and runtime rule checks are verified; the sidecar's commit field is blank, so its reviewed source pin is explicitly marked as a partial deployment provenance match. See `BUILD_STATUS.md` and `UP_NEXT.md`.

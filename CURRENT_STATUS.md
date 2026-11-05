@@ -1,44 +1,27 @@
 # Current status
 
-Checkpoint: **November 6, 2026 (IST)**. Workspace `E:\ethglobalmumbai`; branch **feat/framefuzz-mvp**. Read Git status/log for current commit IDs and edits. This supersedes the initial starter-only checkpoint.
+**November 6, 2026 (IST)** · `E:\ethglobalmumbai` · branch `feat/framefuzz-mvp`. This replaces earlier missing-PoC checkpoints. Inspect Git status/log before editing.
 
-## Completed
-- Preserved starter transport, CLI, evidence and dashboard; extended them in place without dependencies.
-- Implemented `src/adapters/index.mjs` plugin interface: isolated sender per case/path, setup before pending nonce lookup, fresh signing hook, serialized builds, failure poisoning and allowlisted metadata.
-- Implemented separate public/alt endpoint preflight, chain/mainnet guards, duplicate payload/known nonce guards, and metadata requirements for comparative fixtures.
-- Added full path verdict taxonomy and distinguished malformed/nonce/funding/RPC errors from policy findings. Receipt status remains independent; mismatched receipts cannot prove inclusion.
-- Added `uniswap-v4-paymaster` A–C plus optional gas-boundary D; below/at/above generator requires supplied rule provenance and acceptance direction. LIVE plugins refuse MOCK rule configurations.
-- Added CLI scenario/adapter/rules/filter options and nonzero incomplete-run exit status.
-- Added real HTTP mock demo: six cases, twelve independent mock path inputs through two temporary local gateways; exports JSON, Markdown and replay.
-- Extended dashboard with scenario/mutation controls, gateway check, execution state, both admission paths, receipt/rule/mutation metadata, saved runs and download actions.
-- Kept keys out of fixtures, reports and commits. Supplied mock adapter uses no keys and is restricted to loopback endpoints.
+## Actual completed result
+- LIVE adapter uses actual `@forshtat/hegota-support@0.0.1` / `viem@2.57.7` encoding/signing, adapted from supplied PoC and pinned workshop source.
+- Basic sponsored transaction: canonical and alternative **PASS**, both included with status 1 and paymaster payer.
+- Fresh unstaked Uniswap pool reader: canonical and alternative **PASS**, both rejected for foreign storage access.
+- Existing staked pool reader: canonical expected rejection and alternative acceptance **PASS**; alternative included with status 1.
+- Verification gas: three independently signed below/at/above cases through both paths, **six live submissions**, all matched.
+- Total **six cases / twelve admission submissions**, plus one separate reserve deployment. Seven accepted frame transactions have successful receipts; five were rejected as expected.
+- Full JSON/Markdown/replay evidence, raw receipts and actual sidecar rule-by-rule admission checks are committed under `evidence/live/2026-11-06/`.
+- **37 tests passed** on Node 22.13.0 after integration, including real signature recovery and mocked setup/transport/refresh tests. Tests never send externally.
 
-## Verification actually performed
-- Node **22.13.0**, `npm test`: **30 passed, 0 failed**, with local loopback enabled. Node 20 compatibility is intended but Node 20 was not executed here.
-- `node bin/framefuzz.mjs help`: passed.
-- `node bin/framefuzz.mjs mock-demo --results runs`: **6/6 cases matched**, zero unexpected/inconclusive; MOCK only.
-- Automated CLI subprocess, dashboard POST, selection, config, network, saved evidence and three export format tests passed.
-- Browser at temporary port 4188 verified the rendered saved MOCK run, public/alt results, selected staked case, receipt distinction, compact rule details, gateway check and disabled run control.
-- Restricted sandbox can block loopback; run local-RPC tests where local networking is permitted.
+## Contracts and network
+Chain 1337, gateway `https://altmempool.forshtat.com/rpc`; execution root `https://altmempool.forshtat.com`. The gateway provides distinct public raw and alternative structured methods. Plain sponsor `0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30`; existing staked reader `0x552e75d45ee70f09ff69f465ddc4264e6ee31396`; newly deployed unstaked reader `0x3d66c53105be7930fd89571157a41137c12b003f`. Code hashes and Uniswap StateView/pool configuration are in `examples/live/devnet.json`.
 
-## Not implemented / not verified live
-- No actual frame encoder/signer or paymaster contract/setup implementation supplied. Adapter hooks cannot replace them.
-- No real devnet submission, deployed contract, complete live transaction hash or receipt produced here.
-- No independently verified deployed sidecar boundary/rule oracle. MOCK thresholds/addresses/hashes/receipts are fictional.
-- No real Uniswap swap, USDC reimbursement, Arkiv or unrelated sponsor integration.
-- Generic fixtures trust sender/nonce metadata; actual signer correctness belongs to the imported implementation. Independent account allocation/funding/stake lifecycle must be implemented by that plugin.
-- No explorer URL is invented for an unverified network.
+The fresh fixture was deployed from the supplied original artifact with 0.15 throwaway devnet ETH creation value. The supplied test-only deployer key was passed through the process environment and removed afterward; it was never logged or committed. Fresh sender keys are ephemeral memory-only. No genesis fallback was used. Raw key-bearing PoC extraction and all ZIPs are ignored.
 
-## GitHub and commits
-Authenticated account **nishanthcr7777** and remote **https://github.com/n1shanthb/ethglobalmumbai.git** were verified outside the restricted network sandbox in the preceding turn. Earlier invalid-token results from the sandbox were misleading. This session creates coherent local feature commits; it does not push or alter remote history.
+## Dashboard
+Running read-only at `http://127.0.0.1:4177` with real gateway configuration. Browser verified the aggregate LIVE run, all six matches, genuine hashes/receipts, actual unstaked storage rejection, download links, and both gateways ready on chain1337. No frontend files were changed during live integration. Keep this user-facing server running unless the user requests otherwise.
+
+## Provenance and limitations
+Execution client commit `9aa3645d795945c64400f41a70aace0edfa7f383` verified live. Sidecar reports v4.1.1 but an empty commit; exact build/source equivalence cannot be asserted. Reviewed sidecar source and runtime checks are preserved separately. No security vulnerability, USDC reimbursement, swap, Arkiv or additional sponsor work is claimed. No new staking transaction was needed: the C fixture already had a verified active stake.
 
 ## Resume
-Read `UP_NEXT.md` and `docs/ADAPTER.md`. The next concrete step is to obtain the local folder or repository/branch containing the known-good PoC, import its signer/setup code, and implement one LIVE adapter. The November 6 live-integration attempt searched the local workspace, drive/profile filenames, attachments, both tracked branch trees, current remote branch names and connected GitHub file search without locating it. The extra downloaded ZIP is byte-identical to the original starter. No configured devnet environment-variable names were found. See `BUILD_STATUS.md` for exact checks and missing inputs.
-
-Latest test rerun: **30 passed, 0 failed** with loopback enabled. No code, signer, UI or live evidence was changed in that attempt. No live/boundary transaction was submitted. The dashboard started at the user's request remains running at `http://127.0.0.1:4177` in read-only mode with saved MOCK results; no devnet job is running. Waiting for the artifact location before dependent integration work can proceed.
-
-## LIVE integration checkpoint (supersedes earlier missing-artifact blocker)
-Imported the newly supplied framefuzz-poc ZIP; raw archive/extraction remain ignored because some scripts contain throwaway keys. Implemented the real pinned Hegota codec and LIVE plugin with predeployed sponsor checks, distinct raw-public/structured-alt payloads, and read-only evidence refresh. Basic sponsorship passed on both paths with successful payer receipts. Staked Uniswap pool-read rejected publicly and admitted/mined successfully alternatively. Six gas-boundary submissions matched after fixing real gateway policy-wrapper classification. 34 tests pass. Now importing the new framefuzz-paymaster ZIP to deploy a fresh unstaked fixture; exact deployment/funding work is pending. Original evidence remains in runs/.
-
-## Complete live-case checkpoint
-The second supplied ZIP provided the original ReserveReadingPaymaster source/artifact. Deployed a fresh unstaked instance at 0x3d66c53105be7930fd89571157a41137c12b003f; both paths rejected its genuine Uniswap StateView read. Basic and staked alternative receipts succeeded. All six cases / twelve admission submissions now match, including six boundary submissions. 37 tests pass. Full LIVE aggregate, raw receipts, replay exports and real sidecar rule-by-rule reports are preserved under evidence/live/2026-11-06/. The browser is displaying LIVE evidence and both configured gateways are ready on chain1337. Next: finalize documentation/provenance and commit evidence. Sidecar deployed commit remains unreported by the node.
+Core live definition of done is met for this devnet snapshot. Next: confirm the sidecar build commit with its operator and prepare the saved-evidence demo; see `UP_NEXT.md`. Devnet resets/funding depletion can invalidate fixtures. Do not repeat broadcasts just to demonstrate saved results. Full commands, hashes and receipt blocks are in `BUILD_STATUS.md`. Commits are local; no push in this session.

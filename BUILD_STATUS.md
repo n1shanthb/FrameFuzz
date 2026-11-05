@@ -1,65 +1,91 @@
-# Build status
+# Build status — LIVE integration
 
-Verified **November 6, 2026 (IST)** on branch `feat/framefuzz-mvp`.
+**November 6, 2026 (IST)** · branch `feat/framefuzz-mvp`.
 
-## Live integration attempt — November 6, 2026
+## Outcome
+1. LIVE adapter working: **YES**.
+2. Basic sponsored transaction: **PASS** — both paths admitted and included successfully.
+3. Unstaked pool-read rejection: **PASS** — fresh original-artifact deployment rejected through both policies.
+4. Staked pool-read acceptance: **PASS** — canonical storage rejection, alternative admission and successful inclusion.
+5. Boundary mutation tests actually executed: **six submissions**, three below/at/above variants through two paths.
+6. Dashboard displaying real evidence: **YES**, browser verified at `http://127.0.0.1:4177`.
+7. Automated tests: **37 passed, 0 failed**, Node v22.13.0 with loopback networking enabled.
+8. Remaining provenance gap: sidecar v4.1.1 returns an empty deployed commit; reviewed source cannot be attested to that build. Runtime rule checks are saved. No blocker to the demonstrated live flow.
 
-Stage 1 is blocked: the supplied Cursor PoC could not be located. Inspected the working tree, both locally tracked branch trees, current remote branch names, attachment filenames, and targeted filename searches across E:, D:, F: and the user profile (excluding dependencies, caches and system folders). Some protected folders were inaccessible. Connected GitHub file searches for `fast_gate_rerun.ts` and `PAYMASTER_FEASIBILITY` returned no results; that is not proof that private/unindexed/cloud workspaces lack them.
+Six cases / twelve admission submissions matched, with seven successful included frame transactions and five expected rejections. One additional legacy transaction deployed the fresh reserve fixture. No USDC reimbursement or Uniswap swap was performed.
 
-The additional `D:\downloadds\framefuzz-starter.zip` has the same SHA-256 as the workspace ZIP: `CB331F3001B2D7DB6D685FAE856B0AC6B3406A04E431536ED72C3EFC16F92D39`. Its file listing contains only the original starter and synthetic evidence. It has no working signer or paymaster PoC. No environment-variable names matching FRAMEFUZZ, EIP-8141, PAYMASTER or DEVNET were configured in the execution environment; credential values were not printed.
+## Implementation and source
+Added the actual workshop codec/signing adapter, authorized-chain/endpoint/code/funding/stake checks, independent sender/nonce lifecycle, original-artifact deployment helper, structured alternative RPC submissions, complete receipt preservation and read-only evidence refresh. Corrected classification for real gateways that wrap known policy errors as Invalid params/-32602. No frontend redesign or UI changes.
 
-Commands executed in the repository during this attempt:
+The supplied original reserve source calls real Uniswap v4 `StateView.getSlot0` when VERIFY calldata starts with 0x01. Its fresh deployment is `0x3d66c53105be7930fd89571157a41137c12b003f`, transaction `0xb6df27ca069439f8ca7009a0a5a4ba111a37d2c569bd73e330477a1c4ac108ad`, receipt status 1, block `0x63893`. Creation value 0.15 throwaway devnet ETH. Full deployment receipt is committed.
+
+Pinned dependencies: `@forshtat/hegota-support@0.0.1`, `viem@2.57.7`. Workshop source `bcfe02a196ca97b6fb0d1044db9d0b4c673831fc`. Reviewed sidecar source `2e22ff0a2898e69ea4bf5275bce1be8581a8582a`; live execution client `9aa3645d795945c64400f41a70aace0edfa7f383`. Exact sidecar deployment commit remains undisclosed. See `vendor/README.md`.
+
+Actual alternative admission reports confirm the B storage failure on PoolManager `0x6bf9aa9c04fd001385742d61f6818c3236429848`, slot `0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404`. Gas reports confirm total prefix execution plus secp256k1 cost: payer 67199/67200/67201 + sender 30000 + signature 2800 = 99999/100000/100001. Above was rejected as MAX_VERIFY_GAS through both methods. Below/at were admitted and included.
+
+## Evidence
+Committed directory: `evidence/live/2026-11-06/`. `manifest.json` identifies the aggregate report and its original inputs. Aggregate JSON retains original responses, independently signed raw and structured RPC inputs, metadata, raw receipts, payer/frame statuses, and live sidecar rule-by-rule reports. Markdown and replay exports sit alongside it. Computed hashes of rejected transactions are not claims of inclusion.
+
+External PoC evidence under `vendor/poc/external-*` remains labeled external. This build's LIVE evidence is separate. ZIPs and raw key-bearing extraction are ignored; only key-free imports and public chain evidence were committed. A scan checked all 71 tracked files against both private-key literals from the supplied funding script: **zero matches**.
+
+## Exact executed commands
 ```powershell
-git status --short
-git branch --show-current
-git log -6 --oneline
-git branch -a
-git ls-tree -r --name-only origin/main
-git ls-tree -r --name-only origin/feat/framefuzz-mvp
-git ls-remote --heads origin
-Get-FileHash 'E:\ethglobalmumbai\framefuzz-starter.zip','D:\downloadds\framefuzz-starter.zip' -Algorithm SHA256
-tar -tf 'D:\downloadds\framefuzz-starter.zip'
+npm install --save-exact @forshtat/hegota-support@0.0.1 viem@2.57.7
 npm test
+node bin/framefuzz.mjs run examples/live/basic.mjs --public-rpc https://altmempool.forshtat.com/rpc --alt-rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --submit --receipt-wait-ms 12000 --results runs
+node bin/framefuzz.mjs run examples/live/staked.mjs --public-rpc https://altmempool.forshtat.com/rpc --alt-rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --submit --receipt-wait-ms 12000 --results runs
+node bin/framefuzz.mjs run examples/live/verification-gas.mjs --public-rpc https://altmempool.forshtat.com/rpc --alt-rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --submit --receipt-wait-ms 3000 --results runs
+node bin/framefuzz.mjs refresh runs/2026-11-05T21-56-20-051Z-LIVE_RPC_SUBMISSION-a4bcdfbb.json --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --receipt-wait-ms 1000 --results runs
+node bin/framefuzz.mjs refresh runs/2026-11-05T21-57-03-876Z-LIVE_RPC_SUBMISSION-6ac9f698.json --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --receipt-wait-ms 1000 --results runs
+# FRAMEFUZZ_DEPLOYER_KEY supplied via process environment from the user's test-only PoC; no key is recorded here.
+node bin/deploy-reserve.mjs
+node bin/framefuzz.mjs run examples/live/unstaked.mjs --public-rpc https://altmempool.forshtat.com/rpc --alt-rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --submit --receipt-wait-ms 3000 --results runs
+node scripts/collect-live-evidence.mjs runs/2026-11-05T21-55-29-464Z-LIVE_RPC_SUBMISSION-5cff1031.json runs/2026-11-05T22-02-36-899Z-LIVE_RPC_SUBMISSION-9501fa3a.json runs/2026-11-05T21-58-24-164Z-LIVE_RPC_SUBMISSION-7c3f3ead.json runs/2026-11-05T21-58-26-702Z-LIVE_RPC_SUBMISSION-b5a7dbfc.json
+npm test
+node bin/framefuzz.mjs serve --cases examples/live/basic.mjs --public-rpc https://altmempool.forshtat.com/rpc --alt-rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --port 4177
 ```
-`npm test` was rerun with local loopback enabled: **30 passed, 0 failed**. Remote heads contain only `main` and `feat/framefuzz-mvp`, pointing to the starter/handoff and previously built scaffold respectively; no PoC branch was found. The working tree was clean before this documentation update.
 
-Missing inputs remain precisely: `fast_gate_rerun.ts`, `PAYMASTER_FEASIBILITY.md`, the actual frame encoder/signer and dependencies, account/paymaster contracts and ABIs, deployment/funding/stake setup code, authorized chain/public/alternative endpoint configuration, genuine StateView/pool identifiers, full prior receipts and deployed sidecar source/version/verification-gas rule provenance. The user was asked for the local folder or repository/branch containing them. No speculative signer was implemented and no transaction was broadcast.
+The first staked/boundary reports had inconclusive classifications caused by the old generic Invalid params parser. The parser was fixed and regression-tested, and the original responses were reclassified with read-only receipt refresh; no extra transaction submissions occurred. All accepted frame transactions later returned successful full receipts.
 
-Attempt outcomes: LIVE adapter **NO**; basic sponsorship **UNVERIFIED**; unstaked pool rejection **UNVERIFIED**; staked pool acceptance **UNVERIFIED**; live boundary submissions **0**; dashboard displaying real evidence **NO**; tests **30 passed**. The running dashboard still displays explicitly labeled saved MOCK evidence. No complete real transaction hash or receipt is available to record. Stages 2–5 depend on the missing Stage 1 inputs.
-
-## Implemented
-- Signer adapter contract with serialized isolated sender/nonce lifecycle, setup hooks, fresh build/sign hooks and replay metadata.
-- Separate public/alternative RPC paths; chain preflight before setup, mainnet block, duplicate payload/nonce guards.
-- Expected/unexpected accept/reject, unexpected rule/error class, transport failure and inconclusive classification. Known malformed/nonce/funding/RPC errors are not policy findings.
-- Independent receipt success, revert, pending, unknown, unchecked and RPC-error states; hash/block checks.
-- Provenance-driven Uniswap paymaster scenarios A–C plus optional verification-gas boundaries D; six variants through two paths in the supplied mock demo.
-- JSON, Markdown and replay export; CLI scenario/filter/adapter/rules options and meaningful exit codes.
-- Existing dashboard extended with scenario/mutation controls, gateway check, visible run state, both paths, details, saved runs and downloads.
-- Persistent authority/current status/next steps for Cursor and Codex; no runtime dependencies added.
-
-## Actual tests
-`npm test`: **30 passed / 0 failed** on Node **v22.13.0**, with loopback networking permitted. Covers adapter lifecycle/failures, separate endpoints, chain/mainnet guards, duplicate payload/nonce controls, policy/precondition errors, preflight failure evidence, independent success/revert/pending/error receipts, gas boundaries, paymaster configuration, CLI subprocesses, dashboard POST/selection/network/export, and full mock demonstration. Node 20 itself has not been executed.
-
-`node bin/framefuzz.mjs help`: passed. `node bin/framefuzz.mjs mock-demo --results runs`: **6 cases matched / 12 mock path submissions**, zero unexpected or inconclusive. Temporary fake gateways closed afterward. Saved evidence is explicitly **MOCK_RPC_TEST — NOT LIVE**.
-
-Browser smoke check at temporary port 4188 confirmed rendered MOCK evidence, both path columns, staked-case details, receipt distinction, gateway check and disabled run control. Automated API tests also verified real dashboard-triggered runs against local fake gateways and downloadable evidence.
-
-## Real devnet scenarios / transaction hashes / receipts
-**None executed or generated in this session.** No real hashes, deployments, swaps or receipts are claimed. Existing Cursor feasibility notes are external reports. The test double's hex-encoded JSON is not a signature or Ethereum transaction; its addresses, policy threshold, hashes and receipts are fictional.
-
-## Blockers and integration inputs
-Missing known-good EIP-8141 signer/encoder, paymaster contract sources/ABIs, deployment/funding/stake setup logic, authorized devnet configuration, full deployment/transaction evidence and actual pinned sidecar rule provenance. Exact import files and the next gate are listed in `UP_NEXT.md`; plugin shape is in `docs/ADAPTER.md`.
-
-The mock-tested rule framework is complete enough to integrate a real signer; live signing, real state setup and real rule validation remain pending. `VERIFIED` in rules JSON is an operator declaration, not an independent attestation. The live definition of done is **not yet met**. USDC reimbursement and an actual Uniswap v4 swap remain unproven. No Arkiv integration.
-
-## Exact current demonstration
+## Reproduce the saved demonstration (no broadcasting)
 ```powershell
-Set-Location E:\ethglobalmumbai
+npm ci
 npm test
-npm run demo:mock
-npm start
+Copy-Item evidence/live/2026-11-06/*LIVE_RPC_SUBMISSION-3a838bca.json runs/
+node bin/framefuzz.mjs serve --cases examples/live/basic.mjs --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --port 4177
 ```
-Open `http://127.0.0.1:4177`. Select the MOCK saved run, inspect case details and export JSON/Markdown/replay. No npm install, keys or external RPC required. Restricted execution environments must permit loopback. Stop the server with Ctrl+C.
+The server is already running in this session. Browser verified all six LIVE matches, source distinction, actual unstaked rejection text, receipts, real hashes, export links and both gateways ready on chain1337. Live submission remains disabled in this demonstration server.
 
-## Next concrete step
-Import `PAYMASTER_FEASIBILITY.md`, `poc/scripts/fast_gate_rerun.ts`, the working workshop signer and contract/setup dependencies; implement one LIVE plugin, supply grounded rules and authorized endpoints, and reproduce one fresh signed baseline with a full receipt. See README for the integration command template.
+## Complete admission hashes and receipt blocks
+
+The following section is generated directly from the committed aggregate evidence. Returned hashes refer to admitted transactions; computed-only hashes refer to rejected transactions and have no receipt.
+
+### basic-baseline-50000
+
+- public: EXPECTED_ACCEPT; returned `0x3a61f84bef43dee398ce5e1ec17c9cc8b9e6d498a33fef9ff44011c4b334ec84`; included_success, block `0x6384d`.
+- alt: EXPECTED_ACCEPT; returned `0xb810446fcc43d674db0faae8c6e833976a4f3344c418cdb1a2fbb7fe5b35cc6a`; included_success, block `0x6384f`.
+
+### unstaked-baseline-50000
+
+- public: EXPECTED_REJECT; computed only `0x3aca70802e2b6db284daf66dec3bd9873a3e48a231e7e5411b4d77bb62d06bc8`; not_checked.
+- alt: EXPECTED_REJECT; computed only `0xff59ca1dc469b03528937a1a69d13e062a8b2ede5b166f11158cdee4bc517fd6`; not_checked.
+
+### staked-baseline-50000
+
+- public: EXPECTED_REJECT; computed only `0x98404ebac440ec9ee2d82110fa8452ce72c0d8678b14bff08d70fa16ab44c91a`; not_checked.
+- alt: EXPECTED_ACCEPT; returned `0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c`; included_success, block `0x63863`.
+
+### basic-below-67199
+
+- public: EXPECTED_ACCEPT; returned `0xa56f367868376cc4ab7d4f938d03c148c9a1711f736e7bffb7c0fb556b889c1b`; included_success, block `0x6385b`.
+- alt: EXPECTED_ACCEPT; returned `0xa5f569b2de2079fc586b6428706828c2fb9b9b92c7fd34338aefa5f8e748632b`; included_success, block `0x63865`.
+
+### basic-at-67200
+
+- public: EXPECTED_ACCEPT; returned `0x7916c6a306044ba424e43ccbe871945b30a5357a19cba224bfbfc9b3af8f08eb`; included_success, block `0x6385d`.
+- alt: EXPECTED_ACCEPT; returned `0xb1c1583660a3da5ab7264579becdce2a2d04f4e3fdfc4e41bafd0db99f3a9605`; included_success, block `0x63865`.
+
+### basic-above-67201
+
+- public: EXPECTED_REJECT; computed only `0x58a9214e8c1188379e80e7cc4beb1b5acc2ce0897f014eab68fdd8a1c29d9bc8`; not_checked.
+- alt: EXPECTED_REJECT; computed only `0x675d7d64bfe8a3d20624d117e87a1b19281c087681eae658bfd0fbb31246fb54`; not_checked.

@@ -1,54 +1,28 @@
 # Up next
 
-Read `AGENTS.md`, `AUTHORITY.md`, `CURRENT_STATUS.md`, `BUILD_STATUS.md`, and `docs/ADAPTER.md`. Inspect Git before editing. Current branch is `feat/framefuzz-mvp`; retain user work and use frequent coherent conventional commits.
+Read `AGENTS.md`, `AUTHORITY.md`, `CURRENT_STATUS.md`, `BUILD_STATUS.md`, `docs/ADAPTER.md`, and `vendor/README.md`. Remain on `feat/framefuzz-mvp`; inspect Git and preserve user edits.
 
-## Completed gates
-- Starter preserved and tested.
-- Signer adapter interface, mock-tested isolated account/nonce/setup lifecycle.
-- Separate endpoint preflight, explicit verdicts, precondition errors, independent receipts and replay exports.
-- Provenance-driven Uniswap suite and verification-gas boundary framework.
-- Runnable six-case/twelve-path mock demonstration.
-- Existing dashboard extended; CLI/API/browser verification completed.
-- 30 automated tests passed on Node 22.13.0; no external dependencies.
+## Completed
+The missing ZIPs have been supplied and integrated. Real basic sponsorship, fresh unstaked pool rejection, existing staked pool acceptance, and all six live gas-boundary submissions passed. Seven frame transactions were included successfully. LIVE evidence is committed, the existing dashboard displays it, and 37 tests pass. Do not restart the old missing-artifact search.
 
-## 1. Obtain the external experiment artifacts
-**Latest attempt:** targeted local drive/profile/attachment filename searches, tracked branch trees, remote branch names and connected GitHub file search did not locate the PoC. The downloaded ZIP matches the starter byte-for-byte. The user has been asked for its local folder or repository/branch. This is the immediate blocking input; do not repeat the same broad search or substitute invented signer code. Once a location arrives, inspect that snapshot and continue Stage 2 below. Full test rerun still passes 30/30; no live tests have executed.
+## Immediate next step
+Obtain the deployed sidecar's exact build commit from the operator. The node exposes v4.1.1 but an empty commit field. Keep the reviewed source pin separate from the live execution-client pin and runtime admission checks; do not relabel partial provenance as an attested deployment match.
 
-The following were not present in the supplied workspace/archive:
-- `PAYMASTER_FEASIBILITY.md` with complete evidence and deployment configuration.
-- `poc/scripts/fast_gate_rerun.ts`.
-- Known-good encoder/signer such as `poc/workshop-ref/scripts/run_framefuzz_fresh_account.ts` and its exact dependencies/license.
-- Paymaster/account contract sources and ABIs, funding/deployment/stake/setup functions that wait for successful receipts.
-- Authorized devnet chain ID and public/alternative gateway URLs; current StateView/PoolManager/pool IDs, token addresses and deployment evidence.
-- Complete hashes/receipts and pinned deployed sidecar rule source/version, including actual verification-gas constraints.
-
-Do not modify the separate experiment's active branch or reconstruct its signer speculatively. Import a known-good snapshot into an isolated adapter. Never copy keys or `.env` files into fixtures.
-
-## 2. Implement one LIVE plugin
-Use `src/adapters/index.mjs` and `docs/ADAPTER.md`. Supply isolated funded accounts per case/path, checked setup hooks, actual pending nonces and correct EIP-8141 signatures. Plugin factories must not broadcast. Confirm any plugin endpoint uses the checked authorized chain.
-
-Create real rules JSON declaring `VERIFIED` only after checking the deployed rule version. Populate the actual path expectations, rejection rule labels, addresses, pool ID and setup configuration. The shipped mock config cannot become a live fixture by relabeling it.
-
-Run a preview, then one authorized basic sponsored baseline, then pool-reading comparisons with isolated state. Save complete admission responses, full hashes and receipts. A public rejection and alternative acceptance may be expected. Check signer/nonce/funding preconditions before investigating policy mismatches.
-
-## 3. Prove one live boundary family
-Use `verification-gas` with a pinned actual threshold and correct acceptance direction. Verify each below/at/above model is independently encoded/signed. The built-in family uses one supplied common threshold for both paths; add a custom case generator if deployed path limits differ. Capture reproducible JSON/Markdown/replay and independent receipt states. Mark pending/reverted/error honestly.
-
-## 4. Final acceptance and optional follow-up
-- Re-run tests, live baseline, and dashboard with the actual adapter/rules.
-- Add explorer links only after the real chain/explorer is established.
-- Test Node 20 explicitly if installed; current execution was Node 22 only.
-- Preserve imported source/version and actual evidence before any optional swap/reimbursement experiment. Do not claim swap success from admission alone.
-- Keep Arkiv, Chainlink, World and unrelated sponsor work out of scope.
-
-## Reproduce now
+## Prepare the demonstration without new broadcasts
 ```powershell
-Set-Location E:\ethglobalmumbai
+npm ci
 npm test
-npm run demo:mock
-npm start
+Copy-Item evidence/live/2026-11-06/*LIVE_RPC_SUBMISSION-3a838bca.json runs/
+node bin/framefuzz.mjs serve --cases examples/live/basic.mjs --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --port 4177
 ```
-Open `http://127.0.0.1:4177`, inspect the MOCK run and export its evidence. No credentials or network access beyond loopback are needed. Stop the server with Ctrl+C.
+Port 4177 is already serving the user-facing read-only dashboard in this session; do not start a duplicate listener. The six-case aggregate shows A/B/C and the boundary trio together. Explain that intended public rejection/alternative acceptance is a PASS. Export JSON, Markdown and replay; inspect raw payer/frame receipts and rule provenance.
 
-## Handoff and GitHub
-Use `git status --short`, `git log -5 --oneline`, and `git remote -v` before resuming. GitHub auth/remote was verified; network-restricted checks may misleadingly report an invalid token. Push only with authorization to the verified destination. Update status/build/queue documents at each meaningful checkpoint, including exact tests, outstanding work and the next action.
+## If another live run is requested
+- Use the individual `examples/live/*.mjs` case files and README commands. Every path gets a fresh independently signed sender. Never rebroadcast saved raw bytes blindly.
+- Verify authorized chain1337, sponsor code hashes/funding, Uniswap code, and current stake. A devnet reset may require redeployment/config updates.
+- Deployment helper uses the original artifact and a devnet-only funding key from `FRAMEFUZZ_DEPLOYER_KEY`; it never fetches a genesis key. Keep all credentials out of commits.
+- B must remain unstaked. C uses the existing staked fixture; no restaking is necessary. Do not stake B and silently invalidate later unstaked runs.
+- Use `refresh` for read-only receipt updates. Preserve original responses and derived reports separately.
+
+## Handoff and scope
+Update checkpoint documents and commit coherent changes with one-line conventional messages. Keep ZIPs/raw key-bearing files ignored. No UI redesign, Arkiv, new sponsors or USDC/swap claims. Push only when authorized to the verified remote. Node20.12+ compatibility is declared; only Node22.13.0 has been executed here.
