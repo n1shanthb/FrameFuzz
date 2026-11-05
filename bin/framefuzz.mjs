@@ -8,6 +8,8 @@ import { runMockDemo } from '../examples/mock-demo.mjs';
 import { refreshEvidence } from '../src/refresh.mjs';
 import { readFile } from 'node:fs/promises';
 import {runMutationCampaign,replayMutationDescriptor} from '../src/mutations/campaign.mjs';
+import {arkivCommand} from '../src/arkiv/cli.mjs';
+import {redact} from '../src/safety.mjs';
 
 const USAGE = `
 FrameFuzz — EIP-8141 admission testing scaffold
@@ -17,6 +19,10 @@ Usage:
   node bin/framefuzz.mjs serve --results runs [--cases examples/cases] [--port 4177] [--rpc <testnet-url> --allow-chain <id> --submit]
   node bin/framefuzz.mjs demo --results runs
   node bin/framefuzz.mjs help
+  node bin/framefuzz.mjs arkiv publish REPORT.json --case-index 0 --expiration-blocks 302400 --submit --output RECEIPT.json
+  node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS
+  node bin/framefuzz.mjs arkiv fetch --key ENTITY_KEY
+  node bin/framefuzz.mjs arkiv import --key ENTITY_KEY --results runs
   node bin/framefuzz.mjs mock-demo [--results runs]  # local fake gateways, never live evidence
   node bin/framefuzz.mjs refresh <evidence.json> --rpc URL --allow-chain ID [--receipt-wait-ms 1000]  # read-only; no submission
   node bin/framefuzz.mjs mutate --suite verification-gas|uniswap-storage --seed 42 --count 7 --preview
@@ -56,6 +62,7 @@ async function main() {
   if (command === 'help' || command === '--help') return process.stdout.write(USAGE);
   const options = flags(rest);
   const resultDir = options.results ?? 'runs';
+  if(command==='arkiv')return arkivCommand(options);
   if (command === 'mutate') {
     const mutationOptions={suite:options.suite??'verification-gas',seed:numericArg(options.seed,42),count:numericArg(options.count,options.suite==='uniswap-storage'?3:7),
       preview:Boolean(options.preview),submit:Boolean(options.submit),allowChainId:numericArg(options['allow-chain'],null),variant:numericArg(options.variant,undefined),
@@ -122,4 +129,4 @@ async function main() {
     console.log(`Wrote clearly labeled SYNTHETIC visual-only evidence: ${path.basename(saved.jsonFile)}\nOpen via: npm start`);
   } else throw new Error(`Unknown command ${command}. Use help.`);
 }
-main().catch(error => { console.error(`FrameFuzz error: ${error.message}`); process.exitCode = 1; });
+main().catch(error => { console.error(`FrameFuzz error: ${redact(error.message)}`); process.exitCode = 1; });

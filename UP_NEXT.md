@@ -1,5 +1,12 @@
 # Up next
 
+## Registry completed — current handoff
+The real Arkiv publish → fresh-process query → retrieve → dashboard import → unsigned replay preview cycle succeeded. Read `arkiv/how-you-use-arkiv.md` and `evidence/arkiv/2026-11-06/` for exact identity/receipt and commands. All66 tests pass. No remaining implementation blocker for the requested registry MVP.
+
+Next action: demonstrate via the running http://127.0.0.1:4177/#community dashboard or a fresh `arkiv query` process while entity `0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1` remains unexpired (expiry block569638). Query is public; no signing wallet is authenticated or required. A future publish needs a separately funded Rabdi ARKIV_PRIVATE_KEY environment variable; the demo key was not persisted. Do not republish merely to inspect the case. No unrelated integrations or live community auto-broadcast.
+
+Optional future work, not performed: pagination, second independent external publisher validation, moderation and locally verified rules before separately authorized live reruns. Preserve all existing LIVE/MOCK/PREVIEW evidence and receipts. Archive records are not an excuse to bypass current Arkiv expiry checks.
+
 Read `AGENTS.md`, `AUTHORITY.md`, `CURRENT_STATUS.md`, `BUILD_STATUS.md`, `docs/MUTATIONS.md` and `docs/ADAPTER.md`. Stay on `feat/framefuzz-mvp`; preserve user edits and all historical evidence.
 
 ## Completed — do not redo

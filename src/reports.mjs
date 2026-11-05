@@ -24,6 +24,7 @@ export function toMarkdown(output) {
     lines.push('','## Mutation campaign and rule coverage','',`- Campaign: ${JSON.stringify(output.campaign)}`);
     for(const rule of output.coverage.rules)lines.push(`- ${rule.ruleId} / ${rule.path}: ${rule.variants} variants, ${rule.matched} matching decisions, ${rule.unexpected} unexpected, regions ${rule.regions.join(', ')}; verified ${rule.verified}, inferred ${rule.inferred}, unknown ${rule.unknown}`);
   }
+  if(output.communityOrigin)lines.push('','## Community origin (historical publisher claims)', '', 'This run is a new unsigned PREVIEW. Original receipts below are not newly rerun outcomes.', '', '```json',JSON.stringify(output.communityOrigin,null,2),'```');
   lines.push('', '## Details', '');
   for (const c of output.results) {
     lines.push(`### ${c.id}`, '', c.description, '');
@@ -61,7 +62,7 @@ export async function saveReport(output, directory) {
 }
 
 export function toReplay(output) {
-  return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,campaign:output.campaign,coverage:output.coverage,
+  return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,campaign:output.campaign,coverage:output.coverage,communityOrigin:output.communityOrigin,
     warning: 'Contains potentially stale signed bytes. Rebuild with the original signer and isolated state. No automatic broadcast is performed.',
     cases: output.results.map(c => ({ id: c.id, family: c.family, mutation: c.mutation, ruleProvenance: c.ruleProvenance, reproduction: c.reproduction,
       paths: c.paths.filter(p => p.replay).map(p => ({ id: p.id, expected: p.expected, expectedRule: p.expectedRule,oracle:p.oracle,observed:p.observed,receipt:p.receipt,admissionReport:p.admissionReport, ...p.replay })) })) });

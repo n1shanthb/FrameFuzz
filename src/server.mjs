@@ -10,6 +10,7 @@ import { getChainId, sanitizedRpcLabel } from './rpc.mjs';
 import { assertTestChain, redact } from './safety.mjs';
 import {runMutationCampaign,MAX_LIVE_MUTATIONS,DEFAULT_CONFIG,DEFAULT_RULES} from './mutations/campaign.mjs';
 import {MUTATION_SUITES} from './mutations/generator.mjs';
+import {createRegistry} from './arkiv/registry.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
 function json(res, status, value) {
@@ -18,7 +19,7 @@ function json(res, status, value) {
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
-  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES }) {
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry }) {
   let running = false;
   const configured = Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
   const enabled = Boolean(submit && configured && Number.isSafeInteger(allowChainId) && allowChainId > 1);
@@ -36,6 +37,19 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
           scenario: scenario ?? 'fixtures', scenarios: [{ id: 'fixtures', label: 'Signed case fixtures' }, ...(adapterFile && rulesFile ? SCENARIOS : [])],
           mutations:{suites:MUTATION_SUITES,maxLiveVariants:MAX_LIVE_MUTATIONS,maxPreviewVariants:1000},
           endpoints: Object.fromEntries(Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([,v]) => v).map(([k,v]) => [k, sanitizedRpcLabel(v)])) });
+      } else if(req.method==='GET'&&route.pathname==='/api/community'){
+        const registry=communityRegistry??createRegistry();
+        json(res,200,await registry.query({suite:route.searchParams.get('suite')||undefined,ruleId:route.searchParams.get('rule')||undefined,implementation:route.searchParams.get('implementation')||undefined,owner:route.searchParams.get('owner')||undefined}));
+      } else if(req.method==='GET'&&route.pathname==='/api/community/case'){
+        json(res,200,await (communityRegistry??createRegistry()).fetch(route.searchParams.get('key')));
+      } else if(req.method==='POST'&&route.pathname==='/api/community/import'){
+        if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'Invalid Origin'});
+        let body='';for await(const chunk of req){body+=chunk;if(body.length>1024)return json(res,413,{error:'Selection too large'});}
+        const selection=JSON.parse(body);
+        if(selection.submit||Object.keys(selection).some(k=>k!=='key'))return json(res,400,{error:'Community cases support preview only; no submission or overrides'});
+        const {retrieved,preview}=await (communityRegistry??createRegistry()).importPreview(selection.key);
+        const saved=await saveReport(preview,resultDir);
+        json(res,200,{file:path.basename(saved.jsonFile),source:preview.source,submissions:preview.submissions,origin:preview.communityOrigin,owner:retrieved.owner});
       } else if (req.method === 'GET' && route.pathname === '/api/network') {
         const endpoints = Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([, v]) => v);
         const status = await Promise.all(endpoints.map(async ([id, url]) => {

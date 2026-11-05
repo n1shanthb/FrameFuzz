@@ -1,6 +1,14 @@
 # Current status
 
-**November 6, 2026 (IST)** · `E:\ethglobalmumbai` · branch `feat/framefuzz-mvp`. Inspect Git status/log before edits. Latest task: finish the deterministic semantic mutation engine, not rebuild the proven integration.
+**November 6, 2026 (IST)** · `E:\ethglobalmumbai` · branch `feat/framefuzz-mvp`. Inspect Git status/log before edits. Latest task: Arkiv regression registry; the mutation engine remains complete.
+
+## Arkiv checkpoint
+- Real Rabdi publish succeeded: entity `0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1`, transaction `0x0158db1bec0a20a8671ba18d0d9776b437a6a5cdb18970948a6c51d8fe5e8388`, receipt success/block267241, expiry569638.
+- Separate writer `0xd4A81a21dBfb0f90b814404Fa64A2e4C8166C715` funded with test tGLM; signing key held only in memory. Future writers must configure their own funded ARKIV_PRIVATE_KEY environment variable. Public reads need no wallet/key.
+- CLI publish/query/fetch/import; strict schema/digest/creator/attribute/expiry checks; actual SDK indexed query. Fresh CLI process queried the real entity, no cache. Existing dashboard Community Cases queried/retrieved/imported it through fresh SDK reads and opened an unsigned zero-broadcast PREVIEW.
+- Semantic value67198 was regenerated; original LIVE receipts remain separate publisher claims. No new chain1337 broadcast occurred. UI source is PREVIEW_COMMUNITY, new confidence UNKNOWN, receipts not_checked.
+- 66 tests pass, including eight Arkiv tests with mocked transport and dashboard APIs. All five exact sponsor docs and README instructions are complete. Proof is under `evidence/arkiv/2026-11-06/`.
+- Port4177 serves the read-only dashboard. Registry expiry is block-based; archived evidence survives expiry, but expired entities are not offered for replay. No pagination/moderation/independent community adoption claimed.
 
 ## Completed engine
 - Pure seeded unsigned-model generation from one base definition: gas-boundary sweeps and Uniswap storage/stake setup states. Versioned rule model, definition digest and deterministic semantic reproduction descriptors.
@@ -16,7 +24,7 @@ Seed 42/count7 generated payer values **67198, 67202, 67200, 67210, 67201, 67190
 Second family: three generated basic/unstaked-read/staked-read states previewed in browser and tested with adapter/signing/setup and mock transport. No new storage-family live campaign was sent; the original real storage proof remains intact.
 
 ## Verification and evidence
-- `npm test`: **58 passed / 0 failed**, including original 37; Node22.13.0, loopback enabled.
+- `npm test`: **66 passed / 0 failed**, including original58 and eight Arkiv tests; Node22.13.0, loopback enabled.
 - `npm run demo:mock`: 6/6 mock matches. No external broadcasts from automated tests.
 - New evidence: `evidence/mutations/2026-11-06/manifest.json`; original capture, receipt-refreshed LIVE JSON/Markdown/replay and storage PREVIEW exports.
 - `evidence/live/2026-11-06/` remains byte-for-byte unchanged in Git. Do not modify or relabel it.

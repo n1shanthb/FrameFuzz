@@ -14,6 +14,7 @@
     @media(max-width:1000px){.shell{grid-template-columns:1fr}.sidebar{padding:12px 18px;border-right:0;border-bottom:1px solid var(--stroke)}.sidebar-bottom,.sub{display:none}.nav{display:inline-block;margin:0}.brand{display:inline-block;margin-right:20px}.grid{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}}@media(max-width:520px){main{padding:20px 14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px}.metric-value{font-size:23px}}
     .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}.controls label{display:grid;gap:5px;color:var(--muted);font-size:12px}select{max-width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--stroke);border-radius:7px;padding:9px}a.button{text-decoration:none;font-size:12px}a[hidden]{display:none}:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}#receipt,#hash{white-space:pre-line;overflow-wrap:anywhere;max-width:70%}#executionStatus{color:var(--cyan)}
     .controls input{width:100px;padding:9px;border:1px solid var(--stroke);border-radius:7px;background:var(--panel2);color:var(--text)}#coverageSummary{overflow-wrap:anywhere}
+    main{min-width:0}#community{min-width:0;overflow-wrap:anywhere}#communityDetail{max-height:320px;overflow:auto}#community .controls input{width:160px}
   </style>
 </head>
 <body>
@@ -24,6 +25,7 @@
     <a class="nav active" href="#tests">◫ &nbsp; Test runner</a>
     <a class="nav" href="#cases">≋ &nbsp; Test cases</a>
     <a class="nav" href="#detail">⌁ &nbsp; Evidence explorer</a>
+    <a class="nav" href="#community">Community Cases</a>
     <div class="sidebar-bottom"><div class="tiny">ENGINE STATUS</div><p id="engineStatus">Reading local configuration…</p><div class="tiny">Only signed, explicit testnet transactions are sent.</div></div>
   </aside>
   <main>
@@ -79,6 +81,21 @@
           <p id="repro" class="code">Select a saved run.</p></div>
       </section>
     </div>
+    <section id="community" class="panel" style="margin-top:24px;padding:20px">
+      <h2>Community Cases · Arkiv Rabdi</h2>
+      <p class="helper">Shared wallet-owned semantic fixtures on chain 7794095. Public reads require no wallet. Original LIVE labels and outcomes are publisher claims; imports are new unsigned PREVIEW runs.</p>
+      <div class="controls">
+        <label>Suite <select id="communitySuite"><option value="">All suites</option><option>verification-gas</option><option>uniswap-storage</option></select></label>
+        <label>Rule ID <input id="communityRule" placeholder="MAX_VERIFY_GAS"></label>
+        <label>Implementation <input id="communityVersion" placeholder="Optional version"></label>
+        <label>Current owner <input id="communityOwner" placeholder="Optional 0x wallet"></label>
+        <button class="button secondary" id="queryCommunity">Query Arkiv</button>
+      </div>
+      <p id="communityStatus" class="helper">Not queried. RPC: https://rpc.rabdi.db-chain.testnet.arkiv.network</p>
+      <div id="communityList"></div>
+      <pre class="details" id="communityDetail">Select a retrieved fixture to inspect its publisher, owner, expiration, digest and original outcomes.</pre>
+      <button class="button" id="importCommunity" disabled>Open selected case as replay PREVIEW</button>
+    </section>
   </main>
 </div>
 <script>
@@ -144,6 +161,24 @@ $('runButton').addEventListener('click',async()=>{
   $('runButton').disabled=true;safeText('executionStatus','Running: checking chain IDs, preparing independent variants, submitting and checking receipts…');
   try {const r=await fetch('/api/run',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({scenario:$('scenarioSelect').value,mutationFamily:$('mutationSelect').value})});const d=await r.json();if(!r.ok)throw new Error(d.error);await refresh();$('runSelect').value=d.file;await loadRun(d.file);safeText('executionStatus',`Finished: ${d.totals.matched} expected, ${d.totals.unexpected} unexpected, ${d.totals.inconclusive} inconclusive.`);}
   catch(e){safeText('executionStatus',`Run failed: ${e.message}`);}finally{$('runButton').disabled=!enabled;}
+});
+let selectedCommunity=null;
+async function communityJSON(url,options){const r=await fetch(url,options),d=await r.json();if(!r.ok)throw new Error(d.error);return d;}
+$('queryCommunity').addEventListener('click',async()=>{
+  $('queryCommunity').disabled=true;$('importCommunity').disabled=true;selectedCommunity=null;
+  try{
+    const q=new URLSearchParams();for(const [key,id]of [['suite','communitySuite'],['rule','communityRule'],['implementation','communityVersion'],['owner','communityOwner']])if($(id).value.trim())q.set(key,$(id).value.trim());
+    const d=await communityJSON('/api/community?'+q);
+    safeText('communityStatus',`${d.source} · chain ${d.chainId} · block ${d.currentBlock} · reader ${d.reader.walletAddress??'public anonymous (no signing wallet)'} · ${d.cases.length} active cases · ${d.rejected.length} quarantined. Query: ${d.query}`);
+    $('communityList').replaceChildren();
+    for(const c of d.cases){const b=document.createElement('button');b.className='button secondary';b.style.cssText='display:block;margin:8px 0;max-width:100%;overflow-wrap:anywhere;white-space:normal;text-align:left';b.textContent=`${c.record.suite} / ${c.record.ruleId} · original ${c.record.evidence.classification} · ${c.key} · publisher ${c.record.publisher} · owner ${c.owner} · expires block ${c.expiresAtBlock}`;
+      b.addEventListener('click',async()=>{try{selectedCommunity=null;$('importCommunity').disabled=true;const retrieved=await communityJSON('/api/community/case?key='+encodeURIComponent(c.key));safeText('communityDetail',JSON.stringify(retrieved,null,2));selectedCommunity=retrieved;$('importCommunity').disabled=false;}catch(e){safeText('communityStatus',e.message);}});$('communityList').append(b);}
+  }catch(e){safeText('communityStatus',`Arkiv query failed: ${e.message}`);}finally{$('queryCommunity').disabled=false;}
+});
+$('importCommunity').addEventListener('click',async()=>{
+  if(!selectedCommunity)return;$('importCommunity').disabled=true;
+  try{const d=await communityJSON('/api/community/import',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:selectedCommunity.key})});await refresh();$('runSelect').value=d.file;await loadRun(d.file);safeText('communityStatus',`${d.source} · ${d.submissions} broadcasts · ${d.origin.entityKey}. Original outcomes remain separate in communityOrigin; inspect exported JSON. Expiration and integrity rechecked on import.`);$('tests')?.scrollIntoView();}
+  catch(e){safeText('communityStatus',`Import failed: ${e.message}`);}finally{$('importCommunity').disabled=false;}
 });
 refresh();
 </script>
