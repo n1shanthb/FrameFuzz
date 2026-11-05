@@ -15,7 +15,7 @@
     "run:preview": "node ./bin/framefuzz.mjs run examples/cases --allow-chain 1337"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=20.12"
   },
   "license": "MIT",
   "dependencies": {
