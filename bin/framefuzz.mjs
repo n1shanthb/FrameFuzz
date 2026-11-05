@@ -5,6 +5,8 @@ import { saveReport } from '../src/reports.mjs';
 import { createDashboardServer } from '../src/server.mjs';
 import { selectCases } from '../src/selection.mjs';
 import { runMockDemo } from '../examples/mock-demo.mjs';
+import { refreshEvidence } from '../src/refresh.mjs';
+import { readFile } from 'node:fs/promises';
 
 const USAGE = `
 FrameFuzz — EIP-8141 admission testing scaffold
@@ -15,6 +17,7 @@ Usage:
   node bin/framefuzz.mjs demo --results runs
   node bin/framefuzz.mjs help
   node bin/framefuzz.mjs mock-demo [--results runs]  # local fake gateways, never live evidence
+  node bin/framefuzz.mjs refresh <evidence.json> --rpc URL --allow-chain ID [--receipt-wait-ms 1000]  # read-only; no submission
 
 Scenario options (run/serve): --scenario uniswap-v4-paymaster|verification-gas --adapter plugin.mjs --rules rules.json
 Path options: --public-rpc URL --alt-rpc URL (or FRAMEFUZZ_PUBLIC_RPC / FRAMEFUZZ_ALT_RPC environment variables)
@@ -61,6 +64,15 @@ async function main() {
     console.log(JSON.stringify({ totals: evidence.totals, source: evidence.source, evidence: saved }, null, 2));
     if (evidence.totals.unexpected > 0) process.exitCode = 2;
     else if (evidence.totals.inconclusive > 0) process.exitCode = 3;
+  } else if (command === 'refresh') {
+    if (!options._[0]) throw new Error('Refresh requires an evidence JSON file');
+    const original = JSON.parse(await readFile(options._[0], 'utf8'));
+    const evidence = await refreshEvidence(original, {rpcUrl:options.rpc ?? process.env.FRAMEFUZZ_RPC,
+      rpcUrls:{public:options['public-rpc'] ?? process.env.FRAMEFUZZ_PUBLIC_RPC,alt:options['alt-rpc'] ?? process.env.FRAMEFUZZ_ALT_RPC},
+      allowChainId:numericArg(options['allow-chain'],null),receiptWaitMs:numericArg(options['receipt-wait-ms'],1000)});
+    evidence.derivedFrom = path.basename(options._[0]);
+    console.log(JSON.stringify({totals:evidence.totals,evidence:await saveReport(evidence,resultDir)},null,2));
+    if(evidence.totals.unexpected)process.exitCode=2;else if(evidence.totals.inconclusive)process.exitCode=3;
   } else if (command === 'serve') {
     const port = numericArg(options.port, 4177);
     const server = createDashboardServer({

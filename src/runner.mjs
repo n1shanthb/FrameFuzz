@@ -48,12 +48,12 @@ export async function runSuite(cases, options = {}) {
       const url = endpointFor(p, options);
       const record = { id: p.id, method: p.method, expected: p.expected ?? null, expectedRule: p.expectedRule ?? null,
         expectedErrorClass: p.expectedErrorClass ?? null, rpc: sanitizedRpcLabel(url), receipt: { state: 'not_checked' } };
-      let raw = p.params?.[0], metadata = p.metadata ?? null;
+      let raw = p.params?.[0], metadata = p.metadata ?? null, submission = null;
       try {
         if (preflightErrors.size) record.observed = preflightErrors.get(url) ?? { status: 'inconclusive', message: 'Another admission endpoint failed preflight; no setup or submission executed' };
         else if (!submit) record.observed = { status: 'inconclusive', message: 'Preview mode: no setup, signing, or submission executed' };
         else {
-          if (p.prepare) { const built = await p.prepare({ rpcUrl: url, chainId: allowChainId }); raw = built.raw; metadata = built.metadata; }
+          if (p.prepare) { const built = await p.prepare({ rpcUrl: url, chainId: allowChainId }); raw = built.raw; metadata = built.metadata; submission = built.submission; }
           const key = metadata?.sender && metadata?.nonce != null ? `${String(metadata.sender).toLowerCase()}:${metadata.nonce}` : null;
           if (!['eth_sendFrameTransaction', 'eth_sendRawTransaction'].includes(p.method) || !HEX_TRANSACTION.test(raw ?? '')) {
             record.observed = { status: 'inconclusive', message: 'Missing signed bytes or unsupported method; placeholder never submitted' };
@@ -66,9 +66,11 @@ export async function runSuite(cases, options = {}) {
           } else {
             seenRaw.add(raw.toLowerCase()); if (key) seenNonce.add(key);
             record.fingerprint = txFingerprint(raw);
-            record.replay = { method: p.method, params: [raw], metadata, warning: 'Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast.' };
+            if (submission && (submission.method !== p.method || !Array.isArray(submission.params) || submission.params.length !== 1)) throw new Error('Adapter submission does not match selected admission method');
+            const params = submission?.params ?? [raw];
+            record.replay = { method: p.method, params, signedRaw: raw, metadata, warning: 'Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast.' };
             submissions++;
-            try { record.observed = describeRpcResult(await rpcFn(url, p.method, [raw], { timeoutMs: rpcTimeoutMs })); }
+            try { record.observed = describeRpcResult(await rpcFn(url, p.method, params, { timeoutMs: rpcTimeoutMs })); }
             catch (error) { record.observed = describeRpcError(error); }
             if (record.observed.status === 'accepted' && receiptWaitMs > 0) record.receipt = await getReceipt(url, record.observed.hash, { waitMs: receiptWaitMs, timeoutMs: rpcTimeoutMs, rpcFn });
           }

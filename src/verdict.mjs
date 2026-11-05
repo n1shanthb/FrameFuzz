@@ -17,7 +17,10 @@ export function describeRpcResult(value) {
 export function describeRpcError(error) {
   if (error instanceof RpcResponseError) {
     const text = `${error.message} ${JSON.stringify(error.data ?? '')}`;
-    const errorClass = error.code === -32601 ? 'rpc_method' : error.code === -32602 || /invalid params|malformed|rlp|invalid signature|invalid sender|decode|encoding/i.test(text) ? 'malformed_transaction'
+    // Both real gateways wrap policy failures in "Invalid params" / -32602.
+    // Recognize only concrete, source-reviewed policy diagnostics before that wrapper.
+    const policy = /validation-prefix simulation failed:\s*StorageReadNonSender\b|prefix gas budget \(frames \+ sig cost\) exceeds MAX_VERIFY_GAS|validation prefix execution gas sum \d+ \+ signature-verification cost \d+ = \d+ exceeds MAX_VERIFY_GAS/i.test(text);
+    const errorClass = policy ? 'admission_policy' : error.code === -32601 ? 'rpc_method' : error.code === -32602 || /invalid params|malformed|rlp|invalid signature|invalid sender|decode|encoding/i.test(text) ? 'malformed_transaction'
       : /nonce|already known|replacement transaction|underpriced/i.test(text) ? 'nonce_or_duplicate'
       : /insufficient funds|insufficient balance|balance too low/i.test(text) ? 'funding'
       : error.code === -32603 || error.code === -32700 ? 'rpc_error' : 'unclassified_rejection';
@@ -33,7 +36,7 @@ export function compareAdmission(expected, observed, expectedRule = null, expect
   if (!['accepted', 'rejected'].includes(expected)) return { verdict: 'INCONCLUSIVE', reason: 'Missing or invalid expected admission outcome' };
   if (!observed || observed.status === 'inconclusive') return { verdict: 'INCONCLUSIVE', reason: observed?.message ?? 'No observed result' };
   if (expectedErrorClass && observed.status === 'rejected' && observed.errorClass !== expectedErrorClass) return { verdict: 'UNEXPECTED_RULE', reason: `Expected error class ${expectedErrorClass}, observed ${observed.errorClass}` };
-  if (observed.status === 'rejected' && !expectedErrorClass && !['unclassified_rejection', undefined].includes(observed.errorClass)) return { verdict: 'INCONCLUSIVE', reason: `Precondition/RPC error (${observed.errorClass}) is not an admission-policy finding` };
+  if (observed.status === 'rejected' && !expectedErrorClass && !['admission_policy', 'unclassified_rejection', undefined].includes(observed.errorClass)) return { verdict: 'INCONCLUSIVE', reason: `Precondition/RPC error (${observed.errorClass}) is not an admission-policy finding` };
   if (observed.status !== expected) return { verdict: observed.status === 'accepted' ? 'UNEXPECTED_ACCEPT' : 'UNEXPECTED_REJECT', reason: `Expected ${expected}, observed ${observed.status}. Not automatically a protocol bug.` };
   if (expectedRule && expected === 'rejected') {
     const haystack = `${observed.message ?? ''} ${JSON.stringify(observed.data ?? '')}`.toLowerCase();

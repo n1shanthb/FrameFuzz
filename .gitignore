@@ -12,3 +12,7 @@ runs/*
 *.pem
 *.key
 
+# Raw user-supplied PoC contains embedded devnet keys; import sanitized code only
+/framefuzz-poc/
+/.local/
+

@@ -41,7 +41,11 @@ export function createAdapter(plugin) {
         if (payloads.has(rawKey)) throw new Error('Signer reused a signed payload');
         payloads.add(rawKey);
         // Never persist account objects, model secrets, or arbitrary signer output.
-        return { raw: signed.raw, metadata: { adapter: plugin.id, sender, nonce, chainId, caseId, pathId, mode: plugin.mode } };
+        return { raw: signed.raw, submission: signed.submission,
+          metadata: { adapter: plugin.id, sender, nonce, chainId, caseId, pathId, mode: plugin.mode,
+            ...(signed.evidence ? { transaction: { hash: signed.evidence.hash, payer: signed.evidence.payer,
+              payerBalance: signed.evidence.payerBalance, senderBalance: signed.evidence.senderBalance,
+              verificationGas: signed.evidence.verificationGas, stateView: signed.evidence.stateView, poolId: signed.evidence.poolId } } : {}) } };
       } catch (error) { poisoned = true; throw error; }
       finally { busy = false; }
     },

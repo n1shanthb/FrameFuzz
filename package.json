@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "description": "EIP-8141 admission-test engine and results UI (hackathon scaffold)",
-  "bin": { "framefuzz": "./bin/framefuzz.mjs" },
+  "bin": {
+    "framefuzz": "./bin/framefuzz.mjs"
+  },
   "scripts": {
     "test": "node --test",
     "start": "node ./bin/framefuzz.mjs serve --cases examples/cases --results runs --port 4177",
@@ -12,6 +14,12 @@
     "demo:mock": "node ./bin/framefuzz.mjs mock-demo --results runs",
     "run:preview": "node ./bin/framefuzz.mjs run examples/cases --allow-chain 1337"
   },
-  "engines": { "node": ">=20" },
-  "license": "MIT"
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@forshtat/hegota-support": "0.0.1",
+    "viem": "2.57.7"
+  }
 }

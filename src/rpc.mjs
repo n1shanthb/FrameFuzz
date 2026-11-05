@@ -59,6 +59,9 @@ export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutM
         transactionHash: receipt.transactionHash ?? hash,
         status: receipt.status ?? null,
         gasUsed: receipt.gasUsed ?? null,
+        payer: receipt.payer ?? null,
+        frameReceipts: receipt.frameReceipts ?? null,
+        raw: receipt,
       };
     } catch (error) {
       return { state: 'receipt_rpc_error', message: error.message };
