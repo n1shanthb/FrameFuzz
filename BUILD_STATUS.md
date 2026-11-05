@@ -1,4 +1,40 @@
-# Build status — deterministic mutation engine
+# Build status — Arkiv regression registry and mutation engine
+
+## Arkiv registry — executed November 6, 2026
+
+Implemented `src/arkiv/` typed schema, sanitized projection, publish/query/fetch/validate/import, official SDK clients and CLI. Existing server/dashboard has a minimal Community Cases view. It directly queries Rabdi, retrieves selected cases, checks expiry/creator/digests/semantic consistency and imports only an unsigned PREVIEW. Historical and newly generated outcomes remain separate in JSON/Markdown/replay exports. No admission-runner rewrite or new chain1337 broadcast.
+
+**Real publish → fresh-process query → retrieve → dashboard import → replay preview: PASS.**
+
+- Writer/publisher/current owner: `0xd4A81a21dBfb0f90b814404Fa64A2e4C8166C715`. Separate in-memory test key, no persisted key. Balance before publish: 9.5 test tGLM.
+- Rabdi chain7794095, official RPC `https://rpc.rabdi.db-chain.testnet.arkiv.network`, SDK1.0.1. Independent of EIP-8141 chain1337.
+- Entity key: `0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1`.
+- Creation transaction: `0x0158db1bec0a20a8671ba18d0d9776b437a6a5cdb18970948a6c51d8fe5e8388`.
+- Full receipt: `evidence/arkiv/2026-11-06/publish.json`. Status success; block267241; block hash `0x73b437646a1f3ff4163d8789ac8f4aa0dd2cf14ef8296b4e5028591236e8a830`; gas314427; effective gas price1000000000; destination Arkiv system contract `0x4400000000000000000000000000000000000044`.
+- Selected expiration302400 blocks from preflight; exact absolute expiry569638. Public reads are unsigned/anonymous, visibly distinct from creator/current owner. No authenticated querying wallet is implied.
+- Content digest `281434c862232ac4557bd917b0c65d812a6bd5372eab977912117b53edc37e6b`; offchain source evidence SHA-256 `de690539fac4b65b5047141d592bd8cef44ef3991a030d6912c730ae08ee2972`.
+- A fresh CLI process returned the entity at block267249; separate restarted dashboard queried/retrieved/imported it. Case seed42 variant0 regenerated payer gas67198. New source PREVIEW_COMMUNITY; submissions0; both new path outcomes inconclusive/not_checked and confidenceUNKNOWN. Original two successful LIVE receipts remain publisher claims under `communityOrigin.originalOutcomes`.
+- Saved demonstration: `evidence/arkiv/2026-11-06/manifest.json`, original publish receipt/payload, fresh-process query, CLI import, dashboard API query, actual browser-import JSON/Markdown/replay exports, screenshot and test log. Existing `evidence/live/` and `evidence/mutations/` unchanged in Git.
+
+Exact executed product commands:
+
+```powershell
+npm install --save-exact @arkiv-network/sdk
+node bin/framefuzz.mjs arkiv publish evidence/mutations/2026-11-06/2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.json --case-index 0 --expiration-blocks 302400 --submit --output evidence/arkiv/2026-11-06/publish.json
+node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS --output evidence/arkiv/2026-11-06/query-fresh-process.json
+node bin/framefuzz.mjs arkiv import --key 0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1 --output evidence/arkiv/2026-11-06/import-cli.json
+node bin/framefuzz.mjs serve --results runs --port 4177
+npm test
+npm test | Tee-Object -FilePath evidence/arkiv/2026-11-06/tests.txt | Select-Object -Last 10
+```
+
+Environment detail: the signer process could not use network directly. First attempts failed on eth_chainId before any write. The successful publish CLI invocation included `node --import ./.local/arkiv-relay-loader.mjs` before `bin/framefuzz.mjs`, with ARKIV_PRIVATE_KEY passed in the child's environment from memory. The ignored loader/worker relayed only public RPC bodies via local files to the official endpoint; no key was written or relayed. Fresh-process query and dashboard used direct SDK networking. One real entity was published, no repeated writes.
+
+Browser sequence on the restarted server: Community Cases → Query Arkiv → select the real row → inspect retrieved creator/owner/expiry/payload → Open selected case as replay PREVIEW. Observed UI: PREVIEW_COMMUNITY, zero broadcasts, fresh unsigned model, no new transaction hashes. The fixture expired-state rejection is tested with mocked transport; no actual expired testnet entity was created just for the test.
+
+Automated verification: **66 passed / 0 failed**, retaining all58 previous tests. Eight new tests cover projection/secrets, schema/digest/semantic tampering, cross-owner discovery, expiry quarantine/fetch/import rejection, chain/filter/creator checks, unsigned fresh imports, guarded publish/receipt and actual official SDK decoding/query over mocked JSON-RPC transport, plus dashboard preview-only API flow. Automated tests do not send testnet transactions. Initial test-only assertion and sandbox loopback failures were corrected; final suite is green.
+
+All five sponsor files under `arkiv/` and README writer/entity/query/network/license/AI/evidence disclosures completed. Limits: first-page20-case queries, no moderation or independent external adoption measured; public RPC can rate limit; future writes need a funded Rabdi signing key; entity expires at block569638; publisher claims are not attestations; full historical evidence is offchain. No outstanding blocker to the requested MVP cycle.
 
 **Current checkpoint: November 6, 2026 (IST), `feat/framefuzz-mvp`.**
 

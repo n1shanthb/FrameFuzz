@@ -2,7 +2,36 @@
 
 FrameFuzz builds independently signed frame transactions, compares canonical and alternative admission rules, tracks execution separately, and exports reproducible evidence.
 
-**Deterministic mutation engine verified November 6, 2026:** automatically generated seven gas variants from seed 42, independently signed for both paths: **14/14 live decisions matched**, eight included successfully, six expected cap rejections. **58 automated tests pass**, including all original 37 tests. Historical six-scenario live evidence remains unchanged. No USDC reimbursement or Uniswap swap is claimed.
+**Verified November 6, 2026:** seven generated gas variants produced **14/14 matching live decisions**, eight included successfully and six expected cap rejections. **66 automated tests pass**, including all original tests and eight Arkiv registry tests. Historical live evidence remains unchanged. No USDC reimbursement or Uniswap swap is claimed.
+
+## Arkiv Community Cases — real testnet registry
+
+FrameFuzz now publishes sanitized semantic regression fixtures, discovers cases across developers, verifies their integrity and opens a selected fixture in the existing mutation runner as an unsigned **PREVIEW**. The real publish → fresh-process query → retrieve → dashboard import → preview cycle succeeded. No EIP-8141 transaction is broadcast by community import.
+
+- Network: **Arkiv Rabdi, chain 7794095**, RPC `https://rpc.rabdi.db-chain.testnet.arkiv.network`, test gas tGLM, SDK `@arkiv-network/sdk@1.0.1`. The EIP-8141 devnet remains separate on chain 1337.
+- Writer wallet: `0xd4A81a21dBfb0f90b814404Fa64A2e4C8166C715`.
+- Real entity: `0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1`.
+- Creation transaction: `0x0158db1bec0a20a8671ba18d0d9776b437a6a5cdb18970948a6c51d8fe5e8388`, successful receipt at block267241. Entity expires at block569638 (selected approximately seven days).
+- Public query/import requires no wallet. The UI explicitly identifies anonymous unsigned reads and displays each case's publisher, immutable creator and current owner. An optional reader address is only a label, never authenticated ownership.
+
+```powershell
+node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS
+node bin/framefuzz.mjs arkiv fetch --key 0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1
+node bin/framefuzz.mjs arkiv import --key 0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1 --results runs
+node bin/framefuzz.mjs serve --results runs --port 4177
+```
+
+Open **Community Cases**, Query Arkiv, select a case, then **Open selected case as replay PREVIEW**. Optional query filters are `--implementation`, `--owner` and `--limit` (maximum20). Expired records and invalid payloads cannot be imported. Query/fetch/import use the official SDK directly with no local registry cache. See [the exact publish command and walkthrough](arkiv/how-you-use-arkiv.md).
+
+For a new publish, securely configure a separate funded test wallet as `ARKIV_PRIVATE_KEY`; optionally set `ARKIV_ACCESS_KEY` for the SDK RPC. Publishing requires explicit `--submit` and writes only to Rabdi. The demonstration writer key was kept in memory and is not distributed in this repository. Never reuse chain1337 signing/funding configuration for Arkiv.
+
+Arkiv stores the actual portable semantic descriptor, indexed suite/rule/version metadata, content digest and selected original outcome/receipt summaries. Full historical evidence stays offchain in Git, identified by SHA-256; it is not all uploaded to Arkiv. Publisher LIVE labels are claims, not independently attested facts. Imported outcomes are new UNKNOWN-confidence previews; historical claims remain separately labeled under `communityOrigin` in exports. Signatures/nonces are never reused.
+
+Shared indexed fixtures let another developer find a relevant rule/version without knowing a repository's layout. Wallet ownership supplies attribution and a filterable current owner. Expiration stops stale devnet assumptions from remaining replay candidates indefinitely. Local JSON remains useful for private experiments; GitHub remains the permanent source/evidence archive. Arkiv adds shared discovery and bounded fixture lifetimes. No external adoption or testimonials are claimed.
+
+Sponsor documentation: [schema](arkiv/schema.md), [friction](arkiv/friction.md), [reach](arkiv/reach.md), [why Arkiv](arkiv/why-arkiv.md), [how it is used](arkiv/how-you-use-arkiv.md). Real receipt, fresh-process query and dashboard preview evidence: [evidence/arkiv/2026-11-06](evidence/arkiv/2026-11-06/).
+
+License: **MIT**, see [LICENSE](LICENSE); bundled upstream sources retain their notices. AI was used for implementation, documentation, test design and execution assistance. Actual testnet receipts and saved evidence support live claims; AI-generated or mocked data is not labeled live.
 
 ## Generate and run mutations
 
