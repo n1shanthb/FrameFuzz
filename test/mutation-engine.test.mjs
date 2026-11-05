@@ -103,3 +103,14 @@ test('wrong rule class and verified outcome mismatches are distinguished',()=>{
   assert.equal(compareMutation(reject,{status:'rejected',message:'ForeignStorage'}).verdict,'UNEXPECTED_RULE_CLASS');
   assert.equal(compareMutation({...reject,expected:'accepted'},{status:'rejected',message:'ForeignStorage'}).verdict,'UNEXPECTED_REJECT');
 });
+test('storage generator applies stake/read setup conditions before signing all six path variants',async()=>{
+  let counter=0;const setups=[],decisions=new Map();
+  const plugin={id:'test-storage-setup',mode:'MOCK',accountFor:async()=>({sender:`0x${(++counter).toString(16).padStart(40,'0')}`}),
+    setup:async ctx=>{setups.push(structuredClone(ctx.setup));ctx.account.setup=ctx.setup;},getNonce:async()=>0,
+    sign:async ctx=>{assert.equal(ctx.model.poolRead,ctx.account.setup.poolRead);const raw=`0x${counter.toString(16).padStart(4,'0')}`;
+      decisions.set(raw,{reject:ctx.model.poolRead&&(ctx.pathId==='public'||!ctx.account.setup.staked),path:ctx.pathId});return {raw};}};
+  const out=await runMutationCampaign({definition:def({suite:'uniswap-storage',count:3}),config,adapter:createAdapter(plugin),rpcUrl:'http://127.0.0.1:9091',submit:true,allowChainId:1337,evidenceSource:'MOCK',captureRules:false,receiptWaitMs:0,
+    rpcFn:async(_,method,params)=>{if(method==='eth_chainId')return '0x539';const decision=decisions.get(params[0]);if(decision.reject)throw new RpcResponseError(-32000,decision.path==='public'?'Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender':'unstaked payer accessed PoolManager slot');return `0x${'a'.repeat(64)}`;}});
+  assert.equal(out.totals.matched,3);assert.equal(setups.filter(s=>s.staked).length,2);assert.equal(setups.filter(s=>s.poolRead).length,4);assert.equal(out.submissions,6);
+  assert.ok(out.coverage.rules.every(r=>r.ruleId==='STORAGE_ACCESS'));
+});

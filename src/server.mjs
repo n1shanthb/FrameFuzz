@@ -8,6 +8,8 @@ import { listReports, loadReport, saveReport, toMarkdown, toReplay } from './rep
 import { SCENARIOS } from './scenarios.mjs';
 import { getChainId, sanitizedRpcLabel } from './rpc.mjs';
 import { assertTestChain, redact } from './safety.mjs';
+import {runMutationCampaign,MAX_LIVE_MUTATIONS,DEFAULT_CONFIG,DEFAULT_RULES} from './mutations/campaign.mjs';
+import {MUTATION_SUITES} from './mutations/generator.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
 function json(res, status, value) {
@@ -15,7 +17,8 @@ function json(res, status, value) {
   res.end(JSON.stringify(value));
 }
 
-export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0 }) {
+export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES }) {
   let running = false;
   const configured = Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
   const enabled = Boolean(submit && configured && Number.isSafeInteger(allowChainId) && allowChainId > 1);
@@ -31,6 +34,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
       } else if (req.method === 'GET' && route.pathname === '/api/config') {
         json(res, 200, { rpcConfigured: configured, submitEnabled: enabled, allowChainId: allowChainId ?? null, casesLocation, running,
           scenario: scenario ?? 'fixtures', scenarios: [{ id: 'fixtures', label: 'Signed case fixtures' }, ...(adapterFile && rulesFile ? SCENARIOS : [])],
+          mutations:{suites:MUTATION_SUITES,maxLiveVariants:MAX_LIVE_MUTATIONS,maxPreviewVariants:1000},
           endpoints: Object.fromEntries(Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([,v]) => v).map(([k,v]) => [k, sanitizedRpcLabel(v)])) });
       } else if (req.method === 'GET' && route.pathname === '/api/network') {
         const endpoints = Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([, v]) => v);
@@ -55,6 +59,22 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         res.writeHead(200, { 'content-type': format === 'markdown' ? 'text/markdown; charset=utf-8' : 'application/json',
           'content-disposition': `attachment; filename="framefuzz-${format}.${format === 'markdown' ? 'md' : 'json'}"`, 'x-content-type-options': 'nosniff' });
         res.end(content);
+      } else if(req.method==='POST'&&route.pathname==='/api/mutate'){
+        if(running)return json(res,409,{error:'A test run is already executing'});
+        if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'Invalid Origin'});
+        running=true;
+        try{
+          let body='';for await(const chunk of req){body+=chunk;if(body.length>4096)return json(res,413,{error:'Selection too large'});}
+          let selection;try{selection=JSON.parse(body);}catch{return json(res,400,{error:'Invalid JSON selection'});}
+          if(!selection||typeof selection!=='object')return json(res,400,{error:'Mutation selection required'});
+          const requestedSubmit=selection.submit===true;
+          if(requestedSubmit&&!enabled)return json(res,409,{error:'Mutation submission requires server --submit and explicitly configured authorized endpoints/chain'});
+          const evidence=await runMutationCampaign({suite:selection.suite??'verification-gas',seed:selection.seed??42,count:selection.count??(selection.suite==='uniswap-storage'?3:7),
+            preview:requestedSubmit?Boolean(selection.preview):true,submit:requestedSubmit,configFile:mutationConfigFile,rulesFile:mutationRulesFile,
+            rpcUrl,rpcUrls,allowChainId,receiptWaitMs});
+          const saved=await saveReport(evidence,resultDir);
+          json(res,200,{success:true,file:path.basename(saved.jsonFile),source:evidence.source,totals:evidence.totals,coverage:evidence.coverage});
+        }finally{running=false;}
       } else if (req.method === 'POST' && route.pathname === '/api/run') {
         // Local-only dev server, no general network access, and explicit flag to submit.
         if (!enabled) return json(res, 409, { error: 'Submissions are disabled. Configure RPC endpoints, --allow-chain, and --submit.' });

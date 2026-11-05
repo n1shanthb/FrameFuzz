@@ -20,6 +20,10 @@ export function toMarkdown(output) {
   for (const c of output.results) for (const p of c.paths) {
     lines.push(`| ${c.id} | ${p.id} | ${p.expected ?? '-'} | ${p.observed.status} | ${p.comparison.verdict} | ${p.receipt?.state ?? '-'} |`);
   }
+  if(output.coverage){
+    lines.push('','## Mutation campaign and rule coverage','',`- Campaign: ${JSON.stringify(output.campaign)}`);
+    for(const rule of output.coverage.rules)lines.push(`- ${rule.ruleId} / ${rule.path}: ${rule.variants} variants, ${rule.matched} matching decisions, ${rule.unexpected} unexpected, regions ${rule.regions.join(', ')}; verified ${rule.verified}, inferred ${rule.inferred}, unknown ${rule.unknown}`);
+  }
   lines.push('', '## Details', '');
   for (const c of output.results) {
     lines.push(`### ${c.id}`, '', c.description, '');
@@ -30,9 +34,11 @@ export function toMarkdown(output) {
       if (p.receipt) lines.push(`  - Receipt: ${p.receipt.state}, block ${p.receipt.blockNumber ?? 'unconfirmed'}`);
       if (p.rpc) lines.push(`  - Admission endpoint: ${p.rpc}`);
       if (p.metadata) lines.push(`  - Replay metadata: ${JSON.stringify(p.metadata)}`);
+      if(p.oracle)lines.push(`  - Rule oracle: ${JSON.stringify(p.oracle)}`);
     }
     if (c.mutation) lines.push(`- Mutation: ${JSON.stringify(c.mutation)}`);
     if (c.ruleProvenance) lines.push(`- Rule provenance: ${JSON.stringify(c.ruleProvenance)}`);
+    if(c.reproduction?.cli)lines.push(`- Fresh-signature reproduction: \`${c.reproduction.cli}\``);
     if (c.sourceFile) lines.push(`- Reproduction fixture: \`${c.sourceFile}\``);
     lines.push('');
   }
@@ -48,17 +54,17 @@ export async function saveReport(output, directory) {
   const replayFile = path.resolve(directory, `${base}.replay.json`);
   await Promise.all([
     writeFile(jsonFile, JSON.stringify(output, null, 2) + '\n'),
-    writeFile(mdFile, toMarkdown(output) + '\n'),
+    writeFile(mdFile, toMarkdown(output).trimEnd() + '\n'),
     writeFile(replayFile, JSON.stringify(toReplay(output), null, 2) + '\n'),
   ]);
   return { jsonFile, mdFile, replayFile };
 }
 
 export function toReplay(output) {
-  return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,
+  return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,campaign:output.campaign,coverage:output.coverage,
     warning: 'Contains potentially stale signed bytes. Rebuild with the original signer and isolated state. No automatic broadcast is performed.',
     cases: output.results.map(c => ({ id: c.id, family: c.family, mutation: c.mutation, ruleProvenance: c.ruleProvenance, reproduction: c.reproduction,
-      paths: c.paths.filter(p => p.replay).map(p => ({ id: p.id, expected: p.expected, expectedRule: p.expectedRule, ...p.replay })) })) });
+      paths: c.paths.filter(p => p.replay).map(p => ({ id: p.id, expected: p.expected, expectedRule: p.expectedRule,oracle:p.oracle,observed:p.observed,receipt:p.receipt,admissionReport:p.admissionReport, ...p.replay })) })) });
 }
 
 export async function listReports(directory) {

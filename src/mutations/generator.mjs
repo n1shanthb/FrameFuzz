@@ -31,6 +31,8 @@ export function generateMutations(definition) {
   if(!Array.isArray(d.paths)||!d.paths.length||d.paths.some(p=>!['public','alt'].includes(p))||new Set(d.paths).size!==d.paths.length)throw new Error('Unsupported or duplicate admission paths');
   if(!d.baseTemplate?.id||!d.baseTemplate.model||!d.baseTemplate.setup)throw new Error('Base model and setup required');
   if(Object.keys(d.baseTemplate.model).some(k=>!['verificationGasLimit','poolRead'].includes(k)))throw new Error('Unsupported unsigned model dimension');
+  if(!Number.isSafeInteger(d.baseTemplate.model.verificationGasLimit)||d.baseTemplate.model.verificationGasLimit<0||typeof d.baseTemplate.model.poolRead!=='boolean')throw new Error('Invalid unsigned model gas or pool-read flag');
+  if(typeof d.baseTemplate.setup.staked!=='boolean'||typeof d.baseTemplate.setup.poolRead!=='boolean'||!['basic','unstaked','staked'].includes(d.baseTemplate.setup.configuration?.kind))throw new Error('Unsupported sponsor setup requirements');
   const next=random(d.seed), base=d.baseTemplate;
   let changes;
   if(d.suite==='verification-gas') {

@@ -7,6 +7,7 @@ import { selectCases } from '../src/selection.mjs';
 import { runMockDemo } from '../examples/mock-demo.mjs';
 import { refreshEvidence } from '../src/refresh.mjs';
 import { readFile } from 'node:fs/promises';
+import {runMutationCampaign,replayMutationDescriptor} from '../src/mutations/campaign.mjs';
 
 const USAGE = `
 FrameFuzz — EIP-8141 admission testing scaffold
@@ -18,6 +19,10 @@ Usage:
   node bin/framefuzz.mjs help
   node bin/framefuzz.mjs mock-demo [--results runs]  # local fake gateways, never live evidence
   node bin/framefuzz.mjs refresh <evidence.json> --rpc URL --allow-chain ID [--receipt-wait-ms 1000]  # read-only; no submission
+  node bin/framefuzz.mjs mutate --suite verification-gas|uniswap-storage --seed 42 --count 7 --preview
+  node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --submit --allow-chain 1337
+  node bin/framefuzz.mjs mutate --replay RUN.replay.json --variant INDEX --preview
+  Mutation options: --variant INDEX --definition FILE --rules FILE --config FILE. Preview is offline; live batches are capped at seven variants.
 
 Scenario options (run/serve): --scenario uniswap-v4-paymaster|verification-gas --adapter plugin.mjs --rules rules.json
 Path options: --public-rpc URL --alt-rpc URL (or FRAMEFUZZ_PUBLIC_RPC / FRAMEFUZZ_ALT_RPC environment variables)
@@ -33,7 +38,7 @@ function flags(argv) {
     const x = argv[i];
     if (!x.startsWith('--')) { result._.push(x); continue; }
     const name = x.slice(2);
-    if (name === 'submit') { result.submit = true; continue; }
+    if (name === 'submit' || name === 'preview') { result[name] = true; continue; }
     if (i + 1 >= argv.length || argv[i + 1].startsWith('--')) throw new Error(`Missing value for ${x}`);
     result[name] = argv[++i];
   }
@@ -51,7 +56,22 @@ async function main() {
   if (command === 'help' || command === '--help') return process.stdout.write(USAGE);
   const options = flags(rest);
   const resultDir = options.results ?? 'runs';
-  if (command === 'run') {
+  if (command === 'mutate') {
+    const mutationOptions={suite:options.suite??'verification-gas',seed:numericArg(options.seed,42),count:numericArg(options.count,options.suite==='uniswap-storage'?3:7),
+      preview:Boolean(options.preview),submit:Boolean(options.submit),allowChainId:numericArg(options['allow-chain'],null),variant:numericArg(options.variant,undefined),
+      rulesFile:options.rules,configFile:options.config,definitionFile:options.definition,receiptWaitMs:numericArg(options['receipt-wait-ms'],1000),
+      rpcUrl:options.rpc??process.env.FRAMEFUZZ_RPC,rpcUrls:{public:options['public-rpc']??process.env.FRAMEFUZZ_PUBLIC_RPC,alt:options['alt-rpc']??process.env.FRAMEFUZZ_ALT_RPC}};
+    let evidence;
+    if(options.replay){
+      const file=JSON.parse(await readFile(options.replay,'utf8'));
+      const descriptor=file.schema==='framefuzz.mutation-reproduction.v1'?file:mutationOptions.variant===undefined?file.cases?.[0]?.reproduction:file.cases?.find(c=>c.reproduction?.variantIndex===mutationOptions.variant)?.reproduction;
+      if(!descriptor)throw new Error('Replay file has no selected mutation reproduction descriptor');
+      evidence=await replayMutationDescriptor(descriptor,mutationOptions);
+    }else evidence=await runMutationCampaign(mutationOptions);
+    console.log(JSON.stringify({source:evidence.source,campaign:evidence.campaign,totals:evidence.totals,submissions:evidence.submissions,coverage:evidence.coverage,
+      generated:evidence.results.map(c=>({id:c.id,parameters:c.mutation.parameter,oracles:c.paths.map(p=>({path:p.id,ruleId:p.oracle.ruleId,expected:p.oracle.expected,confidence:p.oracle.confidence,reason:p.oracle.reason,components:p.oracle.components}))})),evidence:await saveReport(evidence,resultDir)},null,2));
+    if(evidence.totals.unexpected)process.exitCode=2;else if(options.submit&&evidence.totals.inconclusive)process.exitCode=3;
+  } else if (command === 'run') {
     const location = options._[0] ?? options.cases ?? 'examples/cases';
     const cases = await selectCases({ casesLocation: location, scenario: options.scenario, adapterFile: options.adapter, rulesFile: options.rules, caseId: options.case, mutationFamily: options.mutation });
     const evidence = await runSuite(cases, {
@@ -80,6 +100,7 @@ async function main() {
       rpcUrl: options.rpc ?? process.env.FRAMEFUZZ_RPC,
       rpcUrls: { public: options['public-rpc'] ?? process.env.FRAMEFUZZ_PUBLIC_RPC, alt: options['alt-rpc'] ?? process.env.FRAMEFUZZ_ALT_RPC },
       scenario: options.scenario, adapterFile: options.adapter, rulesFile: options.rules,
+      mutationConfigFile:options.config,mutationRulesFile:options['mutation-rules'],
       allowChainId: numericArg(options['allow-chain'], null),
       submit: Boolean(options.submit), receiptWaitMs: numericArg(options['receipt-wait-ms'], 0),
     });

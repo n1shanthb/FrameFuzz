@@ -12,13 +12,16 @@ export const DEFAULT_CONFIG='examples/live/devnet.json';
 export const DEFAULT_RULES='rules/devnet-1337.v1.json';
 export const MAX_LIVE_MUTATIONS=7;
 
-export async function loadMutationDefinition(options={}) {
-  const rules=JSON.parse(await readFile(options.rulesFile??DEFAULT_RULES,'utf8'));
+async function checkEvidence(rules){
   // A declarative VERIFIED label alone does not suffice: require unchanged fixture evidence.
   for(const evidence of rules.provenance?.evidence??[]){
     try{const hash=createHash('sha256').update(await readFile(evidence.file)).digest('hex');if(hash!==evidence.sha256)rules.provenance.confidence='UNKNOWN';}
     catch{rules.provenance.confidence='UNKNOWN';}
   }
+  return rules;
+}
+export async function loadMutationDefinition(options={}) {
+  const rules=await checkEvidence(JSON.parse(await readFile(options.rulesFile??DEFAULT_RULES,'utf8')));
   if(options.definitionFile){const d=JSON.parse(await readFile(options.definitionFile,'utf8'));return {...d,ruleModel:rules};}
   return mutationDefinition({...options,rules});
 }
@@ -40,7 +43,8 @@ export function mutationCoverage(results) {
 
 export async function runMutationCampaign(options={}) {
   if(options.preview&&options.submit)throw new Error('--preview and --submit are mutually exclusive');
-  const definition=options.definition??await loadMutationDefinition(options);
+  const definition=structuredClone(options.definition??await loadMutationDefinition(options));
+  await checkEvidence(definition.ruleModel);
   let variants=generateMutations(definition);
   if(options.variant!==undefined){if(!Number.isSafeInteger(options.variant)||options.variant<0||options.variant>=variants.length)throw new Error('Invalid variant index');variants=variants.filter(v=>v.index===options.variant);}
   const submit=Boolean(options.submit);

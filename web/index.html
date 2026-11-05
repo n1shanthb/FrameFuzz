@@ -13,6 +13,7 @@
     table{width:100%;border-collapse:collapse;text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}th,td{padding:12px 9px;border-bottom:1px solid var(--stroke);vertical-align:top}tr:last-child td{border-bottom:none}tbody tr{cursor:pointer}tbody tr:hover{background:#192536}.selected{background:#182d42}.empty{padding:34px 10px;color:var(--muted);text-align:center}.summary{font-size:12px;color:var(--muted);margin:0}.line{display:flex;justify-content:space-between;gap:18px;padding:10px 0;border-bottom:1px solid var(--stroke)}.line b{text-align:right;font-weight:600}.line:last-child{border-bottom:0}.scroll{overflow:auto}.alert{padding:12px 14px;border:1px solid #625036;background:#292619;color:#f3d5a8;border-radius:9px;font-size:12px;margin:12px 0}.note{border-left:2px solid var(--cyan);padding:8px 12px;background:#142436;color:#bbdcef;margin-top:16px}.details{white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#b9cde1;background:#0b1420;padding:12px;border-radius:9px;border:1px solid var(--stroke)}
     @media(max-width:1000px){.shell{grid-template-columns:1fr}.sidebar{padding:12px 18px;border-right:0;border-bottom:1px solid var(--stroke)}.sidebar-bottom,.sub{display:none}.nav{display:inline-block;margin:0}.brand{display:inline-block;margin-right:20px}.grid{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}}@media(max-width:520px){main{padding:20px 14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px}.metric-value{font-size:23px}}
     .controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;margin:12px 0}.controls label{display:grid;gap:5px;color:var(--muted);font-size:12px}select{max-width:100%;background:var(--panel2);color:var(--text);border:1px solid var(--stroke);border-radius:7px;padding:9px}a.button{text-decoration:none;font-size:12px}a[hidden]{display:none}:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}#receipt,#hash{white-space:pre-line;overflow-wrap:anywhere;max-width:70%}#executionStatus{color:var(--cyan)}
+    .controls input{width:100px;padding:9px;border:1px solid var(--stroke);border-radius:7px;background:var(--panel2);color:var(--text)}#coverageSummary{overflow-wrap:anywhere}
   </style>
 </head>
 <body>
@@ -44,8 +45,16 @@
             <button class="button secondary" id="checkNetwork">Check gateways</button>
           </div>
           <p id="runHelp" class="helper" aria-live="polite">Connect a testnet endpoint and signed case fixtures to enable live testing.</p>
+          <details open><summary>Generate semantic mutations</summary><div class="controls">
+            <label>Mutation suite <select id="mutationSuite"><option value="verification-gas">Verification gas</option><option value="uniswap-storage">Uniswap storage / stake</option></select></label>
+            <label>Seed <input id="mutationSeed" type="number" min="0" max="4294967295" value="42"></label>
+            <label>Variants <input id="mutationCount" type="number" min="1" max="1000" value="7"></label>
+            <button id="previewMutation" class="button secondary">Preview mutations</button>
+            <button id="submitMutation" class="button" disabled>Submit generated tests</button>
+          </div><p class="helper">Preview is offline. Authorized live batches are limited to seven variants; each path gets a fresh signed transaction.</p></details>
           <p id="gatewayStatus" class="helper">Gateway status has not been checked.</p>
           <p id="executionStatus" role="status" class="helper">Idle</p>
+          <p id="coverageSummary" class="helper" aria-live="polite">Select a generated run to inspect rule coverage.</p>
           <div id="notice" class="alert">A submitted transaction hash proves an admission response only. We report block inclusion and execution separately.</div>
         </div>
         <div class="panel scroll" id="cases">
@@ -82,9 +91,9 @@ function displayCase(c) {
   safeText('caseTitle', c.id); safeText('caseDescription', c.description); safeText('category', c.category); safeText('verdict', c.verdict);
   safeText('receipt', (c.paths ?? []).map(p=>`${p.id}: ${p.observed?.status ?? 'unknown'} / ${p.receipt?.state ?? 'not_checked'}`).join('\n'));
   safeText('hash', (c.paths ?? []).map(p=>`${p.id}: ${p.observed?.hash ?? 'none'}`).join('\n'));
-  safeText('detailJson', JSON.stringify({paths:c.paths,mutation:c.mutation,ruleProvenance:c.ruleProvenance,notes:c.notes},null,2));
+  safeText('detailJson', JSON.stringify({paths:c.paths,mutation:c.mutation,ruleProvenance:c.ruleProvenance,reproduction:c.reproduction,notes:c.notes},null,2));
   safeText('ruleSummary',(c.paths??[]).map(p=>`${p.id}: ${p.comparison?.reason??''}${p.observed?.message ? ` · ${p.observed.message}` : ''}`).join('\n'));
-  safeText('repro', `Case ${c.id} · chain ${active.chainId}. Rebuild with its original fixture/adapter and pinned rules. Export replay metadata for exact observed inputs.`);
+  safeText('repro', c.reproduction?.cli ?? `Case ${c.id} · chain ${active.chainId}. Rebuild with its original fixture/adapter and pinned rules. Export replay metadata for exact observed inputs.`);
 }
 async function loadRun(name) {
   try {
@@ -93,11 +102,12 @@ async function loadRun(name) {
     const data = await response.json(); active = data; runId = name;
     const synthetic = /SYNTHETIC|MOCK/.test(data.source);
     safeText('sourceBadge', synthetic ? data.source : data.source);
-    $('notice').textContent = synthetic ? `${data.source}: test data only. No real devnet execution is proven.` : 'An admission hash is not proof of execution; check each transaction receipt separately.';
+    $('notice').textContent = /PREVIEW/.test(data.source) ? 'PREVIEW: generated unsigned models and expectations only. No RPC, signing, setup or broadcast.' : synthetic ? `${data.source}: test data only. No real devnet execution is proven.` : 'An admission hash is not proof of execution; check each transaction receipt separately.';
+    safeText('coverageSummary',data.coverage ? `${data.campaign.suite} · seed ${data.campaign.seed} · ${data.coverage.generatedVariants} variants / ${data.coverage.decisions} path decisions. `+data.coverage.rules.map(r=>`${r.ruleId}/${r.path}: ${r.regions.join('/')} · ${r.matched} matched, ${r.unexpected} unexpected, ${r.preconditionFailures} preconditions; confidence V/I/U ${r.verified}/${r.inferred}/${r.unknown}`).join(' | ') : 'Historical scenario evidence. No generated-campaign coverage claimed.');
     for (const [id,format] of [['exportJson','json'],['exportMd','markdown'],['exportReplay','replay']]) { $(id).hidden=false; $(id).href=`/api/export?id=${encodeURIComponent(name)}&format=${format}`; }
     safeText('count', data.totals.cases); safeText('passed', data.totals.matched);safeText('unexpected',data.totals.unexpected);safeText('unknown',data.totals.inconclusive);
     function pathCell(c,id) { const p=c.paths?.find(p=>id==='public'?['public','canonical'].includes(p.id):p.id===id); return p ? `${esc(p.expected??'unspecified')} / ${esc(p.observed?.status??'unknown')}<div>${tag(p.comparison?.verdict)}</div><div class="tiny">${esc(p.receipt?.state??'not_checked')}</div>` : '—'; }
-    const rows = data.results.map((c,i) => `<tr data-i="${i}" tabindex="0" role="button" aria-label="Inspect ${esc(c.id)}"><td><strong>${esc(c.id)}</strong><div class="tiny">${esc(c.category ?? '')}</div></td><td>${pathCell(c,'public')}</td><td>${pathCell(c,'alt')}</td><td>${tag(c.verdict)}</td></tr>`).join('');
+    const rows = data.results.map((c,i) => `<tr data-i="${i}" tabindex="0" role="button" aria-label="Inspect ${esc(c.id)}"><td><strong>${esc(c.id)}</strong><div class="tiny">${esc(c.category ?? '')}</div>${c.mutation?.parameter ? `<div class="tiny">${esc(JSON.stringify(c.mutation.parameter))}</div>` : ''}</td><td>${pathCell(c,'public')}</td><td>${pathCell(c,'alt')}</td><td>${tag(c.verdict)}</td></tr>`).join('');
     $('caseRows').innerHTML = rows || '<tr><td colspan="4" class="empty">No cases in run</td></tr>';
     $('caseRows').querySelectorAll('tr[data-i]').forEach(tr => tr.addEventListener('click',()=>{document.querySelectorAll('tr.selected').forEach(el=>el.classList.remove('selected'));tr.classList.add('selected');displayCase(data.results[Number(tr.dataset.i)]);}));
     $('caseRows').querySelectorAll('tr[data-i]').forEach(tr => tr.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();tr.click();}}));
@@ -108,6 +118,7 @@ async function refresh() {
   try {
     const [config,r] = await Promise.all([fetch('/api/config').then(r=>r.json()), fetch('/api/runs').then(r=>r.json())]);
     enabled = config.submitEnabled; $('runButton').disabled = !enabled || config.running;
+    $('submitMutation').disabled=!enabled||config.running;$('previewMutation').disabled=config.running;
     if (!$('scenarioSelect').dataset.loaded) { $('scenarioSelect').innerHTML = config.scenarios.map(s=>`<option value="${esc(s.id)}">${esc(s.label)}</option>`).join(''); $('scenarioSelect').value=config.scenario; $('scenarioSelect').dataset.loaded='true'; }
     $('runHelp').textContent = config.submitEnabled ? `Ready to run signed fixtures from ${config.casesLocation} on explicitly authorized testnet chain ${config.allowChainId}.` : 'Read-only mode. Start the server with --rpc, --allow-chain and --submit to enable live submissions.';
     $('engineStatus').textContent = config.submitEnabled ? 'Live testnet submission enabled' : 'Local read-only mode';$('statusDot').className = config.submitEnabled ? 'dot live':'dot';
@@ -118,6 +129,16 @@ async function refresh() {
   } catch(e){ safeText('notice',`Local dashboard error: ${e.message}`); }
 }
 $('runSelect').addEventListener('change', e=>loadRun(e.target.value));
+$('mutationSuite').addEventListener('change',()=>{$('mutationCount').value=$('mutationSuite').value==='uniswap-storage'?3:7;});
+async function runMutations(submit){
+  const seed=Number($('mutationSeed').value),count=Number($('mutationCount').value);
+  if(!Number.isSafeInteger(seed)||seed<0||seed>4294967295||!Number.isSafeInteger(count)||count<1||count>1000){safeText('executionStatus','Use an integer seed (0–4294967295) and count (1–1000).');return;}
+  $('previewMutation').disabled=true;$('submitMutation').disabled=true;$('runButton').disabled=true;
+  safeText('executionStatus',submit?'Generating, checking setup and signing independent variants…':'Generating unsigned semantic mutations offline…');
+  try{const r=await fetch('/api/mutate',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({suite:$('mutationSuite').value,seed,count,submit,preview:!submit})});const d=await r.json();if(!r.ok)throw new Error(d.error);await refresh();$('runSelect').value=d.file;await loadRun(d.file);safeText('executionStatus',`${d.source}: ${d.totals.cases} variants, ${d.totals.matched} matches, ${d.totals.unexpected} unexpected.`);}
+  catch(e){safeText('executionStatus',`Mutation run failed: ${e.message}`);}finally{$('previewMutation').disabled=false;$('submitMutation').disabled=!enabled;$('runButton').disabled=!enabled;}
+}
+$('previewMutation').addEventListener('click',()=>runMutations(false));$('submitMutation').addEventListener('click',()=>runMutations(true));
 $('checkNetwork').addEventListener('click',async()=>{ $('checkNetwork').disabled=true; safeText('gatewayStatus','Checking configured chain IDs…'); try { const r=await fetch('/api/network');const d=await r.json(); safeText('gatewayStatus',d.endpoints.map(x=>`${x.id}: ${x.state}${x.chainId ? ` (chain ${x.chainId})` : ''}${x.message ? ` · ${x.message}` : ''}`).join(' | ') || 'No gateways configured'); } catch(e) {safeText('gatewayStatus',e.message);} finally {$('checkNetwork').disabled=false;} });
 $('runButton').addEventListener('click',async()=>{
   $('runButton').disabled=true;safeText('executionStatus','Running: checking chain IDs, preparing independent variants, submitting and checking receipts…');
@@ -128,3 +149,4 @@ refresh();
 </script>
 </body>
 </html>
+

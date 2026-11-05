@@ -28,3 +28,6 @@ Core live definition of done is met for this devnet snapshot. Next: confirm the 
 
 ## Mutation-engine checkpoint
 Added deterministic unsigned-model generation, versioned observed-rule oracle, evidence digest binding, per-path setup compilation through the existing LIVE adapter, offline preview, coverage, reproduction descriptors and bounded opt-in shrinking. Fifteen new engine tests pass; historical evidence is untouched. CLI/export/dashboard wiring is in progress; the new automatic sweep has not yet been broadcast. Next: complete integration tests, then execute at most seven gas variants on both paths.
+
+## Automatic campaign result
+The new mutate command generated seven seed-42 gas variants and submitted fourteen independently signed path tests. All seven cases / fourteen decisions matched; eight admitted transactions have successful receipts after read-only refresh; six cap rejections are expected. No discrepancy occurred. CLI replay, dashboard preview/export, storage setup and historical evidence compatibility are tested. Next: browser-check the updated console, preserve new campaign evidence separately, run final suite/mock demo and finish documentation.
