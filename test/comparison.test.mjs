@@ -78,3 +78,21 @@ test('preflight transport failure produces exportable evidence and prevents all 
   assert.equal(out.results[0].paths[0].comparison.verdict, 'TRANSPORT_FAILURE');
   assert.equal(out.results[0].paths[1].comparison.verdict, 'INCONCLUSIVE');
 });
+
+test('comparative raw fixtures without nonce metadata are not submitted', async () => {
+  const cases = structuredClone(fixture); for (const p of cases[0].paths) delete p.metadata;
+  const out = await runSuite(cases, { ...options, rpcFn: async (_, method) => { assert.equal(method, 'eth_chainId'); return '0x539'; } });
+  assert.equal(out.submissions, 0); assert.match(out.results[0].paths[0].observed.message, /metadata/);
+});
+test('MOCK adapters and MOCK replay metadata cannot target remote gateways', async () => {
+  for (const metadataOnly of [false, true]) {
+    const cases = structuredClone(fixture);
+    if (metadataOnly) cases[0].paths[0].metadata.mode = 'MOCK'; else cases[0].paths[0].adapterMode = 'MOCK';
+    await assert.rejects(runSuite(cases, options), /loopback/);
+  }
+});
+test('mismatched receipt cannot claim inclusion or erase the admission verdict', async () => {
+  const out = await runSuite([{ ...fixture[0], paths: [fixture[0].paths[1]] }], { ...options, receiptWaitMs: 1,
+    rpcFn: async (_, method) => method === 'eth_chainId' ? '0x539' : method === 'eth_getTransactionReceipt' ? { status: '0x1', blockNumber: '0x1', transactionHash: `0x${'b'.repeat(64)}` } : hash });
+  assert.equal(out.results[0].paths[0].receipt.state, 'receipt_rpc_error'); assert.equal(out.totals.matched, 1);
+});

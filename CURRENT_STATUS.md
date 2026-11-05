@@ -1,48 +1,36 @@
 # Current status
 
-Checkpoint: **November 6, 2026 (IST)**. Workspace: `E:\ethglobalmumbai`. Branch: `main`. Use `git log -5 --oneline` and `git status --short` for the latest commit and any uncommitted work.
+Checkpoint: **November 6, 2026 (IST)**. Workspace `E:\ethglobalmumbai`; branch **feat/framefuzz-mvp**. Read Git status/log for current commit IDs and edits. This supersedes the initial starter-only checkpoint.
 
-## Completed in this session
-- Extracted `framefuzz-starter.zip` directly into the workspace; preserved the original ignored ZIP.
-- Inspected README, existing handoff/paymaster notes, engine, CLI, tests, and dashboard source.
-- Initialized a local Git repository using the existing Git identity without changing it.
-- Preserved the original build request in `docs/BUILD_BRIEF.md`.
-- Added repository authority, IDE instructions, current status, next steps, and build verification summary.
-- Added an always-applied Cursor rule so Cursor reads the same handoff files.
-- Excluded local archives, environment variants, and key files from Git.
+## Completed
+- Preserved starter transport, CLI, evidence and dashboard; extended them in place without dependencies.
+- Implemented `src/adapters/index.mjs` plugin interface: isolated sender per case/path, setup before pending nonce lookup, fresh signing hook, serialized builds, failure poisoning and allowlisted metadata.
+- Implemented separate public/alt endpoint preflight, chain/mainnet guards, duplicate payload/known nonce guards, and metadata requirements for comparative fixtures.
+- Added full path verdict taxonomy and distinguished malformed/nonce/funding/RPC errors from policy findings. Receipt status remains independent; mismatched receipts cannot prove inclusion.
+- Added `uniswap-v4-paymaster` A–C plus optional gas-boundary D; below/at/above generator requires supplied rule provenance and acceptance direction. LIVE plugins refuse MOCK rule configurations.
+- Added CLI scenario/adapter/rules/filter options and nonzero incomplete-run exit status.
+- Added real HTTP mock demo: six cases, twelve independent mock path inputs through two temporary local gateways; exports JSON, Markdown and replay.
+- Extended dashboard with scenario/mutation controls, gateway check, execution state, both admission paths, receipt/rule/mutation metadata, saved runs and download actions.
+- Kept keys out of fixtures, reports and commits. Supplied mock adapter uses no keys and is restricted to loopback endpoints.
 
-## Actual working baseline
-- JSON-RPC submission, explicit chain-ID guard/mainnet block, placeholder rejection, admission comparison, receipt polling, JSON/Markdown evidence, numeric boundary scaffold, and saved-evidence dashboard exist.
-- No external package installation required. Actual runtime tested: Node.js **v22.13.0**; Node 20 itself has not been tested here.
-- `npm test`: **10 passed, 0 failed**, with local loopback networking enabled. Initial restricted-sandbox execution: 6 passed and 4 mock-RPC tests failed because local fetch was blocked; the permitted rerun passed unchanged.
+## Verification actually performed
+- Node **22.13.0**, `npm test`: **30 passed, 0 failed**, with local loopback enabled. Node 20 compatibility is intended but Node 20 was not executed here.
 - `node bin/framefuzz.mjs help`: passed.
-- `node bin/framefuzz.mjs demo --results runs`: passed; wrote explicitly SYNTHETIC JSON and Markdown. Local generated runs are ignored by Git.
-- Dashboard HTTP/API smoke passed: HTML, configuration, saved evidence listing, and disabled-submission HTTP 409 guard. Temporary server closed; visual/browser interaction was not tested.
+- `node bin/framefuzz.mjs mock-demo --results runs`: **6/6 cases matched**, zero unexpected/inconclusive; MOCK only.
+- Automated CLI subprocess, dashboard POST, selection, config, network, saved evidence and three export format tests passed.
+- Browser at temporary port 4188 verified the rendered saved MOCK run, public/alt results, selected staked case, receipt distinction, compact rule details, gateway check and disabled run control.
+- Restricted sandbox can block loopback; run local-RPC tests where local networking is permitted.
 
-## Missing implementation and evidence
-- No `src/adapters/` module or working signer imported.
-- No executable Uniswap paymaster suite or proven live boundary mutation family.
-- Runner currently takes one `rpcUrl`; separate per-path endpoints are not implemented.
-- Verdicts currently use MATCH / UNEXPECTED / UNEXPECTED_RULE / INCONCLUSIVE; the expanded requested taxonomy is pending.
-- Template gas threshold is speculative; it is not a verified sidecar rule.
-- No real devnet submissions, deployments, complete transaction hashes, or receipts were produced in this session.
-- Existing paymaster notes contain external reports only. Real swap and USDC reimbursement remain unproven.
+## Not implemented / not verified live
+- No actual frame encoder/signer or paymaster contract/setup implementation supplied. Adapter hooks cannot replace them.
+- No real devnet submission, deployed contract, complete live transaction hash or receipt produced here.
+- No independently verified deployed sidecar boundary/rule oracle. MOCK thresholds/addresses/hashes/receipts are fictional.
+- No real Uniswap swap, USDC reimbursement, Arkiv or unrelated sponsor integration.
+- Generic fixtures trust sender/nonce metadata; actual signer correctness belongs to the imported implementation. Independent account allocation/funding/stake lifecycle must be implemented by that plugin.
+- No explorer URL is invented for an unverified network.
 
-## GitHub
-`gh auth status` identified configured account **nishanthcr7777**, but its saved token is invalid. No remote exists and nothing has been pushed. User was asked to run `gh auth login -h github.com --web` and supply an existing repository URL if applicable. Never record tokens here. Local commits can proceed independently.
+## GitHub and commits
+Authenticated account **nishanthcr7777** and remote **https://github.com/n1shanthb/ethglobalmumbai.git** were verified outside the restricted network sandbox in the preceding turn. Earlier invalid-token results from the sandbox were misleading. This session creates coherent local feature commits; it does not push or alter remote history.
 
-## Active work / resume
-This checkpoint prepares continuity and verifies the starter; it does not claim the seven-phase build is complete. No background build or devnet job is running. Resume using `UP_NEXT.md`; first repair/verify GitHub authentication if the user has completed sign-in, then implement the adapter contract. Preserve any newly discovered user edits.
-
-## Adapter checkpoint
-On branch feat/framefuzz-mvp: added the plugin adapter contract and isolated account/nonce/signing lifecycle with allowlisted metadata. Adapter unit tests: 4 passed. No real signer imported. GitHub authentication was verified in the preceding session; origin is https://github.com/n1shanthb/ethglobalmumbai.git. Next: integrate path-specific runner preflight and expanded verdicts.
-
-
-## Comparison checkpoint
-20 tests pass. Implemented per-path endpoint preflight, duplicate payload/nonce guards, explicit admission verdict taxonomy, precondition error classification, independent receipts, and replay metadata. Next: provenance-driven paymaster and gas-boundary scenarios plus CLI wiring.
-
-## Scenario checkpoint
-23 tests pass. Added provenance-driven Uniswap paymaster cases A-C, optional gas-boundary case D, independently built below/at/above variants, scenario CLI selection and JSON/Markdown/replay exports. mock-demo completed 6/6 cases through two local fake gateways; these are MOCK results only, no real signatures or devnet transactions. Next: finish server selection/export APIs and dashboard.
-
-## Console checkpoint
-27 tests pass including CLI subprocess checks, mock dashboard POST runs, selection and exports. Browser verified saved MOCK evidence, public/alternative columns, case details, gateway check, and disabled run control. Added localhost Host guard, fail-closed comparison metadata, receipt-hash validation, and exportable preflight failures. Next: finalize README/build/handoff documentation and import the external signer.
+## Resume
+Read `UP_NEXT.md` and `docs/ADAPTER.md`. The next concrete step is to import the known-good PoC files and implement one LIVE adapter, then run a low-volume authorized baseline with full receipt evidence. No devnet job is running. Temporary preview servers should be stopped at the end of this session; use `npm start` for the next demo.
