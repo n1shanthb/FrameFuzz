@@ -1,0 +1,343 @@
+{
+  "schema": "framefuzz.evidence.v1",
+  "generatedAt": "2026-11-05T21:55:29.458Z",
+  "source": "LIVE_RPC_SUBMISSION",
+  "chainId": 1337,
+  "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+  "submissions": 2,
+  "receiptNote": "Admission hash is not confirmation of execution. Inspect each receipt.state separately.",
+  "results": [
+    {
+      "id": "basic-baseline-50000",
+      "family": "uniswap-v4-paymaster",
+      "category": "Basic sponsorship",
+      "description": "Fresh independently signed transactions using the supplied PoC sponsors and official workshop codec",
+      "mutation": null,
+      "ruleProvenance": {
+        "status": "SOURCE_REVIEWED_DEPLOYMENT_PARTIAL",
+        "workshopCommit": "bcfe02a196ca97b6fb0d1044db9d0b4c673831fc",
+        "sidecarSourceReviewed": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "deployedSidecarCommit": null,
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "source": "Supplied framefuzz-poc.zip fast_gate_rerun.ts and PAYMASTER_FEASIBILITY.md; live code/stake/balance checked",
+        "note": "Execution client commit verified by web3_clientVersion. Sidecar v4.1.1 exposes an empty commit; exact source/deployment equivalence is not attested."
+      },
+      "reproduction": null,
+      "sourceFile": "E:\\ethglobalmumbai\\examples\\live\\basic.mjs",
+      "notes": "",
+      "paths": [
+        {
+          "id": "public",
+          "method": "eth_sendRawTransaction",
+          "expected": "accepted",
+          "expectedRule": null,
+          "expectedErrorClass": null,
+          "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+          "receipt": {
+            "state": "included_success",
+            "blockNumber": "0x6384d",
+            "transactionHash": "0x3a61f84bef43dee398ce5e1ec17c9cc8b9e6d498a33fef9ff44011c4b334ec84",
+            "status": "0x1",
+            "gasUsed": "0x6b5a",
+            "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "frameReceipts": [
+              {
+                "gasUsed": "0x64",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              },
+              {
+                "gasUsed": "0x1bb5",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              },
+              {
+                "gasUsed": "0xbb8",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              }
+            ],
+            "raw": {
+              "blockHash": "0x8f3de2a260ff531f50ba726fa35cbce4e856ac7472b4af8951a9b5af6fed2ee3",
+              "blockNumber": "0x6384d",
+              "contractAddress": null,
+              "cumulativeGasUsed": "0x6b5a",
+              "effectiveGasPrice": "0x77359400",
+              "frameReceipts": [
+                {
+                  "gasUsed": "0x64",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                },
+                {
+                  "gasUsed": "0x1bb5",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                },
+                {
+                  "gasUsed": "0xbb8",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                }
+              ],
+              "from": "0x96a9ff0d0bb73bea9226cae11ca48be2f5701744",
+              "gasUsed": "0x6b5a",
+              "logs": [],
+              "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+              "status": "0x1",
+              "to": "0x96a9ff0d0bb73bea9226cae11ca48be2f5701744",
+              "transactionHash": "0x3a61f84bef43dee398ce5e1ec17c9cc8b9e6d498a33fef9ff44011c4b334ec84",
+              "transactionIndex": "0x0",
+              "type": "0x6"
+            }
+          },
+          "fingerprint": "107dc1344e23b54e",
+          "replay": {
+            "method": "eth_sendRawTransaction",
+            "params": [
+              "0x06f8be820539c180809496a9ff0d0bb73bea9226cae11ca48be2f5701744f849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b8410123cf25ab5295f0d0257eba00f93b623e8311210d80d3492103ed10a303ec344b23f83dc4a7737a780c1f359e508c8e8b08df00eb940408403a27ecf9bc07e6e4cb8477359400847735940080c0c0"
+            ],
+            "signedRaw": "0x06f8be820539c180809496a9ff0d0bb73bea9226cae11ca48be2f5701744f849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b8410123cf25ab5295f0d0257eba00f93b623e8311210d80d3492103ed10a303ec344b23f83dc4a7737a780c1f359e508c8e8b08df00eb940408403a27ecf9bc07e6e4cb8477359400847735940080c0c0",
+            "metadata": {
+              "adapter": "workshop-hegota-0.0.1",
+              "sender": "0x96a9ff0d0bb73bea9226cae11ca48be2f5701744",
+              "nonce": "0",
+              "chainId": 1337,
+              "caseId": "basic-baseline-50000",
+              "pathId": "public",
+              "mode": "LIVE",
+              "transaction": {
+                "hash": "0x3a61f84bef43dee398ce5e1ec17c9cc8b9e6d498a33fef9ff44011c4b334ec84",
+                "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                "payerBalance": "149945012000000000",
+                "senderBalance": "0",
+                "verificationGas": 50000
+              }
+            },
+            "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+          },
+          "observed": {
+            "status": "accepted",
+            "hash": "0x3a61f84bef43dee398ce5e1ec17c9cc8b9e6d498a33fef9ff44011c4b334ec84",
+            "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+          },
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0x96a9ff0d0bb73bea9226cae11ca48be2f5701744",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "basic-baseline-50000",
+            "pathId": "public",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x3a61f84bef43dee398ce5e1ec17c9cc8b9e6d498a33fef9ff44011c4b334ec84",
+              "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+              "payerBalance": "149945012000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000
+            }
+          },
+          "comparison": {
+            "verdict": "EXPECTED_ACCEPT",
+            "reason": "Observed expected accepted decision."
+          }
+        },
+        {
+          "id": "alt",
+          "method": "eth_sendFrameTransaction",
+          "expected": "accepted",
+          "expectedRule": null,
+          "expectedErrorClass": null,
+          "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+          "receipt": {
+            "state": "included_success",
+            "blockNumber": "0x6384f",
+            "transactionHash": "0xb810446fcc43d674db0faae8c6e833976a4f3344c418cdb1a2fbb7fe5b35cc6a",
+            "status": "0x1",
+            "gasUsed": "0x6b72",
+            "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "frameReceipts": [
+              {
+                "gasUsed": "0x64",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              },
+              {
+                "gasUsed": "0x1bb5",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              },
+              {
+                "gasUsed": "0xbb8",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              }
+            ],
+            "raw": {
+              "blockHash": "0xd4b7d257bbd1afd8f6e9e918ed2ee69f412282725816f80bd5206246f5b9ea67",
+              "blockNumber": "0x6384f",
+              "contractAddress": null,
+              "cumulativeGasUsed": "0x6d426",
+              "effectiveGasPrice": "0x77359400",
+              "frameReceipts": [
+                {
+                  "gasUsed": "0x64",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                },
+                {
+                  "gasUsed": "0x1bb5",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                },
+                {
+                  "gasUsed": "0xbb8",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                }
+              ],
+              "from": "0xfc28448c3c18b6f599195e728c7705b7fa505ef3",
+              "gasUsed": "0x6b72",
+              "logs": [],
+              "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+              "status": "0x1",
+              "to": "0xfc28448c3c18b6f599195e728c7705b7fa505ef3",
+              "transactionHash": "0xb810446fcc43d674db0faae8c6e833976a4f3344c418cdb1a2fbb7fe5b35cc6a",
+              "transactionIndex": "0x1",
+              "type": "0x6"
+            }
+          },
+          "fingerprint": "f032828d3bb82400",
+          "replay": {
+            "method": "eth_sendFrameTransaction",
+            "params": [
+              {
+                "chainId": "0x539",
+                "nonceKeys": [
+                  "0x0"
+                ],
+                "nonceSeq": "0x0",
+                "sender": "0xfc28448c3c18b6f599195e728c7705b7fa505ef3",
+                "frames": [
+                  {
+                    "mode": 1,
+                    "flags": 2,
+                    "target": null,
+                    "limits": {
+                      "execution": "0x7530",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 1,
+                    "flags": 1,
+                    "target": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 2,
+                    "flags": 0,
+                    "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  }
+                ],
+                "signatures": [
+                  {
+                    "scheme": 1,
+                    "signer": "0x",
+                    "msg": "0x",
+                    "signature": "0x01e17c90ab33732f1221a7ee7d0c3e04c5b8e8c5b3f33791a34338c60a192edf4c01ad05b0c073524bfcc032975f083f5717d4f8eeb3b224c2333b3cf51a81e54d"
+                  }
+                ],
+                "fees": {
+                  "maxPriorityFeePerGas": "0x77359400",
+                  "maxFeePerGas": "0x77359400",
+                  "maxFeePerBlobGas": "0x0"
+                },
+                "blobVersionedHashes": [],
+                "recentRootReferences": []
+              }
+            ],
+            "signedRaw": "0x06f8be820539c1808094fc28448c3c18b6f599195e728c7705b7fa505ef3f849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84101e17c90ab33732f1221a7ee7d0c3e04c5b8e8c5b3f33791a34338c60a192edf4c01ad05b0c073524bfcc032975f083f5717d4f8eeb3b224c2333b3cf51a81e54dcb8477359400847735940080c0c0",
+            "metadata": {
+              "adapter": "workshop-hegota-0.0.1",
+              "sender": "0xfc28448c3c18b6f599195e728c7705b7fa505ef3",
+              "nonce": "0",
+              "chainId": 1337,
+              "caseId": "basic-baseline-50000",
+              "pathId": "alt",
+              "mode": "LIVE",
+              "transaction": {
+                "hash": "0xb810446fcc43d674db0faae8c6e833976a4f3344c418cdb1a2fbb7fe5b35cc6a",
+                "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                "payerBalance": "149890048000000000",
+                "senderBalance": "0",
+                "verificationGas": 50000
+              }
+            },
+            "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+          },
+          "observed": {
+            "status": "accepted",
+            "hash": "0xb810446fcc43d674db0faae8c6e833976a4f3344c418cdb1a2fbb7fe5b35cc6a",
+            "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+          },
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0xfc28448c3c18b6f599195e728c7705b7fa505ef3",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "basic-baseline-50000",
+            "pathId": "alt",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0xb810446fcc43d674db0faae8c6e833976a4f3344c418cdb1a2fbb7fe5b35cc6a",
+              "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+              "payerBalance": "149890048000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000
+            }
+          },
+          "comparison": {
+            "verdict": "EXPECTED_ACCEPT",
+            "reason": "Observed expected accepted decision."
+          }
+        }
+      ],
+      "verdict": "MATCH"
+    }
+  ],
+  "totals": {
+    "cases": 1,
+    "matched": 1,
+    "unexpected": 0,
+    "inconclusive": 0,
+    "transportFailures": 0
+  }
+}

@@ -1,0 +1,233 @@
+{
+  "schema": "framefuzz.evidence.v1",
+  "generatedAt": "2026-11-05T22:02:36.895Z",
+  "source": "LIVE_RPC_SUBMISSION",
+  "chainId": 1337,
+  "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+  "submissions": 2,
+  "receiptNote": "Admission hash is not confirmation of execution. Inspect each receipt.state separately.",
+  "results": [
+    {
+      "id": "unstaked-baseline-50000",
+      "family": "uniswap-v4-paymaster",
+      "category": "unstaked Uniswap pool read",
+      "description": "Fresh independently signed transactions using the supplied PoC sponsors and official workshop codec",
+      "mutation": null,
+      "ruleProvenance": {
+        "status": "SOURCE_REVIEWED_DEPLOYMENT_PARTIAL",
+        "workshopCommit": "bcfe02a196ca97b6fb0d1044db9d0b4c673831fc",
+        "sidecarSourceReviewed": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "deployedSidecarCommit": null,
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "source": "Supplied framefuzz-poc.zip fast_gate_rerun.ts and PAYMASTER_FEASIBILITY.md; live code/stake/balance checked",
+        "note": "Execution client commit verified by web3_clientVersion. Sidecar v4.1.1 exposes an empty commit; exact source/deployment equivalence is not attested."
+      },
+      "reproduction": null,
+      "sourceFile": "E:\\ethglobalmumbai\\examples\\live\\unstaked.mjs",
+      "notes": "",
+      "paths": [
+        {
+          "id": "public",
+          "method": "eth_sendRawTransaction",
+          "expected": "rejected",
+          "expectedRule": "StorageReadNonSender",
+          "expectedErrorClass": null,
+          "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+          "receipt": {
+            "state": "not_checked"
+          },
+          "fingerprint": "ba44fa0c6dde365b",
+          "replay": {
+            "method": "eth_sendRawTransaction",
+            "params": [
+              "0x06f8be820539c18080949ea5774c2be348894d8b3040c545e72f69d12835f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84100f3809d60223bfcd70ed77b317461c3df459e0c2007878e07fe94fa6e15fd265f0c931e5e72ffb1ce574638d31010a8f3e9b0d047b476a2cd63b80f06b7981c86cb8477359400847735940080c0c0"
+            ],
+            "signedRaw": "0x06f8be820539c18080949ea5774c2be348894d8b3040c545e72f69d12835f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84100f3809d60223bfcd70ed77b317461c3df459e0c2007878e07fe94fa6e15fd265f0c931e5e72ffb1ce574638d31010a8f3e9b0d047b476a2cd63b80f06b7981c86cb8477359400847735940080c0c0",
+            "metadata": {
+              "adapter": "workshop-hegota-0.0.1",
+              "sender": "0x9ea5774c2be348894d8b3040c545e72f69d12835",
+              "nonce": "0",
+              "chainId": 1337,
+              "caseId": "unstaked-baseline-50000",
+              "pathId": "public",
+              "mode": "LIVE",
+              "transaction": {
+                "hash": "0x3aca70802e2b6db284daf66dec3bd9873a3e48a231e7e5411b4d77bb62d06bc8",
+                "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                "payerBalance": "150000000000000000",
+                "senderBalance": "0",
+                "verificationGas": 50000,
+                "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+              }
+            },
+            "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "admission_policy",
+            "code": -32000,
+            "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+            "data": null
+          },
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0x9ea5774c2be348894d8b3040c545e72f69d12835",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "unstaked-baseline-50000",
+            "pathId": "public",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x3aca70802e2b6db284daf66dec3bd9873a3e48a231e7e5411b4d77bb62d06bc8",
+              "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+              "payerBalance": "150000000000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+            }
+          },
+          "comparison": {
+            "verdict": "EXPECTED_REJECT",
+            "reason": "Observed expected rejected decision."
+          }
+        },
+        {
+          "id": "alt",
+          "method": "eth_sendFrameTransaction",
+          "expected": "rejected",
+          "expectedRule": "unstaked payer accessed",
+          "expectedErrorClass": null,
+          "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+          "receipt": {
+            "state": "not_checked"
+          },
+          "fingerprint": "5d2f1272892395cd",
+          "replay": {
+            "method": "eth_sendFrameTransaction",
+            "params": [
+              {
+                "chainId": "0x539",
+                "nonceKeys": [
+                  "0x0"
+                ],
+                "nonceSeq": "0x0",
+                "sender": "0xf835a968e8e0f7954b64f34c2e47c254a686a87e",
+                "frames": [
+                  {
+                    "mode": 1,
+                    "flags": 2,
+                    "target": null,
+                    "limits": {
+                      "execution": "0x7530",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 1,
+                    "flags": 1,
+                    "target": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x01"
+                  },
+                  {
+                    "mode": 2,
+                    "flags": 0,
+                    "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  }
+                ],
+                "signatures": [
+                  {
+                    "scheme": 1,
+                    "signer": "0x",
+                    "msg": "0x",
+                    "signature": "0x00291663419180cf7762d474feb8d703789e014a8de20b95de9a9617b7e2eded06031d67974d3e7b9a10a3f532a684333ff729b73374449d5a32d64dab72b5a8dc"
+                  }
+                ],
+                "fees": {
+                  "maxPriorityFeePerGas": "0x77359400",
+                  "maxFeePerGas": "0x77359400",
+                  "maxFeePerBlobGas": "0x0"
+                },
+                "blobVersionedHashes": [],
+                "recentRootReferences": []
+              }
+            ],
+            "signedRaw": "0x06f8be820539c1808094f835a968e8e0f7954b64f34c2e47c254a686a87ef849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84100291663419180cf7762d474feb8d703789e014a8de20b95de9a9617b7e2eded06031d67974d3e7b9a10a3f532a684333ff729b73374449d5a32d64dab72b5a8dccb8477359400847735940080c0c0",
+            "metadata": {
+              "adapter": "workshop-hegota-0.0.1",
+              "sender": "0xf835a968e8e0f7954b64f34c2e47c254a686a87e",
+              "nonce": "0",
+              "chainId": 1337,
+              "caseId": "unstaked-baseline-50000",
+              "pathId": "alt",
+              "mode": "LIVE",
+              "transaction": {
+                "hash": "0xff59ca1dc469b03528937a1a69d13e062a8b2ede5b166f11158cdee4bc517fd6",
+                "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                "payerBalance": "150000000000000000",
+                "senderBalance": "0",
+                "verificationGas": 50000,
+                "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+              }
+            },
+            "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "unclassified_rejection",
+            "code": -32502,
+            "message": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404",
+            "data": {
+              "payer": "0x3D66c53105be7930FD89571157A41137C12B003F"
+            }
+          },
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0xf835a968e8e0f7954b64f34c2e47c254a686a87e",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "unstaked-baseline-50000",
+            "pathId": "alt",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0xff59ca1dc469b03528937a1a69d13e062a8b2ede5b166f11158cdee4bc517fd6",
+              "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+              "payerBalance": "150000000000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+            }
+          },
+          "comparison": {
+            "verdict": "EXPECTED_REJECT",
+            "reason": "Observed expected rejected decision."
+          }
+        }
+      ],
+      "verdict": "MATCH"
+    }
+  ],
+  "totals": {
+    "cases": 1,
+    "matched": 1,
+    "unexpected": 0,
+    "inconclusive": 0,
+    "transportFailures": 0
+  }
+}

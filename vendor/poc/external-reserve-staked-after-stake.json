@@ -1,0 +1,13 @@
+{
+  "alt": {
+    "ok": true,
+    "h": "0x93049c5d14580f74803800374146fda52bb4e2e4bd3fa179a5819ea916b69f83",
+    "admission": "accepted",
+    "receipt": null
+  },
+  "canonical": {
+    "ok": false,
+    "error": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+    "rule": "STO"
+  }
+}
