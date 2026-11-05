@@ -1,100 +1,98 @@
-# FrameFuzz — admission test runner (starter build)
+# FrameFuzz — EIP-8141 admission testing lab
 
-An independent, dependency-free Node.js EIP-8141 admission-test runner and local results dashboard. This is a working **engine scaffold**, not a finished Uniswap paymaster or a verified Ethereum protocol vulnerability.
+Compare expected and observed admission decisions across public and alternative Ethereum admission paths, keep execution receipts separate, and export reproducible evidence.
+
+**Current deliverable:** tested adapter/runner/scenario infrastructure with an executable local mock demonstration. The external workshop signer and Uniswap paymaster PoC were not supplied. No real devnet transaction or Uniswap swap was executed by this build. See [BUILD_STATUS.md](BUILD_STATUS.md).
+
+## Run the working local demonstration
+
+Node.js **20+**, no dependencies and no `npm install` required. Verified here with Node **22.13.0**.
+
+```powershell
+Set-Location E:\ethglobalmumbai
+npm test
+npm run demo:mock
+npm start
+```
+
+Open [the dashboard](http://127.0.0.1:4177). The mock demo starts two temporary loopback gateways, runs six scenarios / twelve path submissions, saves JSON, Markdown and replay metadata under `runs/`, and closes both gateways. Its transactions, receipts, hashes, addresses and rule thresholds are **fictional test data**, labeled `MOCK_RPC_TEST — NOT LIVE`. It never signs an Ethereum transaction or connects to a devnet.
+
+The dashboard loads saved evidence; select a run or case to inspect both paths, receipts, mutation parameters and rule provenance. Download JSON, Markdown or replay metadata. Live submission stays disabled unless explicitly configured. For scenario dropdowns in read-only mode:
+
+```powershell
+node bin/framefuzz.mjs serve --adapter examples/mock-adapter.mjs --rules examples/mock-rules.json --port 4177
+```
+
+`npm run demo` remains the simpler static SYNTHETIC UI fixture. Both types remain separate from LIVE evidence.
+
+## Working features
+
+- Adapter plugin interface with fresh account allocation, setup hooks, pending nonce lookup, independent variant signing, fail-closed sessions and allowlisted metadata.
+- Separate `public` and `alt` endpoints; every selected endpoint is chain-checked before adapter setup or transaction submission. Chain 1 is blocked.
+- Lazy builds prevent setup/signing in preview mode. The provided adapter requires a distinct sender for each case/path to avoid nonce gaps after expected rejections.
+- Duplicate signed payload and known sender/nonce guards. Comparative raw fixtures require sender + decimal nonce metadata.
+- `EXPECTED_ACCEPT`, `EXPECTED_REJECT`, `UNEXPECTED_ACCEPT`, `UNEXPECTED_REJECT`, `UNEXPECTED_RULE`, `TRANSPORT_FAILURE`, and `INCONCLUSIVE` path verdicts. Case totals retain `MATCH`, `UNEXPECTED`, `INCONCLUSIVE` for compatibility.
+- Malformed payload, nonce/duplicate, funding, and RPC errors remain inconclusive unless explicitly tested as an error class. A generic rejection cannot prove a specific policy match.
+- Independent receipt states: not checked, included success/revert/unknown, pending before timeout, and receipt RPC error. Hash/block validation prevents mismatched receipts from proving inclusion.
+- Provenance-driven `uniswap-v4-paymaster` cases A–C and optional gas-boundary D; `verification-gas` below/at/above variants. No sidecar rule is hardcoded as deployed truth.
+- Saved JSON/Markdown/replay exports and a local console with scenario/mutation selection, gateway check, running state and per-path results.
+
+## Import a real signer
+
+Implement the plugin contract in [docs/ADAPTER.md](docs/ADAPTER.md) using the separate experiment's known-good encoder, signer, contracts and setup scripts. Do not reimplement speculative signing or copy private keys into fixtures. Plugin modules are trusted local executable code; factories and case-loading modules must not broadcast during import. Transaction setup belongs in the checked runner lifecycle.
+
+Supply a rules JSON with actual deployed sidecar version, rule reference, verification date, path expectations, StateView/pool configuration and setup parameters. `status: VERIFIED` is an operator declaration, not independent verification by FrameFuzz. The shipped `examples/mock-rules.json` is fictional; changing its label does not make it valid live configuration. The built-in gas family assumes a common explicitly supplied boundary and acceptance direction for both paths; use custom fixtures when policies have distinct thresholds.
+
+After importing real artifacts and authorizing the test devnet, the command shape is:
+
+```powershell
+# Set these to the authorized endpoints and checked devnet chain ID first.
+# Keep credential-bearing URLs in environment variables.
+node bin/framefuzz.mjs run --scenario uniswap-v4-paymaster --adapter ./local/workshop-adapter.mjs --rules ./local/devnet-rules.json --allow-chain $env:FRAMEFUZZ_CHAIN_ID --submit --receipt-wait-ms 5000
+```
+
+Endpoints come from `FRAMEFUZZ_PUBLIC_RPC` and `FRAMEFUZZ_ALT_RPC`, or `--public-rpc` / `--alt-rpc`. `FRAMEFUZZ_RPC` / `--rpc` is the legacy shared fallback. This command is an integration template; `local/workshop-adapter.mjs` and actual network rules are **not included**. Omit `--submit` for a chain-checking preview with no builder/setup/submission. Use `serve` with the same options for live dashboard runs.
+
+For existing signed case fixtures:
+
+```powershell
+node bin/framefuzz.mjs run examples/cases --rpc $env:FRAMEFUZZ_RPC --allow-chain $env:FRAMEFUZZ_CHAIN_ID
+```
+
+The included placeholder fixture is never broadcast. Actual comparative fixtures need independent signatures and `metadata: { sender: '0x…40 hex digits…', nonce: '0' }` on each path. Metadata must describe the real encoded transaction; the generic harness does not decode or verify signatures itself. Never interpret duplicate/nonce errors as policy differences.
+
+Filters: `--case CASE_ID`, `--mutation all|baseline|verification-gas`. CLI exit codes: `0` all selected cases matched, `2` any unexpected verdict, `3` incomplete/inconclusive/transport outcome, `1` configuration or safety failure. Admission success alone does not make an execution claim; inspect each receipt.
+
+## Evidence and replay
+
+Each run writes `.json`, `.md`, and `.replay.json` files. Replay includes observed signed inputs, adapter/sender/nonce/chain metadata, case IDs, mutation/rule provenance, and original adapter/rules paths. It is exported for inspection; there is no automatic rebroadcast. Nonces, stake, balances and contracts may have changed. Rebuild fresh variants through the original adapter and pinned setup.
+
+RPC host labels omit credentials and paths; evidence is scrubbed for credential fields and URL paths. Plugins must keep secrets out of thrown errors. Local `runs/` is ignored by Git. Archive real evidence separately after checking it contains no secrets. Never use mainnet, real funds, high-volume shared-gateway testing, or speculative protocol vulnerability claims.
+
+## Repository map
+
+```text
+bin/framefuzz.mjs       CLI: run, serve, mock-demo, demo, help
+src/adapters/          signer plugin contract and lifecycle
+src/scenarios.mjs      paymaster cases and verification-gas variants
+src/selection.mjs      fixture/scenario selection and filters
+src/runner.mjs         endpoint preflight, submission, comparisons, receipts
+src/rpc.mjs            transport and receipt polling
+src/verdict.mjs        admission/error classification
+src/reports.mjs        JSON, Markdown and replay evidence
+src/server.mjs         local console API
+src/safety.mjs         chain guard and evidence redaction
+src/fixtures.mjs       trusted local JSON/MJS fixture loader
+src/mutations.mjs      legacy generic boundary helper
+examples/              placeholder fixture, mock adapter/rules/gateways
+test/                  unit, mock integration, CLI and dashboard tests
+web/index.html         existing dashboard, extended in place
+docs/                  original brief, adapter contract and external PoC notes
+runs/                  ignored local generated evidence
+```
 
 ## Resume in Codex or Cursor
 
-Open this repository folder and read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](CURRENT_STATUS.md), and [UP_NEXT.md](UP_NEXT.md). Cursor loads `.cursor/rules/framefuzz.mdc` automatically. The complete supplied task is preserved in [docs/BUILD_BRIEF.md](docs/BUILD_BRIEF.md); verified commands and limitations are in [BUILD_STATUS.md](BUILD_STATUS.md). Keep these checkpoint files current and commit each coherent verified change with a short conventional subject.
+Read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](CURRENT_STATUS.md), and [UP_NEXT.md](UP_NEXT.md). Cursor loads `.cursor/rules/framefuzz.mdc` automatically. The full task remains in [docs/BUILD_BRIEF.md](docs/BUILD_BRIEF.md). Commit coherent verified changes frequently with short conventional subjects.
 
-## Already implemented
-
-- JSON-RPC transport for `eth_sendFrameTransaction` and `eth_sendRawTransaction`.
-- Explicit chain-ID safety check before every run, with Ethereum mainnet blocked.
-- Real rejection vs transport-error separation.
-- Expected admission verdict and rule-label comparison. A policy mismatch is **not** automatically classified as an exploit.
-- Explicit transaction states: **admitted**, **receipt included success**, **receipt included revert**, **pending**, or **not checked**.
-- Human-readable Markdown and machine-readable JSON evidence.
-- A reusable numeric boundary case generator that requires a legitimate **re-signer**. It never corrupts signed raw transaction bytes and falsely labels them as meaningful fuzz tests.
-- Local web UI to view runs and details, and launch cases when live mode is explicitly configured.
-- Node's built-in test suite with a mock JSON-RPC endpoint.
-
-## What is deliberately NOT included
-
-- **No official workshop transaction builder yet**; the Cursor research agent's known-good signing code must be plugged in. The example JSON fixture intentionally contains a placeholder.
-- No deployed Uniswap contracts, paymaster, or full sponsored-transaction lifecycle.
-- No Arkiv integration; sponsor scope depends on experimental results.
-- No EIP-8141 rule oracle for exact expected verdicts. Rule-specific expected verdicts must be authored with reference to the chosen sidecar version.
-- No evidence of successfully included sponsored transactions. An accepted hash is NOT an execution receipt.
-
-## Quick start
-
-Requires **Node.js 20+**, no `npm install` necessary.
-
-```bash
-npm test
-node bin/framefuzz.mjs demo --results runs    # creates SYNTHETIC evidence, no RPC calls
-npm start                                     # open http://127.0.0.1:4177
-```
-
-The synthetic demo is unmistakably labeled as synthetic in the dashboard and evidence. It exists only for UI smoke testing, not for judging or submission evidence.
-
-## Run a real test case
-
-1. Reuse the existing working `mempool-workshop` / FrameFuzz PoC to create a **fresh signed frame transaction** for the intended devnet. Do not include a private key in a case file.
-2. Copy `examples/cases/00-template.json`, replace the placeholder `params[0]` with the properly encoded signed frame transaction, and set `expected` and `expectedRule` according to the **actual rule version**. A placeholder fixture will be marked INCONCLUSIVE and never submitted.
-3. Set a testnet URL, confirm chain ID, and explicitly permit submissions:
-
-```bash
-node bin/framefuzz.mjs run examples/cases --rpc "$TESTNET_RPC" --allow-chain 1337 --submit --receipt-wait-ms 3000
-```
-
-**IMPORTANT:** The devnet may use a different chain ID or gateway by the time you run this. Check the current official documentation rather than trusting `1337` blindly. The runner will refuse to proceed unless the endpoint's actual chain ID matches your explicit `--allow-chain` value.
-
-To run live cases through the UI:
-
-```bash
-node bin/framefuzz.mjs serve --cases examples/cases --rpc "$TESTNET_RPC" --allow-chain 1337 --submit --port 4177
-```
-
-The web server binds to `127.0.0.1` only. Do not expose the local development server publicly.
-
-### Test format
-
-```json
-{
-  "id": "real-staked-paymaster-case",
-  "category": "Storage access",
-  "description": "A real encoded frame transaction signed by the workshop adapter",
-  "paths": [{
-    "id": "alt",
-    "method": "eth_sendFrameTransaction",
-    "params": ["0x... properly signed transaction bytes ..."],
-    "expected": "accepted",
-    "expectedRule": null
-  }]
-}
-```
-
-Cases can also be generated by a trusted local `.mjs` module exporting `cases` or a default function returning cases. Modules execute arbitrary local JS — load only your own code.
-
-For comparative tests, use **independently signed** variants with fresh nonces and corresponding state setups. Do NOT submit the *same* signed transaction to canonical and alternative routes back-to-back and treat a duplicate/nonce error as a meaningful rule difference.
-
-## Latest paymaster feasibility update
-
-The separate Cursor agent reports **PARTIAL**: a predeployed real **Uniswap v4** pool-state read during EIP-8141 validation affected public/alternative admission as expected, and a staked sponsored transaction reportedly executed successfully. **USDC reimbursement and the actual v4 swap are unproven** because the pool had no liquidity. These are reported external PoC results, not independent executions of this starter. See [`docs/PAYMASTER_STATUS_AND_NEXT_GATE.md`](docs/PAYMASTER_STATUS_AND_NEXT_GATE.md).
-
-## Integration with the current Cursor PoC
-
-See [`docs/CURSOR_HANDOFF.md`](docs/CURSOR_HANDOFF.md) for the exact code to wire the existing `poc/workshop-ref/scripts/` builders into this runner without modifying the paymaster feasibility agent's working branch.
-
-## Sponsor strategy
-
-- **EF Alternative Mempool:** Primary. The engine directly measures real `eth_sendFrameTransaction` admission outcomes.
-- **Uniswap:** Conditional on a **working essential Uniswap dependency** in the paymaster testing fixture, not a logo, mock pair, or a hash without execution.
-- **Arkiv:** Conditional on storing wallet-owned, searchable, replayable real test cases and reading them back into the runner. Not implemented in this starter.
-
-Never present all three as qualified until the corresponding work is implemented and proven.
-
-## Honest limitation
-
-This package is an admission test *harness*, not yet a general-purpose fuzzer. `src/mutations.mjs` provides semantic parameter boundary generation, but the official EIP-8141 encoding/signing adapter and tested per-rule expectations are still required. The official workshop itself covers many hand-written admission cases, so the final hackathon project must demonstrate new systematic rule-boundary coverage beyond the workshop examples.
+EF admission testing is the core. Real Uniswap storage-dependent validation and swap/reimbursement claims require imported evidence and reproduction. Arkiv, Chainlink and World are not implemented.
