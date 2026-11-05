@@ -1,0 +1,16 @@
+{
+  "name": "framefuzz-starter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "EIP-8141 admission-test engine and results UI (hackathon scaffold)",
+  "bin": { "framefuzz": "./bin/framefuzz.mjs" },
+  "scripts": {
+    "test": "node --test",
+    "start": "node ./bin/framefuzz.mjs serve --cases examples/cases --results runs --port 4177",
+    "demo": "node ./bin/framefuzz.mjs demo --results runs",
+    "run:preview": "node ./bin/framefuzz.mjs run examples/cases --allow-chain 1337"
+  },
+  "engines": { "node": ">=20" },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "replace-me-signed-self-relay",
+  "category": "Baseline",
+  "description": "TEMPLATE ONLY. Replace the placeholder with a fresh, correctly signed EIP-8141 frame transaction created by the existing workshop adapter.",
+  "notes": "Never reuse a nonce across public and alt submissions. One variant = one signed transaction, configured for the intended testnet.",
+  "paths": [
+    {
+      "id": "alt",
+      "method": "eth_sendFrameTransaction",
+      "params": ["REPLACE_WITH_ACTUAL_SIGNED_FRAME_TX_HEX"],
+      "expected": "accepted"
+    }
+  ]
+}

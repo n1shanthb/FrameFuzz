@@ -1,0 +1,14 @@
+node_modules/
+runs/*
+!runs/.gitkeep
+.env
+*.log
+.DS_Store
+
+# Local archives and credentials
+*.zip
+.env.*
+!.env.example
+*.pem
+*.key
+
