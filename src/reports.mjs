@@ -1,9 +1,12 @@
 import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
+import { randomUUID } from 'node:crypto';
+import { redact } from './safety.mjs';
 
 const slug = x => String(x).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 60);
 
 export function toMarkdown(output) {
+  output = redact(output);
   const lines = [
     '# FrameFuzz admission evidence', '',
     `- Source: **${output.source}**`,
@@ -25,7 +28,11 @@ export function toMarkdown(output) {
       if (p.observed.hash) lines.push(`  - Transaction: \`${p.observed.hash}\``);
       if (p.observed.message) lines.push(`  - RPC response: ${p.observed.message.replaceAll('\n', ' ').slice(0, 500)}`);
       if (p.receipt) lines.push(`  - Receipt: ${p.receipt.state}, block ${p.receipt.blockNumber ?? 'unconfirmed'}`);
+      if (p.rpc) lines.push(`  - Admission endpoint: ${p.rpc}`);
+      if (p.metadata) lines.push(`  - Replay metadata: ${JSON.stringify(p.metadata)}`);
     }
+    if (c.mutation) lines.push(`- Mutation: ${JSON.stringify(c.mutation)}`);
+    if (c.ruleProvenance) lines.push(`- Rule provenance: ${JSON.stringify(c.ruleProvenance)}`);
     if (c.sourceFile) lines.push(`- Reproduction fixture: \`${c.sourceFile}\``);
     lines.push('');
   }
@@ -33,15 +40,25 @@ export function toMarkdown(output) {
 }
 
 export async function saveReport(output, directory) {
+  output = redact(output);
   await mkdir(directory, { recursive: true });
-  const base = `${new Date().toISOString().replace(/[:.]/g, '-')}-${slug(output.source)}`;
+  const base = `${new Date().toISOString().replace(/[:.]/g, '-')}-${slug(output.source)}-${randomUUID().slice(0, 8)}`;
   const jsonFile = path.resolve(directory, `${base}.json`);
   const mdFile = path.resolve(directory, `${base}.md`);
+  const replayFile = path.resolve(directory, `${base}.replay.json`);
   await Promise.all([
     writeFile(jsonFile, JSON.stringify(output, null, 2) + '\n'),
     writeFile(mdFile, toMarkdown(output) + '\n'),
+    writeFile(replayFile, JSON.stringify(toReplay(output), null, 2) + '\n'),
   ]);
-  return { jsonFile, mdFile };
+  return { jsonFile, mdFile, replayFile };
+}
+
+export function toReplay(output) {
+  return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,
+    warning: 'Contains potentially stale signed bytes. Rebuild with the original signer and isolated state. No automatic broadcast is performed.',
+    cases: output.results.map(c => ({ id: c.id, family: c.family, mutation: c.mutation, ruleProvenance: c.ruleProvenance,
+      paths: c.paths.filter(p => p.replay).map(p => ({ id: p.id, expected: p.expected, expectedRule: p.expectedRule, ...p.replay })) })) });
 }
 
 export async function listReports(directory) {

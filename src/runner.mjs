@@ -18,6 +18,10 @@ export async function runSuite(cases, options = {}) {
   if (!Number.isSafeInteger(allowChainId) || allowChainId <= 0) throw new Error('Specify --allow-chain with the exact intended TESTNET chain ID');
   if (!Array.isArray(cases) || !cases.length) throw new Error('No test cases selected');
   const endpoints = new Set(cases.flatMap(c => c.paths.map(p => endpointFor(p, options))));
+  for (const c of cases) for (const p of c.paths) if (p.adapterMode === 'MOCK') {
+    const host = new URL(endpointFor(p, options)).hostname;
+    if (!['127.0.0.1', 'localhost', '[::1]'].includes(host)) throw new Error('MOCK adapters can only use loopback endpoints');
+  }
   // Check ALL endpoints before any setup, signing or broadcast (including builders).
   for (const url of endpoints) assertTestChain(await getChainId(url, { timeoutMs: rpcTimeoutMs, rpcFn }), allowChainId);
   const rawUses = new Map(), nonceUses = new Map();

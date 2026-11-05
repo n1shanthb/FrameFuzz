@@ -40,3 +40,6 @@ On branch feat/framefuzz-mvp: added the plugin adapter contract and isolated acc
 
 ## Comparison checkpoint
 20 tests pass. Implemented per-path endpoint preflight, duplicate payload/nonce guards, explicit admission verdict taxonomy, precondition error classification, independent receipts, and replay metadata. Next: provenance-driven paymaster and gas-boundary scenarios plus CLI wiring.
+
+## Scenario checkpoint
+23 tests pass. Added provenance-driven Uniswap paymaster cases A-C, optional gas-boundary case D, independently built below/at/above variants, scenario CLI selection and JSON/Markdown/replay exports. mock-demo completed 6/6 cases through two local fake gateways; these are MOCK results only, no real signatures or devnet transactions. Next: finish server selection/export APIs and dashboard.

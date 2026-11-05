@@ -5,7 +5,8 @@ export async function numericBoundaryCases({
   id, template, field, boundary, sign, expectedFor, path = 'alt', method = 'eth_sendFrameTransaction'
 }) {
   if (typeof sign !== 'function') throw new Error('A real encode-and-sign adapter is required. No placeholder signing.');
-  if (!Number.isSafeInteger(boundary) || boundary < 1) throw new Error('boundary must be a positive safe integer');
+  if (!Number.isSafeInteger(boundary) || boundary < 1 || boundary >= Number.MAX_SAFE_INTEGER) throw new Error('boundary must allow safe below/at/above integers');
+  if (typeof expectedFor !== 'function') throw new Error('expectedFor rule oracle required');
   if (typeof field !== 'string' || !field) throw new Error('field required');
   const cases = [];
   for (const [suffix, value] of [['below', boundary - 1], ['at', boundary], ['above', boundary + 1]]) {
