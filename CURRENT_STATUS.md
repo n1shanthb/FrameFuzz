@@ -43,3 +43,6 @@ On branch feat/framefuzz-mvp: added the plugin adapter contract and isolated acc
 
 ## Scenario checkpoint
 23 tests pass. Added provenance-driven Uniswap paymaster cases A-C, optional gas-boundary case D, independently built below/at/above variants, scenario CLI selection and JSON/Markdown/replay exports. mock-demo completed 6/6 cases through two local fake gateways; these are MOCK results only, no real signatures or devnet transactions. Next: finish server selection/export APIs and dashboard.
+
+## Console checkpoint
+27 tests pass including CLI subprocess checks, mock dashboard POST runs, selection and exports. Browser verified saved MOCK evidence, public/alternative columns, case details, gateway check, and disabled run control. Added localhost Host guard, fail-closed comparison metadata, receipt-hash validation, and exportable preflight failures. Next: finalize README/build/handoff documentation and import the external signer.

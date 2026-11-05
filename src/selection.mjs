@@ -7,7 +7,8 @@ export async function selectCases({ casesLocation = 'examples/cases', scenario, 
   let cases;
   if (scenario && scenario !== 'fixtures') {
     if (!adapterFile || !rulesFile) throw new Error('Scenario requires --adapter and --rules');
-    cases = createScenarioCases({ scenario, adapter: await loadAdapter(adapterFile), rules: JSON.parse(await readFile(rulesFile, 'utf8')) });
+    cases = createScenarioCases({ scenario, adapter: await loadAdapter(adapterFile), rules: JSON.parse(await readFile(rulesFile, 'utf8')) })
+      .map(c => ({ ...c, reproduction: { scenario, adapterFile, rulesFile } }));
   } else cases = await loadCases(casesLocation);
   if (caseId) cases = cases.filter(c => c.id === caseId);
   if (mutationFamily && mutationFamily !== 'all') cases = cases.filter(c => mutationFamily === 'baseline' ? !c.mutation : c.mutation?.family === mutationFamily);

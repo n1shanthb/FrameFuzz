@@ -52,6 +52,7 @@ export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutM
   do {
     try {
       const receipt = await rpcFn(url, 'eth_getTransactionReceipt', [hash], { timeoutMs });
+      if (receipt && (String(receipt.transactionHash).toLowerCase() !== hash.toLowerCase() || !/^0x[\da-f]+$/i.test(receipt.blockNumber ?? ''))) return { state: 'receipt_rpc_error', message: 'Malformed receipt or transaction hash mismatch; inclusion not proven' };
       if (receipt) return {
         state: receipt.status === '0x1' ? 'included_success' : receipt.status === '0x0' ? 'included_reverted' : 'included_unknown',
         blockNumber: receipt.blockNumber ?? null,

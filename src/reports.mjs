@@ -57,7 +57,7 @@ export async function saveReport(output, directory) {
 export function toReplay(output) {
   return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,
     warning: 'Contains potentially stale signed bytes. Rebuild with the original signer and isolated state. No automatic broadcast is performed.',
-    cases: output.results.map(c => ({ id: c.id, family: c.family, mutation: c.mutation, ruleProvenance: c.ruleProvenance,
+    cases: output.results.map(c => ({ id: c.id, family: c.family, mutation: c.mutation, ruleProvenance: c.ruleProvenance, reproduction: c.reproduction,
       paths: c.paths.filter(p => p.replay).map(p => ({ id: p.id, expected: p.expected, expectedRule: p.expectedRule, ...p.replay })) })) });
 }
 

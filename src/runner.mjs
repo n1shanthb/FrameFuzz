@@ -23,7 +23,13 @@ export async function runSuite(cases, options = {}) {
     if (!['127.0.0.1', 'localhost', '[::1]'].includes(host)) throw new Error('MOCK adapters can only use loopback endpoints');
   }
   // Check ALL endpoints before any setup, signing or broadcast (including builders).
-  for (const url of endpoints) assertTestChain(await getChainId(url, { timeoutMs: rpcTimeoutMs, rpcFn }), allowChainId);
+  const preflightErrors = new Map();
+  for (const url of endpoints) {
+    let chain;
+    try { chain = await getChainId(url, { timeoutMs: rpcTimeoutMs, rpcFn }); }
+    catch (error) { preflightErrors.set(url, { ...describeRpcError(error), status: 'transport_failure' }); continue; }
+    assertTestChain(chain, allowChainId);
+  }
   const rawUses = new Map(), nonceUses = new Map();
   // Reject static duplicates before submitting even the first copy.
   for (const c of cases) for (const p of c.paths) {
@@ -44,12 +50,15 @@ export async function runSuite(cases, options = {}) {
         expectedErrorClass: p.expectedErrorClass ?? null, rpc: sanitizedRpcLabel(url), receipt: { state: 'not_checked' } };
       let raw = p.params?.[0], metadata = p.metadata ?? null;
       try {
-        if (!submit) record.observed = { status: 'inconclusive', message: 'Preview mode: no setup, signing, or submission executed' };
+        if (preflightErrors.size) record.observed = preflightErrors.get(url) ?? { status: 'inconclusive', message: 'Another admission endpoint failed preflight; no setup or submission executed' };
+        else if (!submit) record.observed = { status: 'inconclusive', message: 'Preview mode: no setup, signing, or submission executed' };
         else {
           if (p.prepare) { const built = await p.prepare({ rpcUrl: url, chainId: allowChainId }); raw = built.raw; metadata = built.metadata; }
           const key = metadata?.sender && metadata?.nonce != null ? `${String(metadata.sender).toLowerCase()}:${metadata.nonce}` : null;
           if (!['eth_sendFrameTransaction', 'eth_sendRawTransaction'].includes(p.method) || !HEX_TRANSACTION.test(raw ?? '')) {
             record.observed = { status: 'inconclusive', message: 'Missing signed bytes or unsupported method; placeholder never submitted' };
+          } else if (c.paths.length > 1 && (!/^0x[\da-f]{40}$/i.test(metadata?.sender ?? '') || !/^(0|[1-9][0-9]*)$/.test(String(metadata?.nonce ?? '')))) {
+            record.observed = { status: 'inconclusive', message: 'Comparative paths require sender and decimal nonce metadata; raw bytes alone cannot establish safe nonce isolation' };
           } else if (p.params && (!Array.isArray(p.params) || p.params.length !== 1)) {
             record.observed = { status: 'inconclusive', message: 'Submission requires exactly one signed transaction parameter' };
           } else if ((rawUses.get(raw.toLowerCase()) ?? 0) > 1 || seenRaw.has(raw.toLowerCase()) || (key && ((nonceUses.get(key) ?? 0) > 1 || seenNonce.has(key)))) {
@@ -70,7 +79,7 @@ export async function runSuite(cases, options = {}) {
       paths.push(record);
     }
     results.push({ id: c.id, family: c.family ?? 'fixtures', category: c.category ?? 'General', description: c.description ?? '',
-      mutation: c.mutation ?? null, ruleProvenance: c.ruleProvenance ?? null, sourceFile: c.sourceFile ?? null, notes: c.notes ?? '', paths,
+      mutation: c.mutation ?? null, ruleProvenance: c.ruleProvenance ?? null, reproduction: c.reproduction ?? null, sourceFile: c.sourceFile ?? null, notes: c.notes ?? '', paths,
       verdict: paths.some(p => UNEXPECTED.has(p.comparison.verdict)) ? 'UNEXPECTED'
         : paths.length && paths.every(p => MATCHES.has(p.comparison.verdict)) ? 'MATCH' : 'INCONCLUSIVE' });
   }

@@ -6,8 +6,8 @@ import { RpcResponseError } from '../src/rpc.mjs';
 
 const hash = `0x${'a'.repeat(64)}`;
 const fixture = [{ id: 'compare', paths: [
-  { id: 'public', method: 'eth_sendFrameTransaction', params: ['0xcafe'], expected: 'rejected', expectedRule: 'ForeignStorage' },
-  { id: 'alt', method: 'eth_sendFrameTransaction', params: ['0xbeef'], expected: 'accepted' },
+  { id: 'public', method: 'eth_sendFrameTransaction', params: ['0xcafe'], expected: 'rejected', expectedRule: 'ForeignStorage', metadata: {sender:`0x${'1'.repeat(40)}`,nonce:'0'} },
+  { id: 'alt', method: 'eth_sendFrameTransaction', params: ['0xbeef'], expected: 'accepted', metadata: {sender:`0x${'2'.repeat(40)}`,nonce:'0'} },
 ] }];
 const options = { allowChainId: 1337, submit: true, rpcUrls: { public: 'http://public.test/key', alt: 'http://alt.test/secret' }, evidenceSource: 'MOCK' };
 
@@ -53,7 +53,7 @@ test('preview never invokes prepare; receipt RPC errors preserve accepted admiss
 test('receipt revert and pending remain independent of matching admission', async () => {
   for (const status of ['0x0', null]) {
     const out = await runSuite([ { ...fixture[0], paths: [fixture[0].paths[1]] } ], { ...options, receiptWaitMs: 1,
-      rpcFn: async (_, method) => method === 'eth_chainId' ? '0x539' : method === 'eth_getTransactionReceipt' ? status ? { status } : null : hash });
+      rpcFn: async (_, method) => method === 'eth_chainId' ? '0x539' : method === 'eth_getTransactionReceipt' ? status ? { status, transactionHash: hash, blockNumber: '0x1' } : null : hash });
     assert.equal(out.results[0].paths[0].receipt.state, status ? 'included_reverted' : 'not_included_before_timeout');
     assert.equal(out.totals.matched, 1);
   }
@@ -68,4 +68,13 @@ test('comparison distinguishes verdicts and avoids funding/nonce/malformed false
   const offline = describeRpcError(new Error('offline'));
   assert.equal(compareAdmission('rejected', offline).verdict, 'TRANSPORT_FAILURE');
   assert.equal(compareAdmission('rejected', { status: 'rejected', message: 'unknown' }).verdict, 'INCONCLUSIVE');
+});
+
+test('preflight transport failure produces exportable evidence and prevents all builders', async () => {
+  let built = false;
+  const cases = structuredClone(fixture); cases[0].paths[1].prepare = async () => { built = true; };
+  const out = await runSuite(cases, { ...options, rpcFn: async url => { if (url.includes('public')) throw new Error('gateway offline'); return '0x539'; } });
+  assert.equal(out.submissions, 0); assert.equal(built, false);
+  assert.equal(out.results[0].paths[0].comparison.verdict, 'TRANSPORT_FAILURE');
+  assert.equal(out.results[0].paths[1].comparison.verdict, 'INCONCLUSIVE');
 });

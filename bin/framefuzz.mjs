@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import path from 'node:path';
-import { loadCases } from '../src/fixtures.mjs';
 import { runSuite } from '../src/runner.mjs';
 import { saveReport } from '../src/reports.mjs';
 import { createDashboardServer } from '../src/server.mjs';
