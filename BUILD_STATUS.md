@@ -1,4 +1,101 @@
-# Build status — LIVE integration
+# Build status — deterministic mutation engine
+
+**Current checkpoint: November 6, 2026 (IST), `feat/framefuzz-mvp`.**
+
+## New implementation and actual outcomes
+- `src/mutations/generator.mjs`: pure seeded semantic generator with base template, operation, constraints, paths, setup state, version/digest and self-contained descriptors. Supported gas sweeps and storage/stake environment mutations; unsupported dimensions/credential fields are rejected.
+- `src/mutations/oracle.mjs`: total-budget arithmetic, per-path storage policies, verified/inferred/unknown confidence, sufficient-execution-gas safeguards and explicit precondition/rule-class/transport classifications.
+- `src/mutations/campaign.mjs`: lazy compilation through the existing real LIVE adapter, source/fixture digest checks, live client-version inspection, actual admission-report capture, coverage and a seven-variant public-devnet batch limit. Offline preview allocates no keys and performs no RPC or signing.
+- CLI `mutate`, semantic replay and variant filtering; JSON/Markdown/replay exports retain model, setup, expectations, actual responses, rule reports and independent receipts. Read-only refresh preserves the mutation taxonomy and coverage.
+- Minimal existing-dashboard controls: suite, seed/count, preview/authorized run, generated parameter rows, confidence/region/rule coverage and drill-down/export. Browser verified an offline storage preview and the generated LIVE gas results. No redesign.
+- Bounded single-dimension shrinking is implemented and tested with an explicit monotonic predicate; it never probes the devnet automatically. No unexpected result occurred, so no live shrinking or finding is claimed.
+
+## Automatically generated LIVE campaign
+
+**Seven automatically generated variants / fourteen independently signed submissions; fourteen matching path decisions; zero discrepancies, precondition failures or transport failures.** Eight accepted transactions have successful included receipts; six above-cap transactions were rejected as expected.
+
+Seed 42 produced payer gas sequence **67198, 67202, 67200, 67210, 67201, 67190, 67199**. This comes from the generated boundary plus configured distances, not seven hard-coded scenario functions or per-value expectations. Total budget is payer + sender 30000 + signature 2800. Per path, coverage is **three below, one at, three above**, four expected accepts and three expected rejections. Actual sidecar reports identify MAX_VERIFY_GAS violations at totals 100001, 100002 and 100010. Both policies matched all seven generated cases.
+
+The second family generated three basic/unstaked-read/staked-read setup states from one specification. It was previewed in the browser and exercised with the real signing/adapter setup contract in tests using mock transport; **no additional storage-family live submissions were sent in this task**. The original real storage-policy evidence remains unchanged.
+
+The rule model is `rules/devnet-1337.v1.json`, version `forshtat-1337-observed-2026-11-06.v1`, bound to the historical evidence SHA-256 and known sponsor code hashes. VERIFIED means observed fixture-bound behavior; live sidecar v4.1.1 still exposes no exact commit. Acceptance below the observed sufficient-gas interval is INFERRED, and values below observed payer usage cannot become cap findings. Runtime version mismatches or missing/altered evidence yield UNKNOWN rather than false discrepancies.
+
+## Tests and verification actually executed
+
+`npm test`: **58 passed / 0 failed** on Node v22.13.0 with loopback networking enabled, including all original 37. New tests cover seeded sequences/sampling, budget arithmetic, invalid/insufficient gas, real independently recovered signatures and isolated senders, storage/stake setup, unsupported dimensions, missing/tampered provenance, deterministic key-free replay, bounded shrinking, CLI regeneration, dashboard preview/submission guards, historical LIVE rendering/export and read-only refresh coverage.
+
+`npm run demo:mock`: **6/6 mock cases matched**. Browser verified PREVIEW source labels, three storage-state generated rows, expected path divergence without claiming execution, then the seven-case LIVE campaign with 14 matching decisions and successful receipts. Dashboard remains at `http://127.0.0.1:4177` in read-only mode. `git diff --exit-code -- evidence/live/2026-11-06` passed: historical evidence was neither modified nor relabeled.
+
+## New evidence paths
+
+Directory: `evidence/mutations/2026-11-06/`. `manifest.json` points to:
+- Original automatic capture: `2026-11-05T22-40-18-236Z-LIVE_RPC_SUBMISSION-aa854431.json`.
+- Final receipt-refreshed LIVE JSON/Markdown/replay: prefix `2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01`.
+- Three-state offline storage preview JSON/Markdown/replay: prefix `2026-11-05T22-43-59-653Z-PREVIEW_GENERATED---NO-RPC-OR-SIGNING-2a3c5943`.
+
+Filenames use UTC timestamps; execution date here is November 6 IST. Descriptors include deterministic semantic inputs, seed/count/index, setup/signing instructions, rule model and confidence, gateway identifiers, actual decisions/errors/admission reports, signed raw/structured parameters and receipts. Fresh allocation changes hashes by design; reproduction means the same semantic mutation with current isolated accounts and state.
+
+## Exact mutation commands
+
+```powershell
+node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --preview --results runs
+node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --submit --allow-chain 1337 --receipt-wait-ms 1000 --results runs
+node bin/framefuzz.mjs refresh runs/2026-11-05T22-40-18-236Z-LIVE_RPC_SUBMISSION-aa854431.json --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --receipt-wait-ms 1000 --results runs
+npm test
+npm run demo:mock
+```
+
+Browser storage preview used `POST /api/mutate` with `{suite:"uniswap-storage", seed:42, count:3, preview:true, submit:false}`; the equivalent CLI is `node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --preview`.
+
+Replay offline without new broadcasting:
+```powershell
+node bin/framefuzz.mjs mutate --replay evidence/mutations/2026-11-06/2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.replay.json --variant 0 --preview
+```
+
+To reproduce another authorized live execution, use the submitted command above, or replace `--preview` with `--submit --allow-chain 1337` on the replay command. Explicit public/alternative RPC flags and environment overrides remain supported. Do not rebroadcast stale signed bytes. The current server deliberately disables submission; start `serve` with matching RPC/chain and `--submit` only when live UI execution is intended.
+
+## Remaining limits
+
+Two supported mutation dimensions only; no generic byte fuzzer or expensive delta-debugging. Unknown minimum execution-gas thresholds remain unknown/inferred; the model is fixture- and version-specific. Exact sidecar build commit is unavailable. Storage state uses existing validated deployments; B is not silently staked. The opt-in shrink helper assumes a monotonic predicate and is not automatically wired to remote probing. No discrepancy or protocol bug was found. Node20.12+ is intended but only Node22.13.0 was executed. No Arkiv, swap settlement, Chainlink or additional sponsor work.
+
+## Generated LIVE hash and receipt ledger
+
+### verification-gas-s42-0-67198
+
+- public: EXPECTED_ACCEPT; returned `0xef7bec20e34df87fdf264d9f5fe65934e53a5e6fc65b38b7db78ad8981c50cbd`; included_success, block `0x63a06`.
+- alt: EXPECTED_ACCEPT; returned `0xbe6c43a9740e0e04eb080a23957df96ab7259cb1fe6f49c9fe18dc8ea4c63b2d`; included_success, block `0x63a0d`.
+
+### verification-gas-s42-1-67202
+
+- public: EXPECTED_REJECT; computed only `0x06029dbda56b1efaee257e32d3d38d2655c055cef19e4bcd754ee4d5ae289a93`; not_checked.
+- alt: EXPECTED_REJECT; computed only `0x722bf60bae57399afdb5f0ab7887e2950fbe3d4aad5ba56d966d25cf69a12377`; not_checked.
+
+### verification-gas-s42-2-67200
+
+- public: EXPECTED_ACCEPT; returned `0xab67907c2c9c26faeaed5b34504bf2b4907ffbff132d67e696b2c9c0c2d76429`; included_success, block `0x63a08`.
+- alt: EXPECTED_ACCEPT; returned `0xe427da3c92b78e33d114c1d91e0dae0c87f68c94d43db7d087454445808e6951`; included_success, block `0x63a0d`.
+
+### verification-gas-s42-3-67210
+
+- public: EXPECTED_REJECT; computed only `0x43068ae6808e18859ef59823bb640181e91f44f0dfcf995fd634ba3d92b11f23`; not_checked.
+- alt: EXPECTED_REJECT; computed only `0x4bd87d45de5b34fff5a2ee59946b3314342fbb7a2a1bf87dea9579830d1bab9e`; not_checked.
+
+### verification-gas-s42-4-67201
+
+- public: EXPECTED_REJECT; computed only `0xcdd20f6c0921b0b10ea9702a29bdd7bc60f281502d69f1c8f321c9a3dbdf98f2`; not_checked.
+- alt: EXPECTED_REJECT; computed only `0x80e7331c3213421cdba422eb1fb81d022146d80ea726e3b9b994a6b0f8b3c030`; not_checked.
+
+### verification-gas-s42-5-67190
+
+- public: EXPECTED_ACCEPT; returned `0xdc9dca105fe84c358f864c0228199bf9eaf42e77cb2f2c756ba27dc150aeaaf1`; included_success, block `0x63a0b`.
+- alt: EXPECTED_ACCEPT; returned `0x3bf94779b7f08978ae5f3f5ef214b7ae2206c9e8f36de3a083c37eca142f141c`; included_success, block `0x63a10`.
+
+### verification-gas-s42-6-67199
+
+- public: EXPECTED_ACCEPT; returned `0xf7d68462aa3b7c0b21c2bb5af46ed5db52bec131440b33741e49abe766b461f7`; included_success, block `0x63a0c`.
+- alt: EXPECTED_ACCEPT; returned `0x6d70b783f4c2131fd7fc3ce7562f52bf67d29d96d2438dbc69dedbaffd59241e`; included_success, block `0x63a10`.
+
+## Historical live-integration checkpoint (preserved context)
 
 **November 6, 2026 (IST)** · branch `feat/framefuzz-mvp`.
 

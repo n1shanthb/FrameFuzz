@@ -19,6 +19,7 @@ A developer can run a real signed EIP-8141 admission test, compare expected and 
 6. Improve the existing dashboard using saved evidence; run tests and CLI/dashboard smoke checks.
 
 ## Fixed decisions
+- Mutation task scope: generate deterministic unsigned models and environment/setup variants, then compile through the proven adapter. Preserve `evidence/live/2026-11-06/` unchanged; new campaign evidence belongs under `evidence/mutations/`. Confidence is explicit and provenance-limited. No automatic remote shrinking or large public campaigns; at most seven selected variants per live invocation.
 - Node.js 20+, dependency-light implementation; no giant frontend rewrite.
 - Independent signed transactions and safe state for each public/alternative comparison.
 - Expected policy differences are not automatically vulnerabilities.

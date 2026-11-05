@@ -2,7 +2,27 @@
 
 FrameFuzz builds independently signed frame transactions, compares canonical and alternative admission rules, tracks execution separately, and exports reproducible evidence.
 
-**LIVE integration verified November 6, 2026:** all three sponsored admission scenarios and three gas-boundary variants matched on the forshtat throwaway devnet, chain **1337**. Twelve admission submissions; seven successful included transactions. **37 automated tests pass.** No USDC reimbursement or Uniswap swap is claimed.
+**Deterministic mutation engine verified November 6, 2026:** automatically generated seven gas variants from seed 42, independently signed for both paths: **14/14 live decisions matched**, eight included successfully, six expected cap rejections. **58 automated tests pass**, including all original 37 tests. Historical six-scenario live evidence remains unchanged. No USDC reimbursement or Uniswap swap is claimed.
+
+## Generate and run mutations
+
+```powershell
+# Fully offline: unsigned models, rule expectations, coverage and replay descriptors
+node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --preview
+node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --preview
+# Explicitly authorized controlled batch on the configured chain-1337 devnet
+node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --submit --allow-chain 1337
+```
+
+Seed 42 generates payer limits 67198, 67202, 67200, 67210, 67201, 67190, 67199 in that order. Expectations are calculated from sender gas + payer gas + signature cost. Low validation budgets are treated separately from cap violations. The storage suite derives basic/no-read, unstaked/read and staked/read variants from one setup specification, reusing the real sponsor/state checks.
+
+Definitions include a base template, semantic operation, rule model, constraints, seed/count and target paths. The same seed regenerates the same semantic sequence; fresh accounts/signatures remain intentionally independent. Larger offline sweeps sample additional seeded offsets. At most seven selected variants can be submitted in one live invocation. Rule confidence is VERIFIED, INFERRED or UNKNOWN; inferred/unknown deviations cannot become claimed protocol findings.
+
+The existing dashboard now has suite/seed/count, an offline preview button, generated parameter rows and per-rule/per-path coverage. Its submit button requires the server's explicit `--submit` authorization and matching chain configuration. Start read-only to inspect saved results. New campaign evidence and replay exports are in [evidence/mutations/2026-11-06](evidence/mutations/2026-11-06/); see [docs/MUTATIONS.md](docs/MUTATIONS.md) for definitions, oracle behavior and bounded opt-in shrinking.
+
+```powershell
+node bin/framefuzz.mjs mutate --replay evidence/mutations/2026-11-06/2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.replay.json --variant 0 --preview
+```
 
 ## Open the real evidence dashboard
 
@@ -13,11 +33,11 @@ Set-Location E:\ethglobalmumbai
 npm ci
 npm test
 # Restore committed evidence into the ignored local dashboard library:
-Copy-Item evidence/live/2026-11-06/*LIVE_RPC_SUBMISSION-3a838bca.json runs/
+Copy-Item evidence/mutations/2026-11-06/*LIVE_RPC_SUBMISSION-947a7e01.json runs/
 node bin/framefuzz.mjs serve --cases examples/live/basic.mjs --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --port 4177
 ```
 
-Open [the dashboard](http://127.0.0.1:4177). Select the six-case LIVE run, inspect public/alternative outcomes and receipts, and download JSON, Markdown or replay. This command is read-only: it cannot submit transactions. `npm start` also displays saved evidence but does not configure a network status check. MOCK and SYNTHETIC runs retain separate labels.
+Open [the dashboard](http://127.0.0.1:4177). Select the seven-variant generated LIVE run, inspect public/alternative outcomes, coverage and receipts, and download JSON, Markdown or replay. The historical six-case report can also be copied from `evidence/live/2026-11-06/`. This command is read-only: it cannot submit transactions. `npm start` also displays saved evidence but does not configure a network status check. MOCK, PREVIEW and SYNTHETIC runs retain separate labels.
 
 Full receipts, replay inputs, deployment record, and real sidecar admission checks are committed in [evidence/live/2026-11-06](evidence/live/2026-11-06/). [BUILD_STATUS.md](BUILD_STATUS.md) records complete hashes and exact executed commands.
 
@@ -63,6 +83,6 @@ Only authorized local/devnet chains; mainnet is blocked. No high-volume gateway 
 
 ## Repository and IDE handoff
 
-`src/adapters/` holds codec/live/setup integration; `src/runner.mjs`, `rpc.mjs`, `verdict.mjs`, `refresh.mjs`, and `reports.mjs` handle execution/evidence. `examples/live/` contains working fixtures; `test/` contains 37 tests; `web/` is the existing dashboard, unchanged during live integration. `scripts/collect-live-evidence.mjs` collects existing reports and read-only admission checks. `vendor/` holds provenance/artifacts; `evidence/live/` holds committed real results.
+`src/mutations/` holds the deterministic generator, transparent oracle and campaign compiler; `rules/` holds versioned evidenced models. `src/adapters/` holds the proven codec/live/setup integration. `src/runner.mjs`, `rpc.mjs`, `verdict.mjs`, `refresh.mjs`, and `reports.mjs` handle execution/evidence. `test/` contains 58 tests; `web/` is the existing dashboard with minimal engine controls. `evidence/live/` preserves the original six cases; `evidence/mutations/` preserves the new automatic campaign. `vendor/` retains original artifact/source provenance.
 
 Read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](CURRENT_STATUS.md) and [UP_NEXT.md](UP_NEXT.md) when changing IDEs. Cursor's always-applied rule loads the same handoff. Use coherent, frequent conventional commits.

@@ -1,28 +1,31 @@
 # Up next
 
-Read `AGENTS.md`, `AUTHORITY.md`, `CURRENT_STATUS.md`, `BUILD_STATUS.md`, `docs/ADAPTER.md`, and `vendor/README.md`. Remain on `feat/framefuzz-mvp`; inspect Git and preserve user edits.
+Read `AGENTS.md`, `AUTHORITY.md`, `CURRENT_STATUS.md`, `BUILD_STATUS.md`, `docs/MUTATIONS.md` and `docs/ADAPTER.md`. Stay on `feat/framefuzz-mvp`; preserve user edits and all historical evidence.
 
-## Completed
-The missing ZIPs have been supplied and integrated. Real basic sponsorship, fresh unstaked pool rejection, existing staked pool acceptance, and all six live gas-boundary submissions passed. Seven frame transactions were included successfully. LIVE evidence is committed, the existing dashboard displays it, and 37 tests pass. Do not restart the old missing-artifact search.
+## Completed — do not redo
+Deterministic gas and storage/stake generators, transparent confidence-aware oracle, adapter compilation, CLI/replay/coverage, bounded opt-in shrink utility, minimal console controls and tests are implemented. The NEW seed42/count7 gas campaign executed fourteen independently signed live submissions: all matched, eight included successfully and six rejected above the cap. Three storage states were generated and previewed/tested locally. All 58 tests and the six-case mock demonstration pass. The old six-case evidence remains unchanged.
 
-## Immediate next step
-Obtain the deployed sidecar's exact build commit from the operator. The node exposes v4.1.1 but an empty commit field. Keep the reviewed source pin separate from the live execution-client pin and runtime admission checks; do not relabel partial provenance as an attested deployment match.
+## Saved demonstration (no broadcasts)
+```powershell
+node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --preview
+node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --preview
+node bin/framefuzz.mjs mutate --replay evidence/mutations/2026-11-06/2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.replay.json --variant 0 --preview
+```
+Port4177 is already serving the read-only console. Select the generated LIVE seven-case report to inspect actual results/coverage, or Preview mutations for unsigned expectations. PREVIEW/UNKNOWN must never be displayed as successful live execution. Evidence manifest: `evidence/mutations/2026-11-06/manifest.json`.
 
-## Prepare the demonstration without new broadcasts
+To restore the saved LIVE run on another checkout:
 ```powershell
 npm ci
 npm test
-Copy-Item evidence/live/2026-11-06/*LIVE_RPC_SUBMISSION-3a838bca.json runs/
+Copy-Item evidence/mutations/2026-11-06/*LIVE_RPC_SUBMISSION-947a7e01.json runs/
 node bin/framefuzz.mjs serve --cases examples/live/basic.mjs --rpc https://altmempool.forshtat.com/rpc --allow-chain 1337 --port 4177
 ```
-Port 4177 is already serving the user-facing read-only dashboard in this session; do not start a duplicate listener. The six-case aggregate shows A/B/C and the boundary trio together. Explain that intended public rejection/alternative acceptance is a PASS. Export JSON, Markdown and replay; inspect raw payer/frame receipts and rule provenance.
 
-## If another live run is requested
-- Use the individual `examples/live/*.mjs` case files and README commands. Every path gets a fresh independently signed sender. Never rebroadcast saved raw bytes blindly.
-- Verify authorized chain1337, sponsor code hashes/funding, Uniswap code, and current stake. A devnet reset may require redeployment/config updates.
-- Deployment helper uses the original artifact and a devnet-only funding key from `FRAMEFUZZ_DEPLOYER_KEY`; it never fetches a genesis key. Keep all credentials out of commits.
-- B must remain unstaked. C uses the existing staked fixture; no restaking is necessary. Do not stake B and silently invalidate later unstaked runs.
-- Use `refresh` for read-only receipt updates. Preserve original responses and derived reports separately.
+## Remaining follow-up
+- Obtain the live sidecar's exact build commit from its operator if possible. It exposes v4.1.1 but an empty commit; preserve that limitation.
+- Only expand mutation dimensions or minimum-validation-gas inference with new grounded fixture evidence and tests, under a new rule/generator version as needed. Do not edit historical evidence to make an oracle pass.
+- If a genuine unexpected result appears, use the saved descriptor and an explicit bounded monotonic shrink predicate; no automatic high-volume probing.
+- If another live campaign is requested, use explicit `--submit --allow-chain 1337`, at most seven selected variants, and the existing adapter. Recheck sponsor code/funding/stake. Keep B unstaked. Avoid unnecessary redeployments or repeated campaigns.
+- Keep keys/ZIPs/raw extraction ignored. Do not force-push; push only when authorized. Keep conventional commits and checkpoint files current.
 
-## Handoff and scope
-Update checkpoint documents and commit coherent changes with one-line conventional messages. Keep ZIPs/raw key-bearing files ignored. No UI redesign, Arkiv, new sponsors or USDC/swap claims. Push only when authorized to the verified remote. Node20.12+ compatibility is declared; only Node22.13.0 has been executed here.
+No Arkiv, Uniswap swap settlement, Chainlink or additional sponsor integrations are in scope. No discrepancy was found in the automatic campaign.

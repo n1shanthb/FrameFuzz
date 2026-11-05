@@ -34,3 +34,7 @@ Optional `evidence` is allowlisted to hash, payer, payer/sender balances, verifi
 Use the individual `examples/live/*.mjs` fixtures for the verified snapshot. The default LIVE plugin factory also accepts `FRAMEFUZZ_LIVE_CONFIG` for custom configurations. Endpoint authorization and chain1337 are mandatory; tests use dependency injection to verify behavior without contacting live infrastructure. Sponsor contracts need no new setup for each path when existing state already matches the scenario.
 
 Source/artifact imports are now present under `vendor/`. Exact execution-client commit and runtime rule checks are verified; the sidecar's commit field is blank, so its reviewed source pin is explicitly marked as a partial deployment provenance match. See `BUILD_STATUS.md` and `UP_NEXT.md`.
+
+## Generated mutation campaigns
+
+`src/mutations/campaign.mjs` compiles generated unsigned model/setup pairs into lazy `prepare` calls on this same adapter. Every path calls `build` independently. A preview never instantiates/invokes the plugin. Storage mutations select checked basic/unstaked/staked fixtures; setup is a verified environment requirement, not arbitrary signed-byte manipulation or automatic restaking. Rule oracle confidence/coverage/descriptors are layered on the runner's saved results, preserving the original receipt state. See `docs/MUTATIONS.md`.
