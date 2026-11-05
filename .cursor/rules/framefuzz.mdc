@@ -1,0 +1,10 @@
+---
+description: FrameFuzz project authority, session recovery, and commit workflow
+alwaysApply: true
+---
+
+Read and follow repository-root `AGENTS.md` for every task.
+Before editing, read `AUTHORITY.md`, `CURRENT_STATUS.md`, `UP_NEXT.md`, and `docs/BUILD_BRIEF.md`.
+Use the working tree and Git history to verify those documents; never assume a pending task is already implemented.
+Update checkpoint documents after meaningful work and before switching IDEs.
+Commit verified coherent changes frequently with short single-line conventional subjects.
