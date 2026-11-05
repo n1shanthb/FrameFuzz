@@ -1,0 +1,42 @@
+{
+  "version": "forshtat-1337-observed-2026-11-06.v1",
+  "chainId": 1337,
+  "provenance": {
+    "confidence": "VERIFIED",
+    "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+    "evidence": [
+      {
+        "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+        "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+      }
+    ],
+    "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+    "sidecarVersion": "v4.1.1",
+    "deployedSidecarCommit": null,
+    "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+    "fixtureCodeHashes": {
+      "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+      "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+      "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+    }
+  },
+  "gas": {
+    "maxTotal": 100000,
+    "senderExecution": 30000,
+    "signatureCost": 2800,
+    "observedPayerUsed": 7093,
+    "knownSufficientPayer": 50000
+  },
+  "storage": {
+    "public": {
+      "unstaked": false,
+      "staked": false,
+      "rejection": "StorageReadNonSender"
+    },
+    "alt": {
+      "unstaked": false,
+      "staked": true,
+      "rejection": "unstaked payer accessed"
+    }
+  }
+}

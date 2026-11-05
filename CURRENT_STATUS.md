@@ -25,3 +25,6 @@ Execution client commit `9aa3645d795945c64400f41a70aace0edfa7f383` verified live
 
 ## Resume
 Core live definition of done is met for this devnet snapshot. Next: confirm the sidecar build commit with its operator and prepare the saved-evidence demo; see `UP_NEXT.md`. Devnet resets/funding depletion can invalidate fixtures. Do not repeat broadcasts just to demonstrate saved results. Full commands, hashes and receipt blocks are in `BUILD_STATUS.md`. Commits are local; no push in this session.
+
+## Mutation-engine checkpoint
+Added deterministic unsigned-model generation, versioned observed-rule oracle, evidence digest binding, per-path setup compilation through the existing LIVE adapter, offline preview, coverage, reproduction descriptors and bounded opt-in shrinking. Fifteen new engine tests pass; historical evidence is untouched. CLI/export/dashboard wiring is in progress; the new automatic sweep has not yet been broadcast. Next: complete integration tests, then execute at most seven gas variants on both paths.
