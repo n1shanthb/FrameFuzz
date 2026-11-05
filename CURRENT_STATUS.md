@@ -33,3 +33,7 @@ Checkpoint: **November 6, 2026 (IST)**. Workspace: `E:\ethglobalmumbai`. Branch:
 
 ## Active work / resume
 This checkpoint prepares continuity and verifies the starter; it does not claim the seven-phase build is complete. No background build or devnet job is running. Resume using `UP_NEXT.md`; first repair/verify GitHub authentication if the user has completed sign-in, then implement the adapter contract. Preserve any newly discovered user edits.
+
+## Adapter checkpoint
+On branch feat/framefuzz-mvp: added the plugin adapter contract and isolated account/nonce/signing lifecycle with allowlisted metadata. Adapter unit tests: 4 passed. No real signer imported. GitHub authentication was verified in the preceding session; origin is https://github.com/n1shanthb/ethglobalmumbai.git. Next: integrate path-specific runner preflight and expanded verdicts.
+
