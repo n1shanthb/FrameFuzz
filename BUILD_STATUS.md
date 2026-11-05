@@ -2,6 +2,31 @@
 
 Verified **November 6, 2026 (IST)** on branch `feat/framefuzz-mvp`.
 
+## Live integration attempt — November 6, 2026
+
+Stage 1 is blocked: the supplied Cursor PoC could not be located. Inspected the working tree, both locally tracked branch trees, current remote branch names, attachment filenames, and targeted filename searches across E:, D:, F: and the user profile (excluding dependencies, caches and system folders). Some protected folders were inaccessible. Connected GitHub file searches for `fast_gate_rerun.ts` and `PAYMASTER_FEASIBILITY` returned no results; that is not proof that private/unindexed/cloud workspaces lack them.
+
+The additional `D:\downloadds\framefuzz-starter.zip` has the same SHA-256 as the workspace ZIP: `CB331F3001B2D7DB6D685FAE856B0AC6B3406A04E431536ED72C3EFC16F92D39`. Its file listing contains only the original starter and synthetic evidence. It has no working signer or paymaster PoC. No environment-variable names matching FRAMEFUZZ, EIP-8141, PAYMASTER or DEVNET were configured in the execution environment; credential values were not printed.
+
+Commands executed in the repository during this attempt:
+```powershell
+git status --short
+git branch --show-current
+git log -6 --oneline
+git branch -a
+git ls-tree -r --name-only origin/main
+git ls-tree -r --name-only origin/feat/framefuzz-mvp
+git ls-remote --heads origin
+Get-FileHash 'E:\ethglobalmumbai\framefuzz-starter.zip','D:\downloadds\framefuzz-starter.zip' -Algorithm SHA256
+tar -tf 'D:\downloadds\framefuzz-starter.zip'
+npm test
+```
+`npm test` was rerun with local loopback enabled: **30 passed, 0 failed**. Remote heads contain only `main` and `feat/framefuzz-mvp`, pointing to the starter/handoff and previously built scaffold respectively; no PoC branch was found. The working tree was clean before this documentation update.
+
+Missing inputs remain precisely: `fast_gate_rerun.ts`, `PAYMASTER_FEASIBILITY.md`, the actual frame encoder/signer and dependencies, account/paymaster contracts and ABIs, deployment/funding/stake setup code, authorized chain/public/alternative endpoint configuration, genuine StateView/pool identifiers, full prior receipts and deployed sidecar source/version/verification-gas rule provenance. The user was asked for the local folder or repository/branch containing them. No speculative signer was implemented and no transaction was broadcast.
+
+Attempt outcomes: LIVE adapter **NO**; basic sponsorship **UNVERIFIED**; unstaked pool rejection **UNVERIFIED**; staked pool acceptance **UNVERIFIED**; live boundary submissions **0**; dashboard displaying real evidence **NO**; tests **30 passed**. The running dashboard still displays explicitly labeled saved MOCK evidence. No complete real transaction hash or receipt is available to record. Stages 2–5 depend on the missing Stage 1 inputs.
+
 ## Implemented
 - Signer adapter contract with serialized isolated sender/nonce lifecycle, setup hooks, fresh build/sign hooks and replay metadata.
 - Separate public/alternative RPC paths; chain preflight before setup, mainnet block, duplicate payload/nonce guards.

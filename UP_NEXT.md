@@ -12,6 +12,8 @@ Read `AGENTS.md`, `AUTHORITY.md`, `CURRENT_STATUS.md`, `BUILD_STATUS.md`, and `d
 - 30 automated tests passed on Node 22.13.0; no external dependencies.
 
 ## 1. Obtain the external experiment artifacts
+**Latest attempt:** targeted local drive/profile/attachment filename searches, tracked branch trees, remote branch names and connected GitHub file search did not locate the PoC. The downloaded ZIP matches the starter byte-for-byte. The user has been asked for its local folder or repository/branch. This is the immediate blocking input; do not repeat the same broad search or substitute invented signer code. Once a location arrives, inspect that snapshot and continue Stage 2 below. Full test rerun still passes 30/30; no live tests have executed.
+
 The following were not present in the supplied workspace/archive:
 - `PAYMASTER_FEASIBILITY.md` with complete evidence and deployment configuration.
 - `poc/scripts/fast_gate_rerun.ts`.
