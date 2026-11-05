@@ -37,3 +37,6 @@ This checkpoint prepares continuity and verifies the starter; it does not claim 
 ## Adapter checkpoint
 On branch feat/framefuzz-mvp: added the plugin adapter contract and isolated account/nonce/signing lifecycle with allowlisted metadata. Adapter unit tests: 4 passed. No real signer imported. GitHub authentication was verified in the preceding session; origin is https://github.com/n1shanthb/ethglobalmumbai.git. Next: integrate path-specific runner preflight and expanded verdicts.
 
+
+## Comparison checkpoint
+20 tests pass. Implemented per-path endpoint preflight, duplicate payload/nonce guards, explicit admission verdict taxonomy, precondition error classification, independent receipts, and replay metadata. Next: provenance-driven paymaster and gas-boundary scenarios plus CLI wiring.

@@ -41,17 +41,17 @@ export async function rpc(url, method, params = [], { timeoutMs = 15000, fetchIm
   return data.result;
 }
 
-export async function getChainId(url, options = {}) {
-  const result = await rpc(url, 'eth_chainId', [], options);
+export async function getChainId(url, { rpcFn = rpc, ...options } = {}) {
+  const result = await rpcFn(url, 'eth_chainId', [], options);
   if (typeof result !== 'string' || !/^0x[0-9a-f]+$/i.test(result)) throw new Error('Invalid chain ID from RPC');
   return Number.parseInt(result, 16);
 }
 
-export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutMs = 12000 } = {}) {
+export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutMs = 12000, rpcFn = rpc } = {}) {
   const deadline = Date.now() + waitMs;
   do {
     try {
-      const receipt = await rpc(url, 'eth_getTransactionReceipt', [hash], { timeoutMs });
+      const receipt = await rpcFn(url, 'eth_getTransactionReceipt', [hash], { timeoutMs });
       if (receipt) return {
         state: receipt.status === '0x1' ? 'included_success' : receipt.status === '0x0' ? 'included_reverted' : 'included_unknown',
         blockNumber: receipt.blockNumber ?? null,
