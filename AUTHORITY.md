@@ -36,3 +36,6 @@ The handoff is file-backed, so it does not depend on access to this chat. Open t
 
 ## Commit and GitHub policy
 The user requests frequent coherent commits, including single-file commits when appropriate, with one-line conventional messages. Do not wait until the whole MVP is complete. Keep unrelated work separate and check staged changes for secrets. GitHub authentication is personal and cannot be repaired by guessing credentials. The configured remote is `https://github.com/n1shanthb/ethglobalmumbai.git`; pushing still requires authorization. Preserve the active `feat/framefuzz-mvp` branch.
+
+## Offline investigator authorization update
+The user explicitly requested a real bounded investigator using OpenRouter and selected Sonnet. This authorizes bounded provider requests for owned-fixture offline investigation, including three perspective proposals and an observation-conditioned follow-up, plus additive Swarm Lab controls. It does not authorize blockchain deployment/submission, registry writes or push. Existing live gates remain in force. See docs/INVESTIGATOR.md; real provider demonstration is pending credential visibility, not implied by implementation.

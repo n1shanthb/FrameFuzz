@@ -11,6 +11,7 @@ import { assertTestChain, redact } from './safety.mjs';
 import {runMutationCampaign,MAX_LIVE_MUTATIONS,DEFAULT_CONFIG,DEFAULT_RULES} from './mutations/campaign.mjs';
 import {MUTATION_SUITES} from './mutations/generator.mjs';
 import {createRegistry} from './arkiv/registry.mjs';
+import {createSwarmRoutes} from './swarm/http.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
 const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
@@ -36,15 +37,17 @@ async function serveStatic(res, pathname) {
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
-  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun }) {
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env }) {
   let running = false;
   const configured = !offlineDemo&&Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
   const enabled = Boolean(submit && configured && Number.isSafeInteger(allowChainId) && allowChainId > 1);
+  const swarmRoutes=createSwarmRoutes({resultDir,offlineDemo,getRunning:()=>running,setRunning:value=>{running=value;},runner:swarmRunner,env:swarmEnvironment});
   return http.createServer(async (req, res) => {
     const route = new URL(req.url, 'http://localhost');
     try {
       const requestHost = new URL(`http://${req.headers.host ?? ''}`).hostname;
       if (!['127.0.0.1', 'localhost', '[::1]'].includes(requestHost)) return json(res, 403, { error: 'Localhost Host header required' });
+      if(await swarmRoutes(req,res,route))return;
       if (req.method === 'GET' && route.pathname === '/') {
         const html = await readFile(path.join(WEB_ROOT, 'index.html'));
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });

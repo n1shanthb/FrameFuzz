@@ -28,4 +28,9 @@ export const api = {
     body: JSON.stringify({ key }),
   }).then(parse),
   exportUrl: (id, format) => `/api/export?id=${encodeURIComponent(id)}&format=${format}`,
+  swarmConfig: () => fetch('/api/swarm/config').then(parse),
+  swarmRecent: () => fetch('/api/swarm/recent').then(parse),
+  swarmRun: (body) => fetch('/api/swarm/run',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(parse),
+  swarmTranscript: (id) => fetch(`/api/swarm/transcript?id=${encodeURIComponent(id)}`).then(parse),
+  swarmExport: (id,format='json') => `/api/swarm/export?id=${encodeURIComponent(id)}&format=${format}`,
 };

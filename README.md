@@ -147,3 +147,9 @@ Only authorized local/devnet chains; mainnet is blocked. No high-volume gateway 
 `src/mutations/` holds the deterministic generator, transparent oracle and campaign compiler; `rules/` holds versioned evidenced models. `src/adapters/` holds the proven codec/live/setup integration. `src/runner.mjs`, `rpc.mjs`, `verdict.mjs`, `refresh.mjs`, and `reports.mjs` handle execution/evidence. `test/` contains 58 tests; `web/` is the existing dashboard with minimal engine controls. `evidence/live/` preserves the original six cases; `evidence/mutations/` preserves the new automatic campaign. `vendor/` retains original artifact/source provenance.
 
 Read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](CURRENT_STATUS.md) and [UP_NEXT.md](UP_NEXT.md) when changing IDEs. Cursor's always-applied rule loads the same handoff. Use coherent, frequent conventional commits.
+
+## OpenRouter offline investigator
+
+Opt in with `FRAMEFUZZ_SWARM=on`, configure `OPENROUTER_API_KEY` in the launching terminal and select `OPENROUTER_MODEL=anthropic/claude-sonnet-4.6` (or `sonnet`). Run `node bin/framefuzz.mjs swarm investigate --mode openrouter`, or open Swarm Lab on the normal dashboard and authorize bounded model requests. No blockchain writes are available. [Investigator setup, budgets, exports and replay](docs/INVESTIGATOR.md).
+
+The implemented loop uses one model with three specialist perspectives and an observation-conditioned follow-up. Results are OFFLINE_SIGNATURE_BINDING, not EVM execution or a verified vulnerability. Current committed demonstration is explicitly scripted (zero real LLM calls); real Sonnet demonstration awaits a key visible in the execution environment. [Current live compatibility blockers](docs/LIVE_COMPATIBILITY_AUDIT.md).

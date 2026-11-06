@@ -19,6 +19,12 @@ const state = {
   slideIndex: 0,
   evidenceFilter: 'all',
   swarmEnabled: false,
+  swarmConfig: null,
+  swarmReport: null,
+  swarmTimeline: [],
+  swarmJob: null,
+  swarmBusy: false,
+  swarmRecent: [],
 };
 
 const $ = (id) => document.getElementById(id);
@@ -46,6 +52,7 @@ function navigate(page) {
     el.classList.toggle('active', el.dataset.page === page);
   });
   render();
+  if(page==='swarm')refreshSwarm();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -497,12 +504,13 @@ function renderArkiv() {
 
 function renderSwarm() {
   const s = BRIEFING.swarm;
+  const config=state.swarmConfig,report=state.swarmReport;
   const milestones = [
     { title: 'Contracts compiled', status: s.contractsCompiled ? 'Verified' : 'Not done', ok: s.contractsCompiled, note: 'Owned unsafe/safe validators + ActionRecorder via solc 0.8.28' },
     { title: 'Offline signature binding', status: s.offlineSignatureBinding ? 'Verified' : 'Not done', ok: s.offlineSignatureBinding, note: 'Frame Mutation Engine v2 calldata mutation + ECDSA checks' },
     { title: 'Devnet preflight', status: s.readOnlyPreflight ? 'Read-only verified' : 'Not done', ok: s.readOnlyPreflight, note: 'Allowlisted RPC reads only · no broadcast' },
     { title: 'Live authorization experiment', status: 'Not executed', ok: false, note: 'Requires separate live approval and funded deployer' },
-    { title: 'LLM-driven investigation', status: 'Not implemented / not configured', ok: false, note: 'No real LLM calls at latest checkpoint' },
+    { title: 'LLM-driven investigation', status: report?.realLLMCalls ? `${report.realLLMCalls} real calls recorded` : 'Implemented · no real calls shown', ok: Boolean(report?.realLLMCalls), note: 'OpenRouter · one model · three specialist perspectives' },
     { title: 'Independent live reproduction', status: 'Not executed', ok: false, note: 'No unauthorized action proven' },
   ];
   return `
@@ -513,9 +521,29 @@ function renderSwarm() {
           <h2>Swarm Lab</h2>
           <p class="summary">LLM Hypothesis → Semantic Mutation → Deterministic Executor → Independent Verifier → Regression Case</p>
         </div>
-        <span class="pill idle">FRAMEFUZZ_SWARM defaults off</span>
+        <span class="pill idle">${config?.enabled?'OFFLINE INVESTIGATOR ENABLED':'FRAMEFUZZ_SWARM defaults off'}</span>
       </div>
-      <div class="alert">This page is honest about implementation status. No fabricated agents are actively investigating. Offline cryptographic validation exists; live EIP-8141 validator execution is not yet verified.</div>
+      <div class="alert"><strong>OFFLINE_SIGNATURE_BINDING</strong> · The runtime executes model-selected calldata and independently replays it. This is not EVM execution, admission or a verified onchain weakness. <strong>LIVE NOT VERIFIED.</strong></div>
+      <div class="row" style="margin:16px 0">
+        <span class="pill">${config?.enabled?'Swarm enabled':'FRAMEFUZZ_SWARM defaults off'}</span>
+        <span class="pill">${esc(config?.provider?.model??'OpenRouter configuration not loaded')}</span>
+        <span class="pill">${config?.provider?.configured?'Provider credentials configured':'No OpenRouter key visible'}</span>
+        <button class="btn btn-secondary" id="swarmRefresh">Check configuration</button>
+      </div>
+      <p class="summary">${config?.offlineDemo?'Saved-demo mode prohibits external model calls. Simulation and local cryptographic execution remain available.':'A real investigation allows up to six explicitly authorized OpenRouter requests within a $0.25 client budget. Calls are reserved before sending; reported usage is checked afterwards. Blockchain writes are never available.'}</p>
+      <label class="row" style="margin:14px 0"><input type="checkbox" id="swarmConsent" ${state.swarmBusy?'disabled':''}> I authorize the bounded OpenRouter model calls; no blockchain transactions.</label>
+      <div class="row">
+        <button class="btn btn-primary" id="swarmAI" ${!config?.canCallProvider||state.swarmBusy?'disabled':''}>Start offline AI investigation</button>
+        <button class="btn btn-secondary" id="swarmSimulate" ${!config?.enabled||state.swarmBusy?'disabled':''}>Run labeled deterministic fallback</button>
+        ${state.swarmJob&&report?`<a class="btn btn-secondary" href="${api.swarmExport(state.swarmJob)}" download>Export investigation</a><a class="btn btn-secondary" href="${api.swarmExport(state.swarmJob,'regression')}" download>Export replay descriptors</a>`:''}
+      </div>
+      <div class="row" style="margin:12px 0"><select id="swarmSaved" aria-label="Saved investigations">${state.swarmRecent.map(r=>`<option value="${esc(r.id)}">${esc(r.generatedAt)} · ${esc(r.source)} · ${esc(r.status)}</option>`).join('')||'<option value="">No saved investigation</option>'}</select><button class="btn btn-secondary" id="swarmLoad" ${state.swarmBusy?'disabled':''}>Load saved investigation</button></div>
+      <p class="muted" style="margin:12px 0">${state.swarmBusy?'Running: only actual completed events appear below.':esc(report?.source??'Not run. No placeholder investigation results.')}</p>
+      ${report?`<div class="card" style="margin:16px 0"><strong>${esc(report.status)}</strong><p>${esc(report.executionClass)} · ${report.uniqueExperiments} unique experiments · ${report.realLLMCalls} real model calls · ${report.independentlyReproduced?'INDEPENDENTLY REPRODUCED':'Replay not complete'} · LIVE NOT VERIFIED</p>${report.error?`<p>${esc(report.error)}</p>`:''}
+        ${report.experiments.map(e=>`<div style="margin-top:12px"><span class="tag info">${report.realLLMCalls?'AI HYPOTHESIS':'SIMULATED / TEST PROPOSAL'}</span> record(${e.hypothesis.operation},${e.hypothesis.parameter}) · ${esc(e.hypothesis.change)}<p>${esc(e.hypothesis.assumption)}</p><p>Prediction: unsafe ${esc(e.hypothesis.unsafePrediction)}, safe ${esc(e.hypothesis.safePrediction)}. Falsifier: ${esc(e.hypothesis.falsifier)}</p><span class="tag ok">OBSERVED OFFLINE</span><p>Owner recovered after tampering: unsafe ${e.execution.observation.results.unsafe.tamperedOwnerRecovered}; safe ${e.execution.observation.results.safe.tamperedOwnerRecovered}. ${esc(e.execution.observation.verdict)}; no finding.</p><p>${e.independentReplay?.equivalentSemanticProperties?'INDEPENDENTLY REPRODUCED in fresh process '+e.independentReplay.pid:'Independent replay not verified'}</p></div>`).join('')}
+        ${report.revisions.map(r=>`<p><strong>${report.realLLMCalls?'Model revision':'Scripted / test revision'}:</strong> ${esc(r.hypothesis.revision)} → record(${r.hypothesis.operation},${r.hypothesis.parameter})</p>`).join('')}</div>`:''}
+      <div class="milestone-grid" style="margin:16px 0">${[['validation','Validation Researcher'],['state','State Researcher'],['differential','Differential Researcher']].map(([id,name])=>{const p=report?.proposals?.find(p=>p.perspective===id)??state.swarmTimeline.find(e=>e.perspective===id);return `<div class="milestone"><h4>${name}</h4>${p?`<span class="tag info">${esc(p.origin)}</span><p>${esc(p.hypothesis.assumption)}</p><p>record(${p.hypothesis.operation},${p.hypothesis.parameter}) · ${esc(p.hypothesis.change)}</p>`:'<p>No proposal recorded yet.</p>'}</div>`;}).join('')}</div>
+      ${state.swarmTimeline.length?`<div class="card" style="margin:16px 0"><h3>Evidence-driven investigation timeline</h3>${state.swarmTimeline.map(e=>`<details style="margin:10px 0"><summary>${esc(e.stage)} · ${esc(e.phase??e.scope??(e.mutationValues?JSON.stringify(e.mutationValues):''))}</summary><pre class="details">${esc(JSON.stringify(e,null,2))}</pre></details>`).join('')}</div>`:''}
       <div class="pipeline" style="margin:18px 0">
         <div class="node">LLM Hypothesis</div><div class="arrow">→</div>
         <div class="node">Semantic Mutation</div><div class="arrow">→</div>
@@ -842,6 +870,10 @@ function bindPage() {
   $('runButton')?.addEventListener('click', runLiveSuite);
   $('queryCommunity')?.addEventListener('click', queryCommunity);
   $('importCommunity')?.addEventListener('click', importCommunity);
+  $('swarmRefresh')?.addEventListener('click',refreshSwarm);
+  $('swarmAI')?.addEventListener('click',()=>startSwarm('openrouter'));
+  $('swarmSimulate')?.addEventListener('click',()=>startSwarm('simulated'));
+  $('swarmLoad')?.addEventListener('click',async()=>{const id=$('swarmSaved')?.value;if(!id)return;try{const job=await api.swarmTranscript(id);state.swarmJob=id;state.swarmReport=job.report;state.swarmTimeline=job.timeline;render();}catch(e){setStatus(e.message);}});
   document.querySelectorAll('[data-community-key]').forEach((el) => {
     el.addEventListener('click', () => selectCommunity(el.dataset.communityKey));
   });
@@ -856,6 +888,23 @@ function bindPage() {
     notes.value = sessionStorage.getItem('framefuzz-ef-notes') || '';
     notes.addEventListener('input', () => sessionStorage.setItem('framefuzz-ef-notes', notes.value));
   }
+}
+
+async function refreshSwarm(){try{state.swarmConfig=await api.swarmConfig();if(state.swarmConfig.enabled)state.swarmRecent=(await api.swarmRecent()).investigations;if(state.page==='swarm')render();}catch(e){setStatus(`Swarm configuration: ${e.message}`);}}
+async function startSwarm(mode){
+  const authorized=mode==='simulated'||$('swarmConsent')?.checked;
+  if(!authorized){setStatus('Explicit OpenRouter request authorization is required.');return;}
+  state.swarmBusy=true;state.swarmReport=null;state.swarmTimeline=[];render();
+  try{
+    const job=await api.swarmRun({mode,authorizeProvider:mode==='openrouter'&&authorized});state.swarmJob=job.id;
+    for(let i=0;i<600;i++){
+      const current=await api.swarmTranscript(job.id);state.swarmTimeline=current.timeline??[];state.swarmReport=current.report;
+      if(state.page==='swarm')render();
+      if(current.state!=='RUNNING'){setStatus(current.report?.status??current.state);return;}
+      await new Promise(resolve=>setTimeout(resolve,1000));
+    }
+    throw new Error('Investigation polling timed out; check saved transcript before starting another run');
+  }catch(e){setStatus(`Investigation failed: ${e.message}`);}finally{state.swarmBusy=false;if(state.page==='swarm')render();}
 }
 
 async function runMutations(submit) {

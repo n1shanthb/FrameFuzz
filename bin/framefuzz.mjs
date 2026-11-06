@@ -22,6 +22,9 @@ Usage:
   node bin/framefuzz.mjs help
   node bin/framefuzz.mjs swarm offline --output runs/swarm-offline.json  # requires FRAMEFUZZ_SWARM=on
   node bin/framefuzz.mjs swarm preflight --output runs/swarm-preflight.json  # read-only
+  node bin/framefuzz.mjs swarm investigate --mode openrouter --output runs/investigation.json  # explicit model calls; no blockchain writes
+  node bin/framefuzz.mjs swarm investigate --mode simulated --output runs/simulated.json
+  node bin/framefuzz.mjs swarm replay regression.json --output runs/independent-replay.json
   node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177  # offline, wallet-free historical evidence
   node bin/framefuzz.mjs arkiv publish REPORT.json --case-index 0 --expiration-blocks 302400 --submit --output RECEIPT.json
   node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS

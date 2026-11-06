@@ -1,5 +1,27 @@
 # Build status â€” Arkiv regression registry and mutation engine
 
+## OpenRouter investigator checkpoint — November 6, 2026
+
+Implemented opt-in bounded offline investigator, OpenRouter Sonnet (`anthropic/claude-sonnet-4.6`, alias `sonnet`), three perspective proposals, deterministic selection, actual ECDSA experiment, observation-conditioned follow-up, fresh-process regression replay, exports and additive Swarm Lab controls. Existing premium shell/Technical Briefing and historical LIVE evidence preserved. **92 tests pass / 0 fail** (83 baseline +9 investigator tests). Evidence guide digest check passes.
+
+Real OpenRouter calls: **0 / NOT DEMONSTRATED**. Process/user/machine key-presence checks remain false despite user reporting setup; pending question asks only where configured, never its value. Default mode and missing-key CLI fallback are explicitly `SWARM_SIMULATED — NO REAL LLM`. Mock transport tests are not real model calls. No onchain finding or new live execution is claimed.
+
+Executed scripted record(1,73) and record(19,10): unsafe owner recovered true, safe false; both independent-process replays match. Dashboard port4180 completed a fallback investigation, then server restarted and browser loaded its saved report from disk with exports/timeline. Screenshot and CLI evidence: `evidence/investigator/2026-11-06/`. Saved-demo port4177 preserved. Current server command: `$env:FRAMEFUZZ_SWARM='on'; node bin/framefuzz.mjs serve --results runs --port 4180`.
+
+Fresh eight-request read-only preflight: head0x98 age3s, sidecar boot ID ef0fccbaca0c428c, sponsor code empty/balance0. This is consistent with devnet restart/reset, not operator confirmation. Prior disk-full evidence is historical; current write health/hash compatibility unverified. No deployer/owner context. No blockchain writes, Arkiv writes, automatic retries or pushes performed. See docs/INVESTIGATOR.md and docs/LIVE_COMPATIBILITY_AUDIT.md. Earlier milestones below are historical checkpoints, superseded where stated.
+
+### Exact verification commands and observations
+
+- `npm test`: initial restricted-network attempt could not complete loopback-based cases; reran with loopback permitted: **92 passed, 0 failed**, duration19.393s. All original83 retained;9 mocked/local investigator tests. No paid API calls or chain broadcasts in tests.
+- `node --check web/js/app.js` and `node --check src/swarm/http.mjs`: passed.
+- `node scripts/live-evidence.mjs --check`: Committed evidence guide matches.
+- `$env:FRAMEFUZZ_SWARM='on'; node bin/framefuzz.mjs swarm investigate --mode simulated --output evidence/investigator/2026-11-06/simulated-investigation.json`: COMPLETE_OFFLINE_INVESTIGATION,2 unique experiments,0 real LLM calls, both independently reproduced, findingfalse.
+- `node bin/framefuzz.mjs swarm replay evidence/investigator/2026-11-06/simulated-investigation.json --variant 0 --output evidence/investigator/2026-11-06/replay-0.json`: passed in fresh child.
+- `node bin/framefuzz.mjs swarm replay evidence/investigator/2026-11-06/simulated-investigation.json --variant 1 --output evidence/investigator/2026-11-06/replay-1.json`: passed in fresh child.
+- `node bin/framefuzz.mjs swarm preflight --output evidence/investigator/2026-11-06/compatibility-preflight.json` with flagon:8 read-only requests, exact capture timestamp06:44:10.667Z. No transactions/receipts exist for this task because broadcasts0.
+- Browser: normal `serve --results runs --port 4180`, featureon; fallback job955cb687-a454-414a-a441-4bfa02834bb9 completed, server restarted, then saved report loaded. Two actual local observations, scripted revision and fresh-process IDs visible. `swarm-lab.png` records it. Real AI button disabled because credentials unavailable. Screenshot is proof of fallback UI, not real LLM activity.
+- `git diff 21f278a -- evidence/live evidence/mutations evidence/arkiv evidence/integrated evidence/submission contracts web/js/briefing.js web/css/app.css web/index.html`: empty; old evidence and shell assets preserved.
+
 ## Premium dashboard UI rebuild â€” November 6, 2026 IST
 Replaced the dark single-file console with a modular light-theme SPA under `web/` (`css/app.css`, `js/{api,utils,briefing,app}.js`) while keeping every existing API route, safety gate, CLI command and evidence path. `src/server.mjs` now serves allowlisted static assets (`css/`, `js/`, `assets/`, `favicon.svg`) with path-traversal rejection. Pages: Overview, Test Campaigns, Evidence Explorer, Arkiv Registry, Swarm Lab (honest offline status), Technical Briefing (12 EF slides) with Present-to-EF focus mode (arrows + Escape).
 

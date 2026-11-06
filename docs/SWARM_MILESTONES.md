@@ -65,3 +65,6 @@ Real LLM calls: NO. Live EIP-8141 executions: NO. Unauthorized action proven: NO
 After this milestone, stop for a separate human decision. The later live experiment, independent execution reproduction, real three-pass LLM investigator, timeline UI and Arkiv writes are not completed or implicitly authorized. Human feedback form, recording and ETHGlobal submission remain pending as documented in SUBMISSION_CHECKLIST.md.
 
 **Current stop gate:** securely configured funded devnet-only deployer and owned owner address; healthy/mining authorized chain1337 service with operator confirmation of write recovery; canonical-hash compatibility verification; then explicit approval of the resolved deployment/submission manifest. Public repository visibility is still unverified. No key should be pasted into chat. Arkiv writes require their own later approval. Do not resume broadcasts merely because HTTP reads answer.
+
+## Investigator implementation update
+The later user request explicitly authorizes the bounded OpenRouter offline investigator and additive Swarm Lab controls. Implemented code supersedes the earlier deferred-LLM plan; it does not complete the live milestones. See docs/INVESTIGATOR.md and docs/LIVE_COMPATIBILITY_AUDIT.md. Historical milestone evidence remains unchanged.

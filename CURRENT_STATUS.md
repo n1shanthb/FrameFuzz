@@ -1,5 +1,15 @@
 # Current status
 
+## OpenRouter investigator checkpoint — November 6, 2026
+
+Implemented opt-in bounded offline investigator, OpenRouter Sonnet (`anthropic/claude-sonnet-4.6`, alias `sonnet`), three perspective proposals, deterministic selection, actual ECDSA experiment, observation-conditioned follow-up, fresh-process regression replay, exports and additive Swarm Lab controls. Existing premium shell/Technical Briefing and historical LIVE evidence preserved. **92 tests pass / 0 fail** (83 baseline +9 investigator tests). Evidence guide digest check passes.
+
+Real OpenRouter calls: **0 / NOT DEMONSTRATED**. Process/user/machine key-presence checks remain false despite user reporting setup; pending question asks only where configured, never its value. Default mode and missing-key CLI fallback are explicitly `SWARM_SIMULATED — NO REAL LLM`. Mock transport tests are not real model calls. No onchain finding or new live execution is claimed.
+
+Executed scripted record(1,73) and record(19,10): unsafe owner recovered true, safe false; both independent-process replays match. Dashboard port4180 completed a fallback investigation, then server restarted and browser loaded its saved report from disk with exports/timeline. Screenshot and CLI evidence: `evidence/investigator/2026-11-06/`. Saved-demo port4177 preserved. Current server command: `$env:FRAMEFUZZ_SWARM='on'; node bin/framefuzz.mjs serve --results runs --port 4180`.
+
+Fresh eight-request read-only preflight: head0x98 age3s, sidecar boot ID ef0fccbaca0c428c, sponsor code empty/balance0. This is consistent with devnet restart/reset, not operator confirmation. Prior disk-full evidence is historical; current write health/hash compatibility unverified. No deployer/owner context. No blockchain writes, Arkiv writes, automatic retries or pushes performed. See docs/INVESTIGATOR.md and docs/LIVE_COMPATIBILITY_AUDIT.md. Earlier milestones below are historical checkpoints, superseded where stated.
+
 ## Premium UI rebuild â€” November 6, 2026 IST
 Dashboard rebuilt as a production-style light SPA. Local URL: `http://127.0.0.1:4177` via `node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177`. All 83 tests pass; evidence digest check passes. Technical Briefing + Present mode ready for EF walkthrough. Swarm remains offline/unproven; no live submissions performed during the UI task. Next human actions still follow `docs/SUBMISSION_CHECKLIST.md` (video, push, Uniswap feedback, ETHGlobal entry).
 

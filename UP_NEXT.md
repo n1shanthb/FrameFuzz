@@ -1,5 +1,11 @@
 # Up next
 
+## First unfinished task � real Sonnet demonstration
+
+Expose OPENROUTER_API_KEY to the terminal/process launching FrameFuzz (key location clarification pending; never put its value in chat/files/commits). Model already selects anthropic/claude-sonnet-4.6. Then run `$env:FRAMEFUZZ_SWARM='on'; node bin/framefuzz.mjs swarm investigate --mode openrouter --output runs/sonnet-investigation.json`. Inspect sanitized provider usage/generation IDs, three proposals, actual observations, revision, two distinct executed model-selected values and fresh-process replays. Save a new evidence capture without overwriting scripted or historical results. No real model calls demonstrated yet; do not label this task finished.
+
+92 tests pass. Offline implementation is complete and browser verified, including saved investigation after server restart. Use normal port4180 Swarm Lab with explicit model consent; existing port4177 saved-demo stays external-free. Setup and limits: docs/INVESTIGATOR.md. Default swarm remains off. No blockchain writes or pushes authorized by this checkpoint. Current live sponsor is empty/unfunded, current hash compatibility/write health unverified; see docs/LIVE_COMPATIBILITY_AUDIT.md. Resolve those gates and obtain separate live authorization before any future chain experiment.
+
 ## Dashboard UI complete — use for EF / judge demos
 Premium light SPA is live on the existing saved-demo server. Prefer `node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177` then open Technical Briefing → Present to EF. Do not treat Swarm Lab as a live investigator. Historical evidence and APIs unchanged.
 
