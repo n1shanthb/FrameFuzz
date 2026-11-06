@@ -1,6 +1,6 @@
 # Build status — admission Step 2B
 
-Added a read-only exact EF funding resolver, script and mocked safety tests. It separates Arkiv's 10 tGLM from EF's zero sender balance, rejects the 1-ETH fixed faucet for the requested exact amount, and resolves the official shared genesis source, nonce, balance, 207,391 gas estimate and bounded fee cap. Refreshed source debit ceiling: 0.00050075 test ETH; no key accepted, signing or send method exists in the resolver. Focused tests: 2/2 pass. Full suite: 222/222 pass. Details: `docs/ADMISSION_STEP2B.md`.
+The authorized EF funding transfer succeeded: `0x9b16d59eb1bca1070d7fcf7ce01b75c11caa519ad6b84423a93586d5bcf873ef`, block 9083, status success, 204,600 gas at 3,456,010 wei/gas. The existing sender now has exactly 0.0005 test ETH. The unchanged self-relay candidate regenerated with hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` and reports `FUNDED`; no admission request was sent. Focused tests: 5/5 pass. Full suite: 181/181 pass outside the Windows localhost sandbox. Details: `docs/ADMISSION_STEP2B.md`.
 
 # Previous build status — admission Step 2A
 

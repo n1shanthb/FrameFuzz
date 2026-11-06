@@ -1,9 +1,9 @@
 # Up next — after admission Step 2B
 
-1. STOP before the EF funding transfer. The refreshed exact packet digest is `854693298e68e6c1241895127a2921eb6bdd25c5bfd7d8bf374e9a7964750806`; no write approval was granted.
-2. Configure the official throwaway chain-1337 shared key locally as `FRAMEFUZZ_EF_FUNDING_KEY` without placing it in chat, source or artifacts. Derive and require source `0x5544596212F91984C986A919C8026DF0576816f9`.
-3. Before any signing, rerun `node scripts/step2b-prepare-funding.mjs`. If shared pending nonce differs from 146 or gas exceeds 0.003 gwei, produce a new packet/digest and stop for review. Preserve the 0.0005 value and 0.00050075 total-debit ceiling.
-4. After separately approved funding and a status-1 receipt, revalidate the unchanged candidate hash and sender state. Then prepare a separate public-versus-alternative submission authorization; do not combine it with funding implicitly.
+1. Funding is complete and confirmed by transaction `0x9b16d59eb1bca1070d7fcf7ce01b75c11caa519ad6b84423a93586d5bcf873ef`; do not repeat it.
+2. Preserve the regenerated candidate hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` and its exact public/alternative request payloads.
+3. STOP before admission submission. Obtain separate authorization for public `eth_sendRawTransaction` and alternative `eth_sendFrameTransaction`; the funding authorization did not cover them.
+4. At execution time, refresh sender balance/code/nonce and both endpoint identities. Record each raw response independently; classify duplicate/known, nonce consumption and inclusion races without inventing a policy verdict.
 
 # Previous up next — after admission Step 2A
 

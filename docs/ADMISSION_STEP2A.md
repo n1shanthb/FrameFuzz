@@ -22,7 +22,7 @@ Public request: `POST https://altmempool.forshtat.com/rpc`, `eth_sendRawTransact
 
 ## D–E. Wallet, transactions and maximum spend
 
-Read-only chain 1337 checks: public `skandha/v4.1.1-`, alternative `ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383`. Sender code `0x`, balance **0 wei**, pending nonce **0**. `eth_gasPrice` reported 8 wei; the signed candidate caps at **2 gwei**. `FRAMEFUZZ_DEPLOYER_KEY` is absent, but no deployer is needed. Step 2B resolved the official shared genesis account as the exact funding source; see `docs/ADMISSION_STEP2B.md`. The separate Arkiv chain-7794095 balance cannot fund this chain.
+Read-only chain 1337 revalidation after the authorized funding receipt: public `skandha/v4.1.1-`, alternative `ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383`. Sender code `0x`, balance **500000000000000 wei**, pending nonce **0**. `eth_gasPrice` reported 3,456,010 wei; the signed candidate caps at **2 gwei**. Funding status is `FUNDED`, and the regenerated transaction hash remains unchanged. The separate Arkiv chain-7794095 balance did not participate.
 
 | Planned write | From → to | Value | Maximum fee exposure |
 | --- | --- | ---: | ---: |
@@ -34,7 +34,7 @@ Read-only chain 1337 checks: public `skandha/v4.1.1-`, alternative `ethrex/v23.0
 
 ## F–G. Blockers and final one-shot authorization packet
 
-Current blockers: sender has zero balance; `FRAMEFUZZ_EF_FUNDING_KEY` is not configured locally; execution and sidecar runtime admission of this exact candidate are unverified. The official shared source address, balance and nonce are resolved, but its nonce is race-prone. Funding changes network state, so recheck chain ID, sender code/balance/pending nonce, funding source balance/nonce, client versions and head immediately before writing. If sender nonce or code changed, discard and re-sign the frame candidate.
+Current blocker: public and alternative admission submissions require a new, separate authorization. Execution and sidecar runtime admission of this exact candidate remain unverified. Immediately before submission, recheck chain ID, sender code/balance/pending nonce, client versions and head. If sender nonce or code changed, discard and re-sign the frame candidate.
 
 The funding transfer is now a separate Step 2B approval packet. It must complete and be verified before the two admission submissions are proposed for execution.
 
