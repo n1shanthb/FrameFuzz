@@ -54,7 +54,7 @@ export function createRegistry({publicClient,walletClient=null,readerAddress=pro
       if(owner)query=query.ownedBy(owner);
       const result=await query.fetch();
       const cases=[],rejected=[];for(const row of result.entities){try{cases.push(decode(row,block));}catch(error){rejected.push({key:row.$key??null,reason:error.message});}}
-      return {source:'ARKIV_RABDI',chainId:ARKIV_CHAIN_ID,rpc:ARKIV_RPC,reader,currentBlock:String(block),query:query.toString(),cases,rejected};
+      return {source:'ARKIV_RABDI',chainId:ARKIV_CHAIN_ID,rpc:ARKIV_RPC,reader,currentBlock:String(block),query:query.toString(),discovery:{limit,returned:result.entities.length,possiblyTruncated:result.entities.length===limit,paginationSupported:false,notice:'Bounded discovery only; refine suite, rule, implementation or owner filters. No completeness guarantee.'},cases,rejected};
     },
     async fetch(entityKey){
       if(!HASH.test(entityKey))throw new Error('Arkiv entity key must be 32-byte hex');

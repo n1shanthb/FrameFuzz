@@ -43,6 +43,14 @@ test('query crosses owners, quarantines invalid metadata, and excludes expired e
   m.row.contentDigest.value='tampered';assert.equal((await r.query()).rejected.length,1);m.row.contentDigest.value=make().contentDigest;
   m.setBlock(2000n);assert.equal((await r.query()).cases.length,0);await assert.rejects(r.fetch(key),/expired/);await assert.rejects(r.importPreview(key),/expired/);
 });
+
+test('bounded registry discovery explicitly reports possible truncation',async()=>{
+  const m=mocked(),r=createRegistry({publicClient:m.publicClient,readerAddress:null});
+  const result=await r.query({limit:1});
+  assert.equal(result.discovery.possiblyTruncated,true);
+  assert.equal(result.discovery.paginationSupported,false);
+  assert.equal((await r.query({limit:20})).discovery.possiblyTruncated,false);
+});
 test('creator binding, network isolation and filter validation are enforced',async()=>{
   const m=mocked(),r=createRegistry({publicClient:m.publicClient,readerAddress:null});m.row.$creator=other;await assert.rejects(r.fetch(key),/creator/);m.setChain(1337);await assert.rejects(r.query(),/7794095/);m.setChain(7794095);await assert.rejects(r.query({suite:"x' OR 1"}),/Invalid/);await assert.rejects(r.query({limit:100}),/limit/);await assert.rejects(r.fetch('bad'),/32-byte/);
 });

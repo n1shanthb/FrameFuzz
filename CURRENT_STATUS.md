@@ -1,6 +1,6 @@
 ## Completion sprint — Pass 1 in progress
 
-Core safety/evidence checkpoint committed. CLI now consumes unsigned semantic projection directly, with a real subprocess regression that removes all historical paths/legacy reproduction and regenerates the same variant with zero submissions. Five mutation integration tests pass. Full suite119 passed before this last refinement; final rerun pending. Remaining registry, Swarm portability/provenance and UI changes are staged in later coherent checkpoints. No chain writes, paid calls or push.
+119 tests pass,0fail,0skip after final code refinements. Semantic-only replay works through the CLI. Registry discovery now exposes bounded1–20 results, possible truncation and filter-refinement guidance; no pagination/completeness/adoption claim. Existing real Arkiv evidence untouched and SDK transport tests remain offline. Remaining checkpoints: saved Sonnet/provenance, UI and verification documentation. No writes, paid calls or push.
 
 ## Completion sprint — Pass 0
 
