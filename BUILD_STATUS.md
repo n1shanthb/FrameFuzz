@@ -38,3 +38,6 @@ Implemented genuine Scout/Mutation/Validator/Executor/Critic calls, deterministi
 
 ## BYOC compiler checkpoint — 2026-11-06
 Baseline164/164 tests verified; isolated compiler3 tests pass. Fixed source filename, disabled import resolution, supervised process/worker with heap/RSS/time/output limits; actual ABI/AST/source ranges and selection diagnostics for unseen contracts. Active work continues on stateful agents, HTTP/UI, tool negotiation and full regression checks. No paid/chain/Arkiv calls or push.
+
+## BYOC multi-agent integration — 2026-11-06
+175/175 tests pass; `npm run verify` 86 modules. Independent Scout/Mutation/Validator/Critic sessions with private history, structured agent messages, deterministic veto over LLM decisions, local ABI/AST tools, export/replay/cancel, Contract Playground UI. Real browser paste→analyze→mock negotiation→XFAIL ABI repair→replay→source invalidation verified on mock transport (`scripts/byoc-browser-demo.mjs --mock-transport`). Paid calls:0. Chain writes:0. Generic contracts: compiler/ABI/AST only — not EVM or admission. Verdict: BYOC_MULTI_AGENT_PARTIAL.

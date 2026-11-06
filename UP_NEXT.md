@@ -1,5 +1,7 @@
-# Up next — active BYOC implementation
+# Up next — stop after BYOC integration milestone
 
-Finish the latest user BYOC brief. Compiler intake checkpoint is complete; next: wire independent AgentSession state/history/tool permissions and real communication into bounded source-grounded orchestration, add routes and existing-design Playground UI, then mocked negotiation/replay/cancellation and browser tests. Stop after this integration milestone.
+BYOC multi-agent integration milestone is complete for the authorized brief. Do not start paid OpenRouter investigations, chain writes, deployments, Arkiv publication, Git push or external forms without a new explicit user instruction.
 
-No paid calls, chain writes, deployments, funding, Arkiv publication, Git push or forms. Keep original evidence/fixtures. Current uncommitted src/playground sessions/tools/coordinator and provider cancellation changes belong to the same active task; preserve them when switching IDEs. Open E:\ethglobalmumbai on feat/framefuzz-mvp.
+Optional later (not authorized now): user-consented paid Sonnet run on a pasted contract; bounded local EVM executor for require/revert observation; EIP-8141-context admission classification when sender/payer/frame/signature/chain state is supplied.
+
+Open `E:\ethglobalmumbai` on `feat/framefuzz-mvp`. Preserve historical evidence digests.

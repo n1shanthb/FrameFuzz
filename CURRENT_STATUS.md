@@ -1,7 +1,9 @@
-# Current status — BYOC intake checkpoint, active implementation
+# Current status — BYOC multi-agent integration complete
 
-Baseline6972104 verified clean; npm test164/164 pass (runs/byoc-baseline-tests.txt). New isolated compiler intake passes3 targeted tests (runs/byoc-compiler-tests.txt): unseen source -> actual solc0.8.28 ABI/AST, changed identity, imports/version errors, multi-contract selection, bounded/cancelled compilation.
+HEAD before this handoff: `deecafe` (bounded solc intake). Integration work adds independent Scout/Mutation/Validator/Critic sessions, deterministic tool registry, playground HTTP API, Contract Playground UI, mocked negotiation tests and real-browser paste→report smoke.
 
-Compiler uses fixed UserInput.sol, disabled imports, supervised child/worker,64KiB source,8s deadline,192MiB V8 heap,384MiB sampled RSS and bounded output. AST facts are syntax only, not EVM/security/admission proof. Compiler files and tests are checkpointed; agent sessions/tools/coordinator are active uncommitted work.
+Verified: `npm test` 175/175 pass; `npm run verify` 86 modules, briefing facts match; offline saved-demo still on 4177; BYOC mock transport on 4196 via `node scripts/byoc-browser-demo.mjs --mock-transport`. Real browser journey: paste FreshQuotaJournal → Analyze READY (source `bd0022e4…`, analysis `8664d652…`) → consent → mock investigation COMPLETE → invalid `nonexistent(uint8)` kept as SKIPPED_INVALID → repaired `addQuota(uint8)` mutatedArgs `["256"]` XFAIL ABI domain → local replay `paidCalls:0` → source edit invalidated prior analysis/report. Zero genuine OpenRouter calls, zero chain writes, zero Arkiv publication, no push.
 
-Remaining authorized task: finish genuine independently stateful BYOC agents, tool permissions/communication/repair, endpoints, premium Playground UI, mocked negotiation tests, real-browser journey, exports and full verification. No new paid calls are authorized by this brief; prior provider authorization is not reused. No chain writes/Arkiv/push. Historical evidence/fixtures stay unchanged. Previous completed checkpoint: docs/AGENTIC_FEASIBILITY.md.
+Limitation (honest): generic pasted contracts get compiler/ABI/AST + local encoder evidence only — not EVM execution or public/alternative admission. Fixture validators retain offline crypto paths separately. Mocked negotiation proves agent feedback loops; it is not a paid multi-agent demonstration.
+
+Verdict: BYOC_MULTI_AGENT_PARTIAL (source-grounded investigation + real agent feedback → tools; no generic EVM/admission executor).
