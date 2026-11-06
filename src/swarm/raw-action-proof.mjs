@@ -24,6 +24,7 @@ export function ingestRawActionProof(bundle){
     const tx=decodeTx(profile,bundle.raw),txHash=keccak256(bundle.raw);
     requireThat(Number(tx.chainId)===1337&&equal(tx.sender,e.sender)&&String(tx.nonceSeq)===e.nonceSeq,'Transaction chain/sender/nonce mismatch');
     requireThat(tx.nonceKeys.length===1&&BigInt(tx.nonceKeys[0])===0n,'Unsupported keyed nonce layout');
+    requireThat(tx.signatures.length===1&&tx.signatures[0].scheme===0&&tx.signatures[0].signer==='0x'&&tx.signatures[0].msg==='0x'&&/^0x[\da-f]{130}$/i.test(tx.signatures[0].signature),'Unsupported witness structure; no authorization inferred');
     requireThat(tx.frames.length===3&&tx.frames.every(f=>BigInt(f.value)===0n),'Unsupported frame count/value');
     const [verify,payment,action]=tx.frames;
     requireThat(verify.mode===1&&verify.flags===2&&(verify.target===null||equal(verify.target,e.sender))&&payment.mode===1&&payment.flags===1&&equal(payment.target,e.payer)&&action.mode===2&&action.flags===0&&equal(action.target,e.action),'Wrong frame target/mode/payer');

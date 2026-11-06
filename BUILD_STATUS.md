@@ -1,6 +1,10 @@
 ## Completion sprint — Pass 2 in progress
 
-Sponsored preparation checkpoint committed. Raw proof candidate now has an offline file-based CLI (swarm verify-action);22 focused plan/proof tests pass. Outer/frame/log/state checks reject18 adversarial contexts but never set actionEvidenceVerified or authorizationVerified true. No owned-validator live receipt exists; E7 remains PARTIAL. Active: Registry lifecycle, evidence-derived briefing, responsive/browser checks and delivery docs. No chain writes, paid calls or push.
+147 tests pass,0failed/skipped (baseline119 retained). Offline preparation/proof refinements reject owner/payer/CREATE collisions, normalize equivalent input ordering and require the supported witness structure. Raw proof CLI is exercised with an explicitly constructed fixture, never LIVE proof.
+
+Real read-only Arkiv query succeeded at block293040. Premium browser Query→Select→Verify→Import PREVIEW→Inspect succeeded with zero submissions; selection rechecked expiry at block293088. Offline snapshots, all four filters, request cancellation,375/768/1440px containment and presentation focus/Tab/Escape were verified. Anonymous GitHub repository/branch requests returned404; remote branch remains b15df81. No writes/model calls/push.
+
+Remaining: commit tested dashboard/facts changes, align canonical handoff and exact Pass2 report, run final verification, then STOP. G6 delivery and E7 live proof remain incomplete.
 
 ## Completion sprint — Pass 0 + Pass 1 complete
 

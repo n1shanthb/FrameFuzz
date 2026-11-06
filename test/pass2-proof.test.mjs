@@ -5,6 +5,9 @@ import {encodeAbiParameters,encodeFunctionData,encodeEventTopics,keccak256} from
 import {unsignedValidatorTransaction} from '../src/adapters/sender-validator.mjs';
 import {profile} from '../src/adapters/workshop-codec.mjs';
 import {ingestRawActionProof,RECORDER_ABI,RAW_ACTION_PROFILE} from '../src/swarm/raw-action-proof.mjs';
+import {mkdtemp,readFile,writeFile,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';import path from 'node:path';
+import {execFile} from 'node:child_process';import {promisify} from 'node:util';
 process.env.FRAMEFUZZ_SWARM='on';
 const address=n=>'0x'+String(n).repeat(40),hash=n=>'0x'+String(n).repeat(64);
 function constructed(){
@@ -21,8 +24,14 @@ function constructed(){
     receipt:{transactionHash:txHash,from:sender,payer,status:'0x1',blockHash:hash(4),blockNumber:'0x2',logs:[structuredClone(log)],frameReceipts:[{status:'0x1',logs:[]},{status:'0x1',logs:[]},{status:'0x1',logs:[log]}]},
     state:{before:observation(hash(5),[0n,0n,0n]),after:observation(hash(4),[2n,10n,1n])}};
 }
-test('constructed raw receipt/event/state consistency never becomes live action proof',()=>{
+test('constructed raw receipt/event/state consistency never becomes live action proof',async()=>{
   const r=ingestRawActionProof(constructed());assert.equal(r.rawActionConsistent,true,r.reason);assert.equal(r.actionEvidenceVerified,false);assert.equal(r.authorizationVerified,false);assert.equal(r.liveVerified,false);assert.equal(r.finding,false);
+  const directory=await mkdtemp(path.join(tmpdir(),'framefuzz-raw-proof-'));
+  try{
+    const input=path.join(directory,'constructed.json'),output=path.join(directory,'checked.json');await writeFile(input,JSON.stringify(constructed()));
+    await promisify(execFile)(process.execPath,['bin/framefuzz.mjs','swarm','verify-action','--bundle',input,'--output',output]);
+    const cli=JSON.parse(await readFile(output));assert.equal(cli.rawActionConsistent,true);assert.equal(cli.actionEvidenceVerified,false);assert.equal(cli.finding,false);
+  }finally{await rm(directory,{recursive:true,force:true});}
 });
 const badCases={
   'forged emitter':b=>b.receipt.frameReceipts[2].logs[0].address=address(9),

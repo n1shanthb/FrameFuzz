@@ -8,6 +8,7 @@ const minimal={chainId:1337,profile:SPONSORED_PROFILE};
 const context={...minimal,deployer:'0x'+'1'.repeat(40),owner:'0x'+'2'.repeat(40),deploymentNonce:'7',payer:config.paymasters.basic};
 test('sponsored offline plan is deterministic, derives CREATE addresses and preserves actual mutation',async()=>{
   const a=await prepareSponsoredPlan({investigation,context}),b=await prepareSponsoredPlan({investigation,context});assert.deepEqual(a,b);
+  const reordered=Object.fromEntries(Object.entries(context).reverse());reordered.deploymentNonce=7;assert.deepEqual(await prepareSponsoredPlan({investigation,context:reordered}),a);
   assert.equal(a.preparationComplete,true);assert.equal(a.liveReady,false);assert.equal(a.signaturesGenerated,0);assert.equal(a.deployments.length,5);
   assert.equal(a.deployments[0].predictedAddress,getContractAddress({from:context.deployer,nonce:7n}));
   assert.deepEqual(a.deployments[1].constructorArguments,[context.owner,a.deployments[0].predictedAddress,context.payer]);
@@ -23,4 +24,6 @@ test('sponsored plan rejects contradictory inputs, wrong profile and write capab
   for(const patch of [{chainId:1},{profile:'self-funded-v1'},{payer:'0x'+'9'.repeat(40)},{deploymentNonce:'-1'},{owner:'0x'+'0'.repeat(40)},{privateKey:'never-accepted'}])await assert.rejects(prepareSponsoredPlan({investigation,context:{...context,...patch}}));
   await assert.rejects(prepareSponsoredPlan({investigation,context:{...minimal,deployer:context.deployer}}),/together/);
   await assert.rejects(prepareSponsoredPlan({investigation,context,submit:true}),/Unsupported/);
+  await assert.rejects(prepareSponsoredPlan({investigation,context:{...context,owner:context.payer}}),/alias/);
+  await assert.rejects(prepareSponsoredPlan({investigation,context:{...context,owner:getContractAddress({from:context.deployer,nonce:7n})}}),/collides/);
 });

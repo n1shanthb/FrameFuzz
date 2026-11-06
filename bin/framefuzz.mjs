@@ -21,6 +21,8 @@ Usage:
   node bin/framefuzz.mjs demo --results runs
   node bin/framefuzz.mjs help
   node bin/framefuzz.mjs swarm offline --output runs/swarm-offline.json  # requires FRAMEFUZZ_SWARM=on
+  node bin/framefuzz.mjs swarm sponsored-plan --investigation REPORT.json --context CONTEXT.json  # deterministic offline only
+  node bin/framefuzz.mjs swarm verify-action --bundle BUNDLE.json  # candidate raw consistency; never live proof
   node bin/framefuzz.mjs swarm preflight --output runs/swarm-preflight.json  # read-only
   node bin/framefuzz.mjs swarm readiness --investigation REPORT.json --preflight PREFLIGHT.json --head HEAD.json  # prepare only; no signing or writes
   node bin/framefuzz.mjs swarm self-funded-readiness --investigation REPORT.json --preflight PREFLIGHT.json --head HEAD.json  # isolated offline variant; no funding or writes

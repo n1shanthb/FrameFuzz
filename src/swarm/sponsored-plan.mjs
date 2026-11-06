@@ -14,8 +14,10 @@ export async function prepareSponsoredPlan({investigation,variant=1,context={},.
   for(const key of ['deployer','owner','payer'])if(context[key]!==undefined&&!address(context[key]))throw new Error('Invalid '+key);
   if(context.deploymentNonce!==undefined&&(!/^(0|[1-9]\d{0,15})$/.test(String(context.deploymentNonce))||BigInt(context.deploymentNonce)>BigInt(Number.MAX_SAFE_INTEGER)-5n))throw new Error('Invalid bounded deployment nonce');
   if((context.deployer!==undefined)!==(context.deploymentNonce!==undefined))throw new Error('Deployer and observed pending deployment nonce must be supplied together');
+  context=Object.fromEntries(['chainId','profile','deployer','owner','deploymentNonce','payer'].filter(k=>context[k]!==undefined).map(k=>[k,['deployer','owner','payer'].includes(k)?context[k].toLowerCase():k==='deploymentNonce'?String(context[k]):context[k]]));
   const config=await load('examples/live/devnet.json');
   if(context.payer&&context.payer.toLowerCase()!==config.paymasters.basic.toLowerCase())throw new Error('Payer differs from pinned sponsored candidate');
+  if(context.payer&&[context.deployer,context.owner].includes(context.payer))throw new Error('EOA deployer/owner cannot alias the pinned payer');
   const evidence=await prepareLiveProof({investigation,variant,preflight:await load('evidence/swarm/phase-3/preflight.json'),secondHead:await load('evidence/swarm/phase-3/head-second.json')});
   const compiled=await compileOwnedFixtures(),resolved=Boolean(context.deployer&&context.owner&&context.payer),missing=['deployer','deploymentNonce','owner','payer'].filter(k=>context[k]===undefined);
   const first=context.deployer?BigInt(context.deploymentNonce):null;
@@ -30,6 +32,7 @@ export async function prepareSponsoredPlan({investigation,variant=1,context={},.
   });
   const submissions=evidence.plan.submissions.map((s,i)=>({...s,sender:deployments[i+1].predictedAddress,payer:context.payer??null,action,nonceSeq:null,
     nonceDependency:'Observe sender account nonce after constructor/internal CREATEs; key0 is account nonce, never assume zero',freshSignatureRequired:true}));
+  if(deployments.some(d=>d.predictedAddress&&[context.payer,context.owner].includes(d.predictedAddress.toLowerCase())))throw new Error('Predicted owned deployment collides with owner/payer');
   const result={schema:'framefuzz.sponsored-preparation.v1',path:'SPONSORED_THREE_FRAME',chainId:1337,profile:SPONSORED_PROFILE,context,
     descriptorDigest:evidence.model.descriptorDigest,mutationValues:evidence.model.mutationValues,compiler:evidence.compiler,
     preparationComplete:resolved,missingInputs:missing,liveReady:false,broadcastCapability:false,signaturesGenerated:0,

@@ -31,7 +31,7 @@ export async function swarmCommand(options){
     const file=JSON.parse(await readFile(options._[1],'utf8')),index=Number(options.variant??0);if(!Number.isSafeInteger(index)||index<0||index>1)throw new Error('Replay variant must be0 or1');
     const descriptor=file.schema==='framefuzz.offline-regression.v1'&&index===0?file:file.descriptors?.[index]??file.experiments?.[index]?.execution?.descriptor;
     if(!descriptor)throw new Error('No offline regression descriptor found');report=await(await import('./replay.mjs')).independentlyReplay(descriptor);
-  }else throw new Error('Swarm supports offline, preflight, readiness, investigate or replay only; no live writes');
+  }else throw new Error('Swarm supports offline, preflight, readiness, sponsored-plan, verify-action, self-funded-readiness, investigate and replay; no live writes');
   const output=options.output??`runs/swarm-${action}.json`;
   await mkdir(path.dirname(output),{recursive:true});await writeFile(output,stringify(report)+'\n');
   const approvalManifest=action==='readiness'?{chainId:report.chainId,endpoints:report.endpoints,wallet:report.wallet,deploymentCount:report.plan.deploymentCount,deployments:report.plan.deployments.map(d=>({role:d.role,address:d.predictedAddress,creationBytecodeHash:d.creationBytecodeHash,initCodeHash:d.initCodeHash})),submissionCount:report.plan.submissionCount,totalFeeUpperBoundWei:report.plan.totalFeeUpperBoundWei,feeScope:report.plan.feeScope,checks:report.plan.evidenceRequired,compatibility:report.compatibility.runtimeCompatibility,technicallyReadyForApproval:report.technicallyReadyForApproval}:undefined;
