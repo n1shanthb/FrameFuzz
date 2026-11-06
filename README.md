@@ -10,7 +10,7 @@ FrameFuzz generates semantic transaction variations, signs and submits them to s
 
 ## Quickstart — no wallet or devnet required
 
-Experimental owned-validator work is isolated behind `FRAMEFUZZ_SWARM=on` and disabled by default. Only offline compilation/signature coverage and read-only preflight are implemented; no live unauthorized action, LLM investigation or contract-level execution is claimed. See [milestone evidence and stop gate](docs/SWARM_MILESTONES.md). The full automated suite now has83 passing tests, retaining the71-test submission baseline. Existing demo and v1 fixtures remain unchanged.
+Experimental owned-validator work is disabled by default behind `FRAMEFUZZ_SWARM=on`. Four real Sonnet calls drove two independently reproduced OFFLINE_SIGNATURE_BINDING experiments. No owned-validator EVM execution or vulnerability is claimed. The completion sprint preserves the 107-test baseline; see BUILD_STATUS.md for current verification.
 
 Requires Node20.12+; tested on22.13.0. From this repository:
 
@@ -32,7 +32,7 @@ Start here: [generated LIVE evidence matrix](docs/LIVE_EVIDENCE.md), [four-minut
 
 The generator and confidence-aware oracle are pure modules under `src/mutations/`; `src/adapters/` checks deployment/stake/nonce/funding state and reuses the proven frame codec. The runner separates admission from execution. `src/arkiv/` publishes sanitized portable descriptors, queries indexed metadata and verifies retrieved schema/digests/ownership/expiry. Community imports feed only constrained semantic data to the existing generator as PREVIEW; they cannot supply executable plugins, RPC configuration or stale signatures. The existing localhost dashboard exposes this workflow. Full reports remain offchain in Git; their digests and selected summaries accompany the onchain fixture.
 
-**Verified November 6, 2026:** seven generated gas variants produced **14/14 matching live decisions**, eight included successfully and six expected cap rejections. **71 automated tests pass**, retaining all previous tests. Historical Uniswap baseline cases show basic ACCEPT/ACCEPT, unstaked pool read REJECT/REJECT and staked pool read REJECT/ACCEPT with successful historical receipts. The new generated Uniswap campaign made six real submissions: four expected decisions, two sidecar disk failures, zero new confirmed inclusions and zero genuine rule discrepancies. Historical evidence is unchanged. No USDC reimbursement, swap settlement or mainnet EIP-8141 support is claimed.
+**Verified November 6, 2026:** seven generated gas variants produced **14/14 matching live decisions**, eight included successfully and six expected cap rejections. **71 automated tests passed at that historical checkpoint**, retaining all previous tests. Historical Uniswap baseline cases show basic ACCEPT/ACCEPT, unstaked pool read REJECT/REJECT and staked pool read REJECT/ACCEPT with successful historical receipts. The new generated Uniswap campaign made six real submissions: four expected decisions, two sidecar disk failures, zero new confirmed inclusions and zero genuine rule discrepancies. Historical evidence is unchanged. No USDC reimbursement, swap settlement or mainnet EIP-8141 support is claimed.
 
 ## Arkiv Community Cases — real testnet registry
 
@@ -152,8 +152,17 @@ Read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](C
 
 Opt in with `FRAMEFUZZ_SWARM=on`, configure `OPENROUTER_API_KEY` in the launching terminal and select `OPENROUTER_MODEL=anthropic/claude-sonnet-4.6` (or `sonnet`). Run `node bin/framefuzz.mjs swarm investigate --mode openrouter`, or open Swarm Lab on the normal dashboard and authorize bounded model requests. No blockchain writes are available. [Investigator setup, budgets, exports and replay](docs/INVESTIGATOR.md).
 
-The implemented loop uses one model with three specialist perspectives and an observation-conditioned follow-up. Results are OFFLINE_SIGNATURE_BINDING, not EVM execution or a verified vulnerability. The real Sonnet4.6 demonstration completed four validated model calls, two model-selected experiments and independent descriptor replays; 93 tests pass. Evidence: `evidence/investigator/2026-11-06/sonnet-retry-2.json`. This proves offline signature binding only. [Current live compatibility blockers](docs/LIVE_COMPATIBILITY_AUDIT.md).
+The implemented loop uses one model with three specialist perspectives and an observation-conditioned follow-up. Results are OFFLINE_SIGNATURE_BINDING, not EVM execution or a verified vulnerability. The real Sonnet4.6 demonstration completed four validated model calls, two model-selected experiments and independent descriptor replays; 93 tests passed at that historical checkpoint. Evidence: `evidence/investigator/2026-11-06/sonnet-retry-2.json`. This proves offline signature binding only. [Current live compatibility blockers](docs/LIVE_COMPATIBILITY_AUDIT.md).
 
 ### Isolated self-funded candidate
 
 `swarm self-funded-readiness` prepares a two-frame sender-as-payer variant using the actual Sonnet descriptor. It removes the separate PAYMENT sponsor from this candidate, but remains PLAUSIBLE_UNVERIFIED with no live execution.107tests pass. [Feasibility, funding caps and alternative devnet observations](docs/SELF_FUNDED_FEASIBILITY.md). Original sponsored flow remains intact.
+
+## Offline preview and saved investigation
+
+`npm run run:preview` generates seven unsigned variants without credentials or RPC.
+`node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4191` restores historical LIVE reports, the community PREVIEW and the genuine Sonnet transcript. Set `FRAMEFUZZ_SWARM=on` before launching to view the saved transcript; no API key is needed and provider requests are disabled in saved-demo.
+
+Execution is limited to explicitly selected chain 1337 or local 31337; Arkiv uses its separate Rabdi client. Standalone reserve deployment additionally requires `--submit --allow-chain 1337`; this sprint authorizes no deployment.
+
+Completion sprint verification: **119 passing tests**,57 syntax-checked modules. [Pass0/Pass1 dispositions and remaining limits](docs/COMPLETION_SPRINT.md).

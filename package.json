@@ -9,6 +9,7 @@
   },
   "scripts": {
     "test": "node --test",
+    "verify": "node scripts/verify-local.mjs",
     "start": "node ./bin/framefuzz.mjs serve --cases examples/cases --results runs --port 4177",
     "demo": "node ./bin/framefuzz.mjs demo --results runs",
     "demo:mock": "node ./bin/framefuzz.mjs mock-demo --results runs",

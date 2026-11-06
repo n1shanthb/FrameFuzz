@@ -1,6 +1,14 @@
-## Completion sprint — Pass 1 UI checkpoint
+## Completion sprint — Pass 0 + Pass 1 complete
 
-119 tests pass,0fail,0skip. Browser verified unsigned seed123 preview with preserved inputs and real coverage, keyboard row invocation, restored genuine Sonnet transcript without a key, presentation Next/Escape and retained checklist selection. Five added SPA behavior tests use DOM doubles, not a browser engine. Gateway response now means chain_verified with write health explicitly unverified; registry reads have a request deadline and bounded-result notice. No frontend redesign, chain writes, paid calls or push. Remaining: final build/docs checkpoint, then STOP before PARTIAL pass.
+Both broken workflows FIXED. Final `npm test`:119 passed,0failed,0skipped (all107 baseline retained); `npm run verify`:57 modules; `npm audit --package-lock-only --ignore-scripts --json`:0 known vulnerabilities; evidence guide check passes. Exact dispositions, supported scopes, commands and limitations: docs/COMPLETION_SPRINT.md.
+
+All24 originally limited items reviewed:5 PROMOTED_TO_FULL,10 IMPROVED_STILL_LIMITED,9 DEFERRED_EXTERNAL_OR_SCOPE. Totals across65 audit items: FULL27,LIMITED19,PARTIAL7,BROKEN0,BLOCKED3,MOCK1,DEAD WEIGHT1,NOT IMPLEMENTED7. Includes separately repaired A16/G3 and explicitly requested F5 coverage; no PARTIAL promotion.
+
+Fresh saved-demo at http://127.0.0.1:4191 uses runs/sprint-saved-demo, FRAMEFUZZ_SWARM=on, no API key. Browser verified unsigned preview/input retention/coverage, keyboard row action, genuine saved Sonnet load, presentation Next/Escape and checklist retention. Screenshot runs/sprint-saved-demo/browser-sonnet.png is local/ignored. Five automated SPA function tests use DOM doubles; no browser-engine suite added.
+
+Historical evidence/contracts/rules/vendor unchanged. New blockchain submissions/deployments/transfers/Arkiv writes/model calls/pushes:0. Runtime codec/owned EVM proof, sponsor viability, binary attestation, global billing quota, outside publisher adoption and arbitrary-fixture aggregate budgets remain unverified/limited.
+
+Next: STOP. Do not start the seven PARTIAL features until the next user instruction. Public delivery/video/forms remain pending; no push, funding or live execution authorization is implied. Review Git history for this sprint's coherent commits; report lists changed paths.
 
 ## Completion sprint — Pass 0
 
