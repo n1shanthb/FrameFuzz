@@ -1,31 +1,24 @@
-# Current status — Stage B PREPARE ONLY (approval gate)
+# Current status — Arkiv createEntity PUBLISHED (one-shot)
 
-Stage B prepare completed on `feat/framefuzz-mvp` without broadcast, funding, deploy, publish, paid LLM, push, or form submit. LIVE_READ_ONLY served at `http://127.0.0.1:4177` after stopping the conflicting saved-demo on that port. Probe status `READ_ONLY_READY`. Approval endpoint returns HTTP 409 with `approvalIssued:false` (no token).
+Explicit user approval of intent `be8bb848e49f63f3d14c3418e239d3b1eccd8b6360eb1c326ec192a5ddd40ff4` / max fee `0.001` tGLM was consumed once. Preflight passed; **one** Rabdi `createEntity` submitted; no retry; no EF / funding / LLM / push.
 
-## Readiness classifications (live reads 2026-11-06T18:16:09.690Z)
-- **Arkiv `ARKIV_PUBLISH`**: `BLOCKED_MISSING_KEY` (co-blocker `BLOCKED_SCHEMA` on current Stage A source report).
-  - Manifest SHA-256: `3814673fc75d47d8a2042247576ebb0e6d6ba890df740083e29a813f834e00de`
-  - Chain/RPC: 7794095 / `https://rpc.rabdi.db-chain.testnet.arkiv.network` (live chainId match; head block `301600`)
-  - Writer: `UNRESOLVED` — `ARKIV_PRIVATE_KEY` absent; nonce/balance unresolved
-  - Fee basis: historical createEntity gasUsed `314427` × gasPrice `1000000000` wei → est `314427000000000` wei; max cap `628854000000000` wei (~0.000629 test ETH)
-  - Fresh query `verification-gas`/`MAX_VERIFY_GAS`: 1 entity `0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1`
-  - Source `evidence/playground/2026-11-06/byoc-paid-report.json` is playground BYOC shape (no `framefuzz.mutation-reproduction.v1`); `buildRegressionCase` cannot finalize contentDigest even after a key is added without switching to a semantic mutation report (new digest)
-- **EF `EIP8141_UNISWAP_COMPARE`**: `BLOCKED_MISSING_KEY` and `BLOCKED_OTHER` (`PINNED_BASIC_PAYMASTER_CODE_EMPTY_OR_MISSING`).
-  - Manifest SHA-256: `f0fe91b05dc3ff4e33ab75521b5eb1a521bdc8167cd6fd503ff15ccab90f6756`
-  - Admission `https://altmempool.forshtat.com/rpc` chainId 1337; head `7071`→`7072` advancing; client `skandha/v4.1.1-`
-  - StateView/PoolManager code hashes MATCH pinned; poolId `0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648`; getSlot0 initialized=`false` (sqrtPrice 0)
-  - Basic/staked/unstaked paymasters: code empty, balance `0` — do not invent replacements without listing all new prerequisites
-  - `FRAMEFUZZ_DEPLOYER_KEY` absent; sender/nonce unresolved
-  - Max total testnet spend upper bound for 1 public + 1 alt path: `2000000000000000` wei (0.002 test ETH) excluding redeploy/stake/funding
-
-## LIVE_AUTHORIZED boundary (verified in code + tests)
-- Started only via explicit `--mode LIVE_AUTHORIZED` plus `--submit`, configured RPC, and `allowChainId` in `EXECUTION_CHAINS` (`1337`,`31337`). Credential presence never sets `writesEnabled`.
-- `/api/readiness/approve` is operation + exact digest specific, one-time, issues no token (409). Saved demo irrevocably non-network/non-write. `submitEnabled` false on LIVE_READ_ONLY. No global write bypass. 7/7 `test/live-readiness.test.mjs` pass.
+## Confirmed publication
+- **tx:** `0x007bd10f4d720a124c4dd0b44449f235b32f364a4b68e7657917f1717a307c00`
+- **receipt:** `success` at block `302519`
+- **entityKey:** `0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1`
+- **creator/owner:** `0x20370BE5BA867Ab4779ad0686963A55ADc0722b1`
+- **expiresAtBlock:** `345303`
+- **contentDigest:** `0f7f014559fbfb6ea828820cc954401f1562937b66c2fe24360959dcb5196b25` (fresh fetch + owner query MATCH)
+- **fee paid:** `0.000278489` tGLM (`gasUsed` `278489` × `1 gwei`) — under `0.001` ceiling
+- **import:** unsigned preview `PREVIEW_COMMUNITY — UNTRUSTED, NO BROADCAST`, `submissions: 0`
+- **explorer:** none verified/pinned for Rabdi in-repo (not invented)
 
 ## Evidence
-- Prepare readout: `runs/stage-b-prepare-readiness.json` (gitignored under `runs/`)
-- Repro script: `scripts/stage-b-prepare-readiness.mjs`
-- Zero real transactions / Arkiv publications / paid provider calls / push
+- `evidence/arkiv/2026-11-07/publish-receipt.json`
+- `evidence/arkiv/2026-11-07/fresh-fetch.json`
+- `evidence/arkiv/2026-11-07/unsigned-import-preview.json`
+- `evidence/arkiv/2026-11-07/confirmation-summary.json`
+- Gate: `src/arkiv/approval-gate.mjs` (11/11 tests); submit lock cleared after one-shot
 
-## Preserved prior
-Stage A commits `cf4be7e`, `45050f6`. Paid LLM remaining **$0.37798696** unused this pass.
+## Not done
+EF Uniswap path still blocked (empty paymasters). No Git push authorized.
