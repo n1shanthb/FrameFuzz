@@ -1,4 +1,8 @@
-# Current status — incomplete-run budget gate fixed
+# Current status — admission Step 1 read-only preparation
+
+The user redirected the next milestone to fresh EIP-8141 admission comparison and explicitly limited this step to preparation. The source-bound readiness module and panel are implemented; the EF endpoints answered read-only probes on chain 1337. The pinned basic paymaster has empty code and zero balance, and no deployer key is configured in this process. Pasted ordinary source remains `UNKNOWN` for EIP-8141 role. No candidate, admission verdict, chain write, paid call, Arkiv publication or push was produced. `npm test` passed 217/217; details and proposed one-shot approval packet are in `docs/ADMISSION_STEP1.md`.
+
+# Previous status — incomplete-run budget gate fixed
 
 QuotaVault run `282b81ac…` stopped with a **mislabeled** error. Exact gate: **`maxInputBytes` 24749 > 24000** on Mutation repair — **not** OpenRouter key limit and **not** FrameFuzz sprint USD (`$0.8849` still showed remaining).
 

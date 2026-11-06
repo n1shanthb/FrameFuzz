@@ -13,6 +13,7 @@ import {discoverCommunityRegressions,buildPublishConfirmation,ENTITY} from './ar
 import {arkivClients,ARKIV_CHAIN_ID} from '../arkiv/client.mjs';
 import {createRegistry} from '../arkiv/registry.mjs';
 import {saveReport} from '../reports.mjs';
+import {admissionReadiness} from './admission.mjs';
 const UUID=/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i,HASH=/^[\da-f]{64}$/;
 const reportDigest=value=>{const text=JSON.stringify(value);if(Buffer.byteLength(text)>2*1024*1024)throw Error('REPORT_SIZE_LIMIT');return sha256(text);};
 const operatorConfigured=env=>/^0x[\da-fA-F]{64}$/.test(env?.ARKIV_PRIVATE_KEY||'');
@@ -82,6 +83,15 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId,reservedUSD:budget.reservedUSD},investigationBudget:{byoc:byocPlan,uniswap:uniPlan,minInvestigationUSD:MIN_INVESTIGATION_USD,layers:{providerAccount:'OpenRouter key limit is separate and is not FrameFuzz authorization',sprintAggregate:`FrameFuzz sprint ${budget.sprintId} cap $${SPRINT_BUDGET_USD}`,perRun:'Allocated at Start from remaining sprint budget'}},canStart:readiness.canStart&&byocPlan.blockers.length===0,investigationReadiness:{...readiness,canStart:readiness.canStart&&byocPlan.blockers.length===0,blockers:[...readiness.blockers,...byocPlan.blockers],notice:byocPlan.blockers[0]??readiness.notice},offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:false,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/budget'){json(res,200,await budgetStatus(resultDir));return true;}
+  if(req.method==='GET'&&url.pathname==='/api/playground/admission-readiness'){
+   const id=url.searchParams.get('analysisId');
+   if(!HASH.test(id??''))throw new ApiError(400,'INVALID_ANALYSIS','Analyze the exact source first');
+   const cached=analyses.get(id);
+   if(!cached||Date.now()-cached.at>600000)throw new ApiError(409,'STALE_ANALYSIS','Analyze the current source again');
+   if(offlineDemo){json(res,200,{schema:'framefuzz.admission-readiness.v1',classification:'BLOCKED_PRECONDITION',sourceCompiled:cached.analysis.status==='READY'?'READY':'FAILED',publicEndpoint:{status:'UNAVAILABLE'},alternativeEndpoint:{status:'UNAVAILABLE'},deployment:{status:'MISSING'},walletAndFunding:{status:'MISSING'},signedComparisonCandidate:'BLOCKED',liveExecution:'BLOCKED',blockers:['Saved demo disables network reads and writes'],writes:0});return true;}
+   let config={};try{config=JSON.parse(await readFile(new URL('../../examples/live/devnet.json',import.meta.url),'utf8'));}catch{}
+   json(res,200,await admissionReadiness(cached.analysis,{env,config}));return true;
+  }
   if(req.method==='POST'&&url.pathname==='/api/playground/analyze'){
    const input=await readJsonObject(req,['source','abi','contractName','role','profile'],120000);
    for(const [key,entry]of analyses)if(Date.now()-entry.at>600000)analyses.delete(key);

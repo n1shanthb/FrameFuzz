@@ -1,4 +1,8 @@
-# Build status — Pass2
+# Build status — admission Step 1
+
+`src/playground/admission.mjs` and the Contract Playground readiness panel now connect exact compiled-source identity to read-only EF endpoint and paymaster checks. The existing workshop codec can prepare one signed raw/structured candidate after verified prerequisites, but none was prepared for the current generic source or missing paymaster. `node --test test/playground-admission.test.mjs`: 3/3 pass. `npm test`: 217/217 pass, 0 fail. EF chain 1337 public and alternative RPC reads succeeded; pinned basic payer code is empty and balance is zero. No new live submissions, receipts or transaction hashes. Full commands, blockers and approval scope: `docs/ADMISSION_STEP1.md`.
+
+# Previous build status — Pass2
 
 Full report and exact changed paths: [docs/PASS2_REPORT.md](docs/PASS2_REPORT.md). Current supported capabilities: [docs/CURRENT_CAPABILITIES.md](docs/CURRENT_CAPABILITIES.md). Older checkpoint text is preserved under docs/history/ and Git history.
 

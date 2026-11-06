@@ -1,5 +1,5 @@
 import {esc} from './utils.js';
-const s={mode:'byoc',source:'',abi:'',role:'UNKNOWN',contractName:'',contracts:[],config:null,analysis:null,job:null,report:null,timeline:[],phase:'IDLE',error:'',version:0,active:false,controller:null,filter:'all',replay:null,budget:null,arkivImport:null,arkivPublish:null};
+const s={mode:'byoc',source:'',abi:'',role:'UNKNOWN',contractName:'',contracts:[],config:null,analysis:null,admission:null,job:null,report:null,timeline:[],phase:'IDLE',error:'',version:0,active:false,controller:null,filter:'all',replay:null,budget:null,arkivImport:null,arkivPublish:null};
 const $=id=>document.getElementById(id);
 async function request(route,body,signal){const res=await fetch('/api/playground/'+route,{...(body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}),signal:signal??AbortSignal.timeout(20000)});const data=await res.json();if(!res.ok)throw Error(data.error??'Request failed');return data;}
 const isBusy=()=>['ANALYZING','INVESTIGATING','CANCELLING'].includes(s.phase);
@@ -42,6 +42,10 @@ function arkivIntelHtml(){
     :`<p class="muted" style="margin-top:10px">Judges may query, verify and import. Wallet-backed publish requires an authenticated operator.</p>`}
  </section>`;
 }
+function admissionHtml(){const r=s.admission;if(s.mode!=='byoc')return '';if(!r)return '<section class="card"><h3>ADMISSION TEST READINESS</h3><p>Analyze pasted source to inspect frame and endpoint prerequisites.</p></section>';
+ const rows=[['Source compiled',r.sourceCompiled],['EIP-8141 frame context',r.frameContext??'BLOCKED'],['Public endpoint',r.publicEndpoint?.status??'UNAVAILABLE'],['Alternative endpoint',r.alternativeEndpoint?.status??'UNAVAILABLE'],['Deployment state',r.deployment?.status??'MISSING'],['Wallet and funding',r.walletAndFunding?.status??'MISSING'],['Signed comparison candidate',r.signedComparisonCandidate??'BLOCKED'],['Live execution',r.liveExecution??'BLOCKED']];
+ return `<section class="card"><h3>ADMISSION TEST READINESS</h3><p>Detected frame role: ${esc(r.supportedFrameRole??'NONE')} · chain 1337 · ${esc(r.classification)}</p>${rows.map(([name,status])=>`<p><strong>${esc(name)}:</strong> ${esc(status)}</p>`).join('')}<p>Public: ${esc(r.publicEndpoint?.submissionMethod??'eth_sendRawTransaction')} · Alternative: ${esc(r.alternativeEndpoint?.submissionMethod??'eth_sendFrameTransaction')}</p><p class="muted">${esc(r.comparisonCapability??'No signed candidate exists yet.')}</p><details open><summary>Exact blockers and remediation</summary><ul>${(r.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul></details><p class="muted">Read-only preparation · no observed admission verdicts · no broadcast.</p></section>`;
+}
 function analysisHtml(){const a=s.analysis;if(!a)return '<p class="muted">Choose a mode, then analyze. BYOC uses pasted source. Uniswap loads pinned paymaster + historical admission evidence. Registry discovers Arkiv regressions without automatic writes.</p>';
  return `<p><strong>${esc(a.status)}</strong> · profile ${esc(a.profile?.id??'byoc')} · ${esc(a.compiler??'profile/source')} · digest ${esc(a.sourceDigest)}</p>${a.analysisId?`<p class="mono tiny">Analysis identity: ${esc(a.analysisId)}</p>`:''}
  <p>Role: ${esc(a.detectedRole?.role??'UNKNOWN')} (${esc(a.detectedRole?.basis??'No role evidence')}).</p>
@@ -50,7 +54,7 @@ function analysisHtml(){const a=s.analysis;if(!a)return '<p class="muted">Choose
  ${a.profile?.uniswapContext?`<p>StateView: ${esc(a.profile.uniswapContext.stateView)} · pool ${esc(a.profile.uniswapContext.poolId)} · interaction ${esc(a.profile.uniswapContext.interaction)}. No swap / USDC reimbursement claim.</p>`:''}
  ${a.functions?`<p>${a.functions.length} ABI functions · ${(a.structure?.variables||[]).length} state vars · ${(a.structure?.events||[]).length} events · ${(a.structure?.externalCalls||[]).length} external call sites.</p><details><summary>Verified facts</summary><pre class="details">${esc(JSON.stringify({functions:a.functions,facts:a.sourceFacts,profile:a.profile},null,2))}</pre></details>`:''}
  ${a.diagnostics?.length?`<details ${a.status!=='READY'?'open':''}><summary>Diagnostics / profile notices</summary><pre class="details">${esc(JSON.stringify(a.diagnostics,null,2))}</pre></details>`:''}
- ${arkivIntelHtml()}`;
+ ${admissionHtml()}${arkivIntelHtml()}`;
 }
 function resultsHtml(){const r=s.report;if(!r)return `<p class="muted">${s.phase==='INVESTIGATING'?'Only actual agent requests and completed tool events appear below.':'No investigation result yet.'}</p>`;
  const entries=r.workspace.proposals.filter(e=>s.filter==='all'||s.filter==='executed'&&e.state==='EXECUTED'||s.filter==='negative'&&e.proposal.expectedVerdict==='REJECT'||s.filter==='unexpected'&&e.outcome?.findingCandidate||s.filter==='invalid'&&['INVALID','DUPLICATE','UNSUPPORTED'].includes(e.feasibility?.effective)||s.filter==='missing'&&e.feasibility?.effective==='CONDITIONAL');
@@ -95,11 +99,12 @@ function paint(){if(!s.active||!$('byocPanels'))return;
  });
 }
 async function cancel(){s.controller?.abort();if(s.job&&s.phase==='INVESTIGATING'){s.phase='CANCELLING';try{await request('cancel',{id:s.job});}catch(e){s.error=e.message;}}else if(s.phase==='ANALYZING')s.phase='CANCELLED';paint();}
-function invalidate(){const oldJob=s.job;if(oldJob&&['INVESTIGATING','CANCELLING'].includes(s.phase))request('cancel',{id:oldJob}).catch(()=>{});s.controller?.abort();s.version++;s.analysis=null;s.report=null;s.job=null;s.timeline=[];s.replay=null;s.arkivImport=null;s.arkivPublish=null;s.phase='IDLE';s.error='Context changed: previous conclusions invalidated.';if($('byocConsent'))$('byocConsent').checked=false;paint();}
+function invalidate(){const oldJob=s.job;if(oldJob&&['INVESTIGATING','CANCELLING'].includes(s.phase))request('cancel',{id:oldJob}).catch(()=>{});s.controller?.abort();s.version++;s.analysis=null;s.admission=null;s.report=null;s.job=null;s.timeline=[];s.replay=null;s.arkivImport=null;s.arkivPublish=null;s.phase='IDLE';s.error='Context changed: previous conclusions invalidated.';if($('byocConsent'))$('byocConsent').checked=false;paint();}
 async function analyze(){const version=++s.version;s.phase='ANALYZING';s.error='';s.controller=new AbortController();paint();try{
  const input=s.mode==='byoc'?{source:s.source,role:s.role,profile:'byoc',...(s.contractName?{contractName:s.contractName}:{}),...(s.abi.trim()?{abi:JSON.parse(s.abi)}:{})}:{profile:s.mode};
  const a=await request('analyze',input,AbortSignal.any([s.controller.signal,AbortSignal.timeout(20000)]));if(version!==s.version)return;
  s.analysis=a;s.contracts=a.contracts??[];s.phase=a.status;s.contractName=a.contractName??s.contractName;if(a.source&&s.mode!=='byoc')s.source=a.source;
+ if(s.mode==='byoc'&&a.analysisId){try{const r=await request('admission-readiness?analysisId='+encodeURIComponent(a.analysisId));if(version===s.version)s.admission=r;}catch(e){if(version===s.version)s.admission={classification:'BLOCKED_PRECONDITION',blockers:[e.message]};}}
  const select=$('byocContract');if(select){select.innerHTML='<option value="">Auto-select single contract</option>'+(s.contracts||[]).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');select.value=s.contractName||'';}
  }catch(e){if(version===s.version){s.error=e.name==='AbortError'?'Analysis cancelled':e.message;s.phase='INCOMPLETE';}}if(version===s.version)paint();}
 async function start(){if(!$('byocConsent')?.checked){s.error='Explicit consent is required before any model requests.';paint();return;}const version=s.version;s.phase='INVESTIGATING';s.error='';s.report=null;s.timeline=[];paint();
