@@ -4,6 +4,7 @@ import {assertSwarmEnabled} from './gate.mjs';
 import {frameMutationDefinition,generateFrameMutation,replayFrameMutation,frameDigest} from '../mutations/frames.mjs';
 import {prepareAuthorizationPair} from '../adapters/sender-validator.mjs';
 import {validateHypothesis} from './hypothesis.mjs';
+const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value==='object' ? Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])])) : value;
 export const EXECUTION_CLASS='OFFLINE_SIGNATURE_BINDING';
 const addr=n=>'0x'+n.toString(16).padStart(40,'0');
 export async function executeMutation(mutation){
@@ -31,6 +32,6 @@ export async function replayRegression(descriptor){
  const compilation=await compileOwnedFixtures();
  if(compilation.compiler!==descriptor.compiler||compilation.inputDigest!==descriptor.compilerInputDigest||frameDigest(compilation.sourceDigests)!==frameDigest(descriptor.sourceDigests))throw new Error('Owned source/compiler provenance mismatch');
  const observation=await executeMutation(descriptor.mutation);
- if(frameDigest(observation.semanticProperties)!==frameDigest(descriptor.semanticProperties))throw new Error('Independent semantic properties differ');
+ if(frameDigest(stable(observation.semanticProperties))!==frameDigest(stable(descriptor.semanticProperties)))throw new Error('Independent semantic properties differ');
  return {schema:'framefuzz.independent-replay.v1',pid:process.pid,descriptorDigest:contentDigest,executionClass:EXECUTION_CLASS,sourceHashesVerified:true,equivalentSemanticProperties:true,observation,liveVerified:false,finding:false};
 }

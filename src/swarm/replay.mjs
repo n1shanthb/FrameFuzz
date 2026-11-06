@@ -8,7 +8,7 @@ export async function independentlyReplay(descriptor,{timeoutMs=20000}={}){
   const timer=setTimeout(()=>stop(new Error('Independent replay timeout')),timeoutMs);
   child.on('error',()=>stop(new Error('Independent process unavailable')));child.stdin.on('error',()=>{});
   child.stdout.on('data',chunk=>{stdout+=chunk;if(stdout.length>65536)stop(new Error('Independent output too large'));});
-  child.stderr.on('data',()=>{});child.on('close',code=>{if(done)return;if(code!==0)return stop(new Error('Independent replay rejected descriptor/source/properties'));try{const r=JSON.parse(stdout);if(r.pid===process.pid||r.descriptorDigest!==descriptor.contentDigest||r.equivalentSemanticProperties!==true||r.sourceHashesVerified!==true||r.finding!==false)throw new Error();stop(null,r);}catch{stop(new Error('Invalid independent replay evidence'));}});
+  child.stderr.on('data',()=>{});child.on('close',code=>{if(done)return;if(code!==0)return stop(new Error('Independent replay rejected descriptor/source/properties'));try{const r=JSON.parse(stdout);if(r.pid!==child.pid||r.pid===process.pid||r.descriptorDigest!==descriptor.contentDigest||r.equivalentSemanticProperties!==true||r.sourceHashesVerified!==true||r.finding!==false)throw new Error();stop(null,{...r,parentPid:process.pid,workerPid:child.pid,transport:'stdin-json/fresh-process',independenceScope:'same implementation, fresh process and owner key; not independent EVM execution'});}catch{stop(new Error('Invalid independent replay evidence'));}});
   child.stdin.end(input);
  });
 }

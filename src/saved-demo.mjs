@@ -8,5 +8,10 @@ export const SAVED_DEMO_FILES=[
 export async function prepareSavedDemo(directory){
   await mkdir(directory,{recursive:true});const files=[];
   for(const file of SAVED_DEMO_FILES){const bytes=await readFile(new URL('../'+file,import.meta.url));const report=JSON.parse(bytes);if(report.schema!=='framefuzz.evidence.v1')throw new Error('Invalid saved demo evidence');const name=file.includes('/arkiv/')?'saved-arkiv-import-preview.json':path.basename(file);await writeFile(path.join(directory,name),bytes);files.push(name);}
-  return {files,defaultRun:files[0],mode:'SAVED_EVIDENCE_OFFLINE',notice:'Historical LIVE captures and saved PREVIEW only. No fresh network execution or current Arkiv availability is implied.'};
+  const investigation = await readFile(new URL('../evidence/investigator/2026-11-06/sonnet-retry-2.json',import.meta.url));
+  const parsed = JSON.parse(investigation);
+  if(parsed.schema!=='framefuzz.investigation.v1')throw new Error('Invalid saved investigation');
+  await mkdir(path.join(directory,'swarm'),{recursive:true});
+  await writeFile(path.join(directory,'swarm','2a910262-9dcd-4261-b661-d245a7d20122.json'),investigation);
+  return {files,investigation:'2a910262-9dcd-4261-b661-d245a7d20122',defaultRun:files[0],mode:'SAVED_EVIDENCE_OFFLINE',notice:'Historical LIVE captures and saved PREVIEW only. No fresh network execution or current Arkiv availability is implied.'};
 }

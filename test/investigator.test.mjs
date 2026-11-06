@@ -39,7 +39,8 @@ test('different model values change actual ABI calldata and deterministic observ
  const a=await executeHypothesis(h(41,10)),b=await executeHypothesis({...h(1,4321),unsafePrediction:'OWNER_NOT_RECOVERED',safePrediction:'OWNER_RECOVERED'});
  assert.deepEqual(decodeFunctionData({abi:ACTION_ABI,data:a.calldata}).args,[41n,10n]);assert.deepEqual(decodeFunctionData({abi:ACTION_ABI,data:b.calldata}).args,[1n,4321n]);assert.notEqual(a.calldata,b.calldata);
  assert.equal(a.observation.verdict,b.observation.verdict);assert.equal(b.observation.finding,false);assert.deepEqual(b.predictionSupported,{unsafe:false,safe:false});
- const replay=await independentlyReplay(a.descriptor);assert.notEqual(replay.pid,process.pid);assert.equal(replay.equivalentSemanticProperties,true);assert.equal(replay.liveVerified,false);
+ const replay=await independentlyReplay(a.descriptor);assert.notEqual(replay.pid,process.pid);assert.equal(replay.workerPid,replay.pid);assert.equal(replay.parentPid,process.pid);assert.match(replay.independenceScope,/same implementation/);assert.equal(replay.equivalentSemanticProperties,true);assert.equal(replay.liveVerified,false);
+ const reordered=structuredClone(a.descriptor);reordered.semanticProperties=Object.fromEntries(Object.entries(reordered.semanticProperties).reverse().map(([k,v])=>[k,Object.fromEntries(Object.entries(v).reverse())]));const {contentDigest:oldDigest,...semanticBody}=reordered;reordered.contentDigest=frameDigest(semanticBody);assert.equal((await replayRegression(reordered)).equivalentSemanticProperties,true);
  const changed=structuredClone(a.descriptor);changed.compilerInputDigest='bad';await assert.rejects(replayRegression(changed),/integrity/);
  const {contentDigest,...body}=changed;const forged={...body,contentDigest:frameDigest(body)};await assert.rejects(replayRegression(forged),/provenance/);
 });
