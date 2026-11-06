@@ -1,0 +1,166 @@
+{
+  "schema": "framefuzz.sprint-budget.v1",
+  "sprintId": "2026-11-06-real-agent-quality",
+  "capUSD": 1,
+  "spentUSD": 0.6220130400000001,
+  "reservedUSD": 0,
+  "entries": [
+    {
+      "at": "2026-11-06T17:34:04.122Z",
+      "type": "RESERVE",
+      "label": "byoc:002bd1ff-4059-460c-8d36-11a93814cc12",
+      "amountUSD": 0.55,
+      "remainingAfter": 0.44999999999999996
+    },
+    {
+      "at": "2026-11-06T17:34:28.249Z",
+      "type": "FAILED_BILLABLE",
+      "label": "byoc:002bd1ff-4059-460c-8d36-11a93814cc12",
+      "reservedUSD": 0.55,
+      "actualUSD": 0.024282719999999994,
+      "providerCalls": 1,
+      "generationIds": [
+        "gen-1793986443-ezUV5sZHYYzgdriMLiM3"
+      ],
+      "remainingAfter": 0.97571728
+    },
+    {
+      "at": "2026-11-06T17:35:11.078Z",
+      "type": "RESERVE",
+      "label": "byoc:b81e5ad6-f38c-4087-ab61-2e7918d18e61",
+      "amountUSD": 0.55,
+      "remainingAfter": 0.42571728
+    },
+    {
+      "at": "2026-11-06T17:36:13.851Z",
+      "type": "FAILED_BILLABLE",
+      "label": "byoc:b81e5ad6-f38c-4087-ab61-2e7918d18e61",
+      "reservedUSD": 0.55,
+      "actualUSD": 0.09771597000000001,
+      "providerCalls": 4,
+      "generationIds": [
+        "gen-1793986510-3obo1cjhPGmVNLqoe9uk",
+        "gen-1793986529-fowIVcvrcFkLkVeoe2ME",
+        "gen-1793986542-3lTZr2VKHKWvIZbWuvGn",
+        "gen-1793986561-1WlyHxKbWZQtOJ4zMeKO"
+      ],
+      "remainingAfter": 0.87800131
+    },
+    {
+      "at": "2026-11-06T17:36:53.884Z",
+      "type": "RESERVE",
+      "label": "byoc:8edbdf04-25e6-42d6-b859-e313f4ef22fc",
+      "amountUSD": 0.55,
+      "remainingAfter": 0.32800131
+    },
+    {
+      "at": "2026-11-06T17:38:25.560Z",
+      "type": "SETTLE",
+      "label": "byoc:8edbdf04-25e6-42d6-b859-e313f4ef22fc",
+      "reservedUSD": 0.55,
+      "actualUSD": 0.1553013000000001,
+      "providerCalls": 7,
+      "generationIds": [
+        "gen-1793986612-kr7VS3RrW7jxzUscUPFK",
+        "gen-1793986630-NVoVN9nNyrOkFlQdkQ4n",
+        "gen-1793986647-TcigF4mvMCWexEGo6vpo",
+        "gen-1793986663-rIRdrScYtYR2zcfoQwCi",
+        "gen-1793986673-luu0Arryyek59LkopQYr",
+        "gen-1793986682-7oM4UMkhKdFWrfdEJmPJ",
+        "gen-1793986688-7RbzaueHMRtg0mvYNdSp"
+      ],
+      "remainingAfter": 0.7227000099999998
+    },
+    {
+      "at": "2026-11-06T17:38:54.537Z",
+      "type": "RESERVE",
+      "label": "uniswap-v4-paymaster:4ccf5bf9-6fa4-4ed6-84dd-d7f27b13a3fe",
+      "amountUSD": 0.35,
+      "remainingAfter": 0.37270000999999986
+    },
+    {
+      "at": "2026-11-06T17:39:56.519Z",
+      "type": "FAILED_BILLABLE",
+      "label": "uniswap-v4-paymaster:4ccf5bf9-6fa4-4ed6-84dd-d7f27b13a3fe",
+      "reservedUSD": 0.35,
+      "actualUSD": 0.09458558999999998,
+      "providerCalls": 5,
+      "generationIds": [
+        "gen-1793986733-v108wcsJ6blvzkmFz7cd",
+        "gen-1793986746-U7tKttKHP9DMKKEUwAn6",
+        "gen-1793986759-yK5LTvZr2v1dcZP3uT0E",
+        "gen-1793986774-7XNMzyMMKFZ64Bw7qNBb",
+        "gen-1793986786-Sb3SBU1REidEZogEAkf2"
+      ],
+      "remainingAfter": 0.62811442
+    },
+    {
+      "at": "2026-11-06T17:40:28.104Z",
+      "type": "RESERVE",
+      "label": "uniswap-v4-paymaster:708c706b-611c-4eec-a789-5743562e2efe",
+      "amountUSD": 0.4,
+      "remainingAfter": 0.22811441999999993
+    },
+    {
+      "at": "2026-11-06T17:40:43.378Z",
+      "type": "FAILED_BILLABLE",
+      "label": "uniswap-v4-paymaster:708c706b-611c-4eec-a789-5743562e2efe",
+      "reservedUSD": 0.4,
+      "actualUSD": 0.015081659999999997,
+      "providerCalls": 1,
+      "generationIds": [
+        "gen-1793986827-EOZiqmVJdu9Oxk8mfQnL"
+      ],
+      "remainingAfter": 0.6130327599999998
+    },
+    {
+      "at": "2026-11-06T17:41:00.522Z",
+      "type": "RESERVE",
+      "label": "uniswap-v4-paymaster:17cbecf1-9ef7-488a-80f8-da24f7324c5e",
+      "amountUSD": 0.4,
+      "remainingAfter": 0.21303275999999982
+    },
+    {
+      "at": "2026-11-06T17:42:03.170Z",
+      "type": "FAILED_BILLABLE",
+      "label": "uniswap-v4-paymaster:17cbecf1-9ef7-488a-80f8-da24f7324c5e",
+      "reservedUSD": 0.4,
+      "actualUSD": 0.09568152,
+      "providerCalls": 5,
+      "generationIds": [
+        "gen-1793986859-1YbiS49DKe2fHk24oJGw",
+        "gen-1793986872-Sk3QHP5iRr25gn9viBHh",
+        "gen-1793986885-qECJtgkwnNwjppJN0FhS",
+        "gen-1793986898-YkNF2iYtB2eLJp17N2cC",
+        "gen-1793986911-FeoCmYDgaXpaFE1DWEgg"
+      ],
+      "remainingAfter": 0.5173512399999999
+    },
+    {
+      "at": "2026-11-06T17:42:27.962Z",
+      "type": "RESERVE",
+      "label": "uniswap-v4-paymaster:da5e54ff-97fc-470f-9d83-24c0f3f828ec",
+      "amountUSD": 0.4,
+      "remainingAfter": 0.11735123999999986
+    },
+    {
+      "at": "2026-11-06T17:43:51.901Z",
+      "type": "SETTLE",
+      "label": "uniswap-v4-paymaster:da5e54ff-97fc-470f-9d83-24c0f3f828ec",
+      "reservedUSD": 0.4,
+      "actualUSD": 0.13936428,
+      "providerCalls": 7,
+      "generationIds": [
+        "gen-1793986947-eXHLMEIruxglz5Mb8nT1",
+        "gen-1793986958-ItFD4aU7IPEiloaIALVl",
+        "gen-1793986972-2T3XA2kHOwvA3qGWaCYe",
+        "gen-1793986987-F3fKAAhYpPQW0mqJpdrE",
+        "gen-1793986998-a27n3GRJEqRVBcMI1sTb",
+        "gen-1793987007-uRLMbR1xYdc4pImvsEh1",
+        "gen-1793987021-1t6KzEZoHVvyNv5grtQ1"
+      ],
+      "remainingAfter": 0.37798695999999987
+    }
+  ],
+  "updatedAt": "2026-11-06T17:43:51.901Z"
+}

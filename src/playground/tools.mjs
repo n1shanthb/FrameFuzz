@@ -50,7 +50,8 @@ export function checkProposal(p,analysis,{seen=new Set()}={}){
  check('MUTATED_PARAMETERS',profileTool||unsupported||!mutationError||abiToolTest,mutationError?`Impossible ABI input (${mutationError}); use ABI_TOOL_TEST only for encoder conformance, never as contract/mempool failure`:'Mutation ABI encoding valid');
  check('ABI_TOOL_TEST_INTENT',!abiToolTest||!!mutationError,'ABI_TOOL_TEST requires a mutation the encoder actually rejects');
  const admission=['PUBLIC_ADMISSION','ALTERNATIVE_ADMISSION','VALIDATOR_AUTHORIZATION','EXECUTION_ACTION'].includes(p.domain);
- check('RUNTIME_CONTEXT',!admission&&!p.preconditions.some(x=>['FUNDING','NONCE','STAKE','DEPLOYMENT','SIGNATURE_SCOPE','FRAME_LAYOUT','CHAIN_CLIENT'].includes(x)),'Missing verified sender/payer/frame/signature/chain/state prerequisites','CONDITIONAL');
+ // Profile historical/context tools may list stake/deployment as semantic dimensions without requiring a fresh live chain check.
+ check('RUNTIME_CONTEXT',profileTool||(!admission&&!p.preconditions.some(x=>['FUNDING','NONCE','STAKE','DEPLOYMENT','SIGNATURE_SCOPE','FRAME_LAYOUT','CHAIN_CLIENT'].includes(x))),'Missing verified sender/payer/frame/signature/chain/state prerequisites','CONDITIONAL');
  const modeOk=(p.domain==='ABI_ENCODING'&&p.tool==='abi_encode'&&!mutationError)||(abiToolTest)||(p.domain==='SOURCE_STRUCTURE'&&p.tool==='structure_check')||(p.domain==='POLICY_PREDICTION'&&['historical_evidence','uniswap_context','gas_policy'].includes(p.tool));
  check('MODE',modeOk,'Match domain to a supported local tool: encodable ABI_ENCODING, explicit ABI_TOOL_TEST, structure_check, or profile policy prediction — never invent EVM/admission execution','UNSUPPORTED');
  const failed=checks.filter(c=>!c.passed),decision=failed.some(c=>c.decision==='INVALID')?'INVALID':failed.some(c=>c.decision==='DUPLICATE')?'DUPLICATE':failed.some(c=>c.decision==='CONDITIONAL')?'CONDITIONAL':failed.length?'UNSUPPORTED':'EXECUTABLE';

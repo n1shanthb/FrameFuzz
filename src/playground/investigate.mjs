@@ -36,10 +36,12 @@ export async function investigateContract(analysis,options={}){
    for(const request of response.toolRequests){
     if(!agents[role].permissions.includes(request.tool))throw Error('AGENT_TOOL_PERMISSION_DENIED');
     const output=await tool(agents[role].id,request.tool,request,()=>{
-     if(request.tool==='feasibility'){
-      const candidate=response.proposals?.find(p=>p.id===request.proposalId)??report.workspace.proposals.find(p=>p.proposal.id===request.proposalId)?.proposal;if(!candidate)throw Error('UNKNOWN_PROPOSAL');validate(candidate,PROPOSAL);return {schema:'framefuzz.feasibility-feedback.v1',proposalId:candidate.id,...checkProposal(candidate,analysis)};
-     }
-     return readTool(request.tool,request.tool==='inspect_source'?{startLine:request.startLine,endLine:request.endLine}:request.tool==='query_abi'?{functionSignature:request.functionSignature}:{},analysis);
+     try{
+      if(request.tool==='feasibility'){
+       const candidate=response.proposals?.find(p=>p.id===request.proposalId)??report.workspace.proposals.find(p=>p.proposal.id===request.proposalId)?.proposal;if(!candidate)throw Error('UNKNOWN_PROPOSAL');validate(candidate,PROPOSAL);return {schema:'framefuzz.feasibility-feedback.v1',proposalId:candidate.id,...checkProposal(candidate,analysis)};
+      }
+      return readTool(request.tool,request.tool==='inspect_source'?{startLine:request.startLine,endLine:request.endLine}:request.tool==='query_abi'?{functionSignature:request.functionSignature}:{},analysis);
+     }catch(e){return {schema:'framefuzz.tool-error.v1',tool:request.tool,error:e.message,recoverable:true};}
     });send('tool:'+request.tool,role,'TOOL_RESULT',output);
    }
    response=await agents[role].ask('Revise/finalize your own decision using the actual tool results in your private history. No more read-tool rounds: toolRequests must be empty.',schema,{signal:controller.signal});
@@ -54,7 +56,9 @@ export async function investigateContract(analysis,options={}){
   for(const entry of entries){
    const p=entry.proposal,model=decision.decisions.find(d=>d.proposalId===p.id),deterministic=await tool('coordinator','feasibility',p,()=>({schema:'framefuzz.deterministic-feasibility.v1',...checkProposal(p,analysis,{seen})}));
    const referencesValid=model.factIds.every(id=>analysis.sourceFacts.some(f=>f.id===id));
-   const effective=!referencesValid?'INVALID':deterministic.decision!=='EXECUTABLE'?deterministic.decision:model.decision;
+   const profileRead=['historical_evidence','uniswap_context'].includes(p.tool);
+   // Deterministic veto always wins. Model may only be more conservative for non-profile tools; historical/profile reads execute when gates pass.
+   const effective=!referencesValid?'INVALID':deterministic.decision!=='EXECUTABLE'?deterministic.decision:(profileRead?'EXECUTABLE':model.decision);
    entry.feasibility={model,deterministic,effective,disagreement:!referencesValid||model.decision!==deterministic.decision};entry.state=effective==='EXECUTABLE'?'READY':effective==='INVALID'?'REJECTED':'DEFERRED';
    if(effective==='EXECUTABLE')seen.add(proposalKey(p));
    else{
@@ -84,7 +88,7 @@ export async function investigateContract(analysis,options={}){
   const scout=await ask('scout',analysis.profile?.id==='uniswap-v4-paymaster'?'Inspect the Uniswap v4 paymaster profile: StateView.getSlot0 dependency, stake vs unstaked external storage reads, and historical public/alternative evidence. Cite fact IDs. Do not invent fresh admissions.':'Inspect this exact submitted contract and send cited opportunities/questions to Mutation. No fixture matching. You can request source ranges or ABI facts if necessary.',SCOUT);
   if(scout.findings.some(f=>f.factIds.some(id=>!analysis.sourceFacts.some(a=>a.id===id))))throw Error('SCOUT_REFERENCE_MISMATCH');
   send(agents.scout.id,'mutation','SOURCE_BACKED_OPPORTUNITIES',{findings:scout.findings,opportunities:scout.opportunities,questions:scout.questions});
-  const mutation=await ask('mutation','Generate one or two distinct proposals tied to this analysisId and sourceDigest. Prefer encodable ABI_ENCODING mutations of real compiled functions (PASS when expected ACCEPT). Use domain ABI_TOOL_TEST with negativeObjective ABI_REJECTION only for deliberate encoder conformance. Do not claim require/revert or admission without the matching tool. Out-of-range ints in ABI_ENCODING are invalid.',MUTATION);
+  const mutation=await ask('mutation',analysis.profile?.id==='uniswap-v4-paymaster'?'Propose one or two source-grounded Uniswap paymaster tests using tools historical_evidence or uniswap_context with domain POLICY_PREDICTION. Cite StateView.getSlot0 / stake / public-vs-alt distinctions. Use distinct originalArgs/mutatedArgs labels (e.g. unstaked→staked). Do not claim fresh admission or swaps.':'Generate one or two distinct proposals tied to this analysisId and sourceDigest. Prefer encodable ABI_ENCODING mutations of real compiled functions (PASS when expected ACCEPT). Use domain ABI_TOOL_TEST with negativeObjective ABI_REJECTION only for deliberate encoder conformance. Do not claim require/revert or admission without the matching tool. Out-of-range ints in ABI_ENCODING are invalid.',MUTATION);
   let entries=await validateBatch(addBatch(mutation));
   const rejected=entries.find(e=>['INVALID','CONDITIONAL','UNSUPPORTED'].includes(e.feasibility.effective));
   if(rejected){

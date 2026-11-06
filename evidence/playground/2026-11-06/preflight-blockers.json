@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-11-06T17:44:26.036Z",
+  "envPresence": {
+    "ARKIV_PRIVATE_KEY": false,
+    "ARKIV_ACCESS_KEY": false,
+    "ARKIV_READER_ADDRESS": false,
+    "FRAMEFUZZ_DEPLOYER_KEY": false,
+    "FRAMEFUZZ_RPC": false,
+    "FRAMEFUZZ_PUBLIC_RPC": false,
+    "FRAMEFUZZ_ALT_RPC": false,
+    "FRAMEFUZZ_LIVE_CONFIG": false,
+    "OPENROUTER_API_KEY": true
+  },
+  "arkiv": {
+    "status": "ARKIV_PUBLICATION_BLOCKED",
+    "chainId": 7794095,
+    "rpc": "https://rpc.rabdi.db-chain.testnet.arkiv.network",
+    "writerConfigured": false,
+    "historicalEntities": [
+      {
+        "entityKey": "0x6779cf38a4398eb90da94b11885e691b84a6bb09dda59974cf5b8f1a21db773e",
+        "note": "Historical Uniswap regression preview import evidence"
+      }
+    ],
+    "blockers": [
+      "ARKIV_PRIVATE_KEY not configured for a funded Rabdi-only writer",
+      "No separate explicit user approval of an exact Arkiv publication transaction manifest for this sprint"
+    ],
+    "manifest": {
+      "schema": "framefuzz.arkiv-publish-manifest.v1",
+      "status": "DRAFT_NOT_AUTHORIZED",
+      "submit": false,
+      "sourceInvestigation": "8edbdf04-25e6-42d6-b859-e313f4ef22fc",
+      "sourceDigest": "89fd35b3dd56e5147ed3cd47dbfd5e526fb2e07c46d60da35fb4f5e51f00195c",
+      "contentDigest": "89a365151c5d967997c1be0c3655928835409fe05bf0255050a12576e8b3e07b",
+      "contractName": "FreshInventoryLock",
+      "publisher": "UNRESOLVED",
+      "expirationBlocks": 43200,
+      "notice": "Preview only. Publishing requires funded writer + explicit approval of this exact manifest."
+    }
+  },
+  "eip8141": {
+    "status": "FRESH_EIP8141_BLOCKED_EXTERNAL",
+    "chainId": 1337,
+    "endpoints": [
+      "https://altmempool.forshtat.com/rpc",
+      "https://altmempool.forshtat.com"
+    ],
+    "blockers": [
+      "FRAMEFUZZ_DEPLOYER_KEY missing; no owned fresh signing",
+      "No separate explicit approval of an exact EIP-8141 broadcast manifest for this sprint"
+    ],
+    "observations": [
+      {
+        "method": "eth_chainId",
+        "result": "0x539"
+      },
+      {
+        "method": "eth_getBlockByNumber",
+        "number": "0x1a62",
+        "ageSeconds": 2
+      }
+    ],
+    "historicalEvidence": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+    "historicalAltInclusion": "0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c"
+  }
+}

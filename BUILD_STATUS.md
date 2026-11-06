@@ -41,3 +41,6 @@ Baseline164/164 tests verified; isolated compiler3 tests pass. Fixed source file
 
 ## BYOC multi-agent integration — 2026-11-06
 175/175 tests pass; `npm run verify` 86 modules. Independent Scout/Mutation/Validator/Critic sessions with private history, structured agent messages, deterministic veto over LLM decisions, local ABI/AST tools, export/replay/cancel, Contract Playground UI. Real browser paste→analyze→mock negotiation→XFAIL ABI repair→replay→source invalidation verified on mock transport (`scripts/byoc-browser-demo.mjs --mock-transport`). Paid calls:0. Chain writes:0. Generic contracts: compiler/ABI/AST only — not EVM or admission. Verdict: BYOC_MULTI_AGENT_PARTIAL.
+
+## Real agent quality / Uniswap / preflight — 2026-11-06
+178/178 tests; verify 90 modules; audit 0. ABI_TOOL_TEST vs impossible ABI fixed. Sprint OpenRouter spend $0.62201304 / $1.00. Genuine paid BYOC FreshInventoryLock COMPLETE (`8edbdf04…`, 7 calls). Genuine paid Uniswap ReserveReadingPaymaster COMPLETE (`da5e54ff…`, 7 calls, PREDICTED historical/context — not fresh admission). Arkiv ARKIV_PUBLICATION_BLOCKED. Fresh EIP-8141 FRESH_EIP8141_BLOCKED_EXTERNAL (gateway alive; no deployer key/approval). Evidence: `evidence/playground/2026-11-06/`. No push/chain/Arkiv writes.

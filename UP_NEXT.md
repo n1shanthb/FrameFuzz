@@ -1,7 +1,9 @@
-# Up next — stop after BYOC integration milestone
+# Up next — stop after real-agent-quality sprint
 
-BYOC multi-agent integration milestone is complete for the authorized brief. Do not start paid OpenRouter investigations, chain writes, deployments, Arkiv publication, Git push or external forms without a new explicit user instruction.
+This sprint is complete for the authorized $1 OpenRouter allowance and read-only network preflights.
 
-Optional later (not authorized now): user-consented paid Sonnet run on a pasted contract; bounded local EVM executor for require/revert observation; EIP-8141-context admission classification when sender/payer/frame/signature/chain state is supplied.
+Do not spend remaining model budget, publish to Arkiv, or broadcast EIP-8141 frames without a new explicit user instruction plus exact transaction manifests and funded testnet wallets.
 
-Open `E:\ethglobalmumbai` on `feat/framefuzz-mvp`. Preserve historical evidence digests.
+Optional later: approve Arkiv draft manifest with ARKIV_PRIVATE_KEY; approve smallest historical gas/Uniswap live comparison with deployer key; optional EVM executor for require/revert BYOC cases.
+
+Open `E:\ethglobalmumbai` on `feat/framefuzz-mvp`. Preserve `evidence/playground/2026-11-06/` and historical live digests.

@@ -41,7 +41,7 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
     let analysis;
     if(input.profile==='uniswap-v4-paymaster')analysis=await loadUniswapProfileAnalysis();
     else if(input.profile==='regression-registry'){const sourceDigest=digest({profile:'regression-registry'});analysis={status:'READY',analysisId:digest({profile:'regression-registry',v:1}),sourceDigest,source:'',contractName:'RegressionRegistry',compiler:null,functions:[],sourceFacts:[{id:'registry',kind:'meta',file:'src/arkiv/registry.mjs',startLine:1,endLine:1,sourceDigest,claim:'Arkiv Rabdi publish/query/import uses explicit submit and funded writer'}],capabilities:['ARKIV_MANIFEST','UNSIGNED_IMPORT'],missingPrerequisites:['EXPLICIT_PUBLISH_APPROVAL','FUNDED_ARKIV_WRITER'],diagnostics:[],structure:{functions:[],variables:[],events:[],guards:[],externalCalls:[]},declaredRole:'UNKNOWN',detectedRole:{role:'UNKNOWN',basis:'Registry workflow'},contracts:[],limitations:['No automatic Arkiv write'],profile:{id:'regression-registry',title:'Regression Registry',summary:PROFILES[2].summary}};}
-    else analysis=await analyzeContract(input,{signal:c.signal});
+    else{const {profile,...intake}=input;analysis=await analyzeContract(intake,{signal:c.signal});}
     if(analysis.status==='READY')analyses.set(analysis.analysisId,{analysis,at:Date.now()});json(res,200,analysis);
    }catch(e){throw new ApiError(e.message==='COMPILER_BUSY'?429:e.message.includes('TIMEOUT')?504:400,'COMPILER_REJECTED',e.message);}
    finally{res.removeListener('close',abort);}return true;
