@@ -1,4 +1,11 @@
-# Up next — after admission Step 2B
+# Up next — after admission Step 2C
+
+1. Preserve the live evidence and do not resubmit the included nonce-0 candidate.
+2. Resolve the currently supported alternative admission endpoint/method using read-only official documentation or operator guidance. Do not probe support by sending another transaction.
+3. If a valid alternative route is established, prepare a fresh independently signed nonce-1 candidate and a new funding/fee/state packet; obtain authorization before broadcasting it.
+4. Keep the result honest: public admission/inclusion/execution is proven; alternative admission remains unobserved because the configured method returned `-32601`.
+
+# Previous up next — after admission Step 2B
 
 1. Funding is complete and confirmed by transaction `0x9b16d59eb1bca1070d7fcf7ce01b75c11caa519ad6b84423a93586d5bcf873ef`; do not repeat it.
 2. Preserve the regenerated candidate hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` and its exact public/alternative request payloads.

@@ -1,4 +1,8 @@
-# Build status — admission Step 2B
+# Build status — admission Step 2C
+
+One genuine self-funded EIP-8141 transaction flowed end-to-end through the public path. Candidate `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` was accepted, included in block `0x23c1`, and executed with successful outer and two frame receipts. Alternative returned `-32601 Method not found`, so its admission verdict is unobserved rather than rejected. No retry, deployment or additional funding. Evidence and exact requests are in `evidence/admission/2026-11-07/self-relay-first-comparison.json`. Harness syntax/evidence validation passed; focused signer tests 3/3 passed. The immediately preceding full suite passed 181/181.
+
+# Previous build status — admission Step 2B
 
 The authorized EF funding transfer succeeded: `0x9b16d59eb1bca1070d7fcf7ce01b75c11caa519ad6b84423a93586d5bcf873ef`, block 9083, status success, 204,600 gas at 3,456,010 wei/gas. The existing sender now has exactly 0.0005 test ETH. The unchanged self-relay candidate regenerated with hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` and reports `FUNDED`; no admission request was sent. Focused tests: 5/5 pass. Full suite: 181/181 pass outside the Windows localhost sandbox. Details: `docs/ADMISSION_STEP2B.md`.
 
