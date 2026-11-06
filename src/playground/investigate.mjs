@@ -9,7 +9,7 @@ export const INVESTIGATION_LIMITS={maxCalls:10,maxCostUSD:0.5,maxTotalTokens:600
 export function agentFacts(analysis){
  const facts={analysisId:analysis.analysisId,sourceDigest:analysis.sourceDigest,contractName:analysis.contractName,compiler:analysis.compiler,declaredRole:analysis.declaredRole,detectedRole:analysis.detectedRole,
   functions:analysis.functions,sourceFacts:analysis.sourceFacts.slice(0,24),capabilities:analysis.capabilities,missingPrerequisites:analysis.missingPrerequisites,tools:TOOLS,
-  boundaries:'Only ABI encoding and syntactic source checks. Unknown roles never imply admission. Runtime tests need sender/payer/frames/signature/chain/nonce/state context. ABI rejection is a supported intentional negative; contract require/revert is not measured.'};
+  boundaries:'Encodable ABI_ENCODING values prove encoder acceptance only. Impossible ABI widths/types are SKIPPED_INVALID unless domain=ABI_TOOL_TEST with negativeObjective=ABI_REJECTION (encoder conformance, never contract/mempool failure). require/revert needs an EVM executor (unsupported here). Unknown roles never imply admission. Uniswap profile may cite historical public/alt evidence and StateView.getSlot0 context without claiming fresh execution.'};
  if(Buffer.byteLength(JSON.stringify(facts))>14000)throw Error('AGENT_FACT_CONTEXT_LIMIT: reduce source/function complexity');return facts;
 }
 export async function investigateContract(analysis,options={}){
@@ -17,13 +17,13 @@ export async function investigateContract(analysis,options={}){
  if(options.submit||options.deploy||options.publish||options.fund)throw Error('BLOCKED_WRITE');
  if(analysis.status!=='READY'||sha256(analysis.source)!==analysis.sourceDigest)throw Error('STALE_ANALYSIS');
  const facts=agentFacts(analysis),provider=options.provider??new OpenRouterProvider({limits:{maxCalls:10}}),id=options.id??randomUUID();
- const report={schema:'framefuzz.byoc-investigation.v1',id,analysisId:analysis.analysisId,sourceDigest:analysis.sourceDigest,contractName:analysis.contractName,generatedAt:new Date().toISOString(),source:provider.kind==='OPENROUTER'?'OPENROUTER_STATEFUL_AGENTS':'MOCK_LLM_TRANSPORT — NO PAID MODEL',status:'RUNNING',limits:INVESTIGATION_LIMITS,
+ const report={schema:'framefuzz.byoc-investigation.v1',id,analysisId:analysis.analysisId,sourceDigest:analysis.sourceDigest,contractName:analysis.contractName,profileId:analysis.profile?.id??'byoc',generatedAt:new Date().toISOString(),source:provider.kind==='OPENROUTER'?'OPENROUTER_STATEFUL_AGENTS':'MOCK_LLM_TRANSPORT — NO PAID MODEL',status:'RUNNING',limits:INVESTIGATION_LIMITS,
   contract:analysis,agents:{},workspace:{identity:{analysisId:analysis.analysisId,sourceDigest:analysis.sourceDigest},facts,messages:[],proposals:[],objections:[],toolOutputs:[],followUps:[],dispositions:[],evidenceReferences:analysis.sourceFacts.map(f=>({id:f.id,file:f.file,startLine:f.startLine,endLine:f.endLine,sourceDigest:f.sourceDigest}))},timeline:[],broadcasts:0,evmExecuted:false,admissionVerified:false,verifiedVulnerability:false};
  const controller=new AbortController(),cancel=()=>controller.abort(),timeoutMs=options.timeoutMs??INVESTIGATION_LIMITS.timeoutMs;
  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<1||timeoutMs>INVESTIGATION_LIMITS.timeoutMs)throw Error('Invalid investigation deadline');
  let timedOut=false;const timer=setTimeout(()=>{timedOut=true;controller.abort();},timeoutMs);options.signal?.addEventListener('abort',cancel,{once:true});if(options.signal?.aborted)cancel();
  const emit=event=>{const e={...event,at:new Date().toISOString(),sequence:report.timeline.length};report.timeline.push(e);options.onEvent?.(structuredClone(e));};
- const agents=Object.fromEntries(['scout','mutation','validator','critic'].map(role=>[role,new AgentSession(role,id,provider,emit)]));
+ const agents=Object.fromEntries(['scout','mutation','validator','critic'].map(role=>[role,new AgentSession(role,id,provider,emit,{profileId:analysis.profile?.id??null})]));
  const send=(from,to,type,payload)=>{const target=agents[to];const msg=target?target.receive(from,type,payload):{from,to,type,payload:structuredClone(payload)};report.workspace.messages.push({...msg,id:'message-'+report.workspace.messages.length});emit({stage:'AGENT_MESSAGE',from,to:target?.id??to,type,payload});};
  const tool=async(actor,name,input,operation)=>{
   if(controller.signal.aborted)throw Error('CANCELLED');emit({stage:'TOOL_REQUEST',actor,tool:name,input});
@@ -81,10 +81,10 @@ export async function investigateContract(analysis,options={}){
  try{
   for(const role of Object.keys(agents))send('workspace',role,'VERIFIED_COMPILER_FACTS',facts);
   report.workspace.toolOutputs.push({id:'compiler-intake',actor:'developer',tool:'compiler_abi',input:{sourceDigest:analysis.sourceDigest},output:{status:analysis.status,analysisId:analysis.analysisId,compiler:analysis.compiler,functions:analysis.functions,diagnostics:analysis.diagnostics}});
-  const scout=await ask('scout','Inspect this exact submitted contract and send cited opportunities/questions to Mutation. No fixture matching. You can request source ranges or ABI facts if necessary.',SCOUT);
+  const scout=await ask('scout',analysis.profile?.id==='uniswap-v4-paymaster'?'Inspect the Uniswap v4 paymaster profile: StateView.getSlot0 dependency, stake vs unstaked external storage reads, and historical public/alternative evidence. Cite fact IDs. Do not invent fresh admissions.':'Inspect this exact submitted contract and send cited opportunities/questions to Mutation. No fixture matching. You can request source ranges or ABI facts if necessary.',SCOUT);
   if(scout.findings.some(f=>f.factIds.some(id=>!analysis.sourceFacts.some(a=>a.id===id))))throw Error('SCOUT_REFERENCE_MISMATCH');
   send(agents.scout.id,'mutation','SOURCE_BACKED_OPPORTUNITIES',{findings:scout.findings,opportunities:scout.opportunities,questions:scout.questions});
-  const mutation=await ask('mutation','Generate one or two distinct proposals tied to this analysisId and sourceDigest. Choose actual compiled functions and scalar string arguments. ABI_REJECTION intentionally tests malformed/out-of-range typed input; contract require/revert behavior cannot be executed here.',MUTATION);
+  const mutation=await ask('mutation','Generate one or two distinct proposals tied to this analysisId and sourceDigest. Prefer encodable ABI_ENCODING mutations of real compiled functions (PASS when expected ACCEPT). Use domain ABI_TOOL_TEST with negativeObjective ABI_REJECTION only for deliberate encoder conformance. Do not claim require/revert or admission without the matching tool. Out-of-range ints in ABI_ENCODING are invalid.',MUTATION);
   let entries=await validateBatch(addBatch(mutation));
   const rejected=entries.find(e=>['INVALID','CONDITIONAL','UNSUPPORTED'].includes(e.feasibility.effective));
   if(rejected){

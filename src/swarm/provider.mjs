@@ -2,7 +2,7 @@ import {createHash} from 'node:crypto';
 import {HYPOTHESIS_SCHEMA,validateHypothesis} from './hypothesis.mjs';
 export const DEFAULT_OPENROUTER_MODEL='anthropic/claude-sonnet-4.6';
 export const DEFAULT_LIMITS={maxCalls:6,maxTotalTokens:60000,maxCostUSD:0.50,maxOutputTokens:2000,maxInputBytes:24000,timeoutMs:45000};
-export const MAX_LIMITS={...DEFAULT_LIMITS,maxCalls:10};
+export const MAX_LIMITS={...DEFAULT_LIMITS,maxCalls:10,maxCostUSD:1,maxTotalTokens:120000};
 const digest=x=>createHash('sha256').update(x).digest('hex');
 const bounded=(n,min,max,name)=>{if(!Number.isFinite(n)||n<min||n>max)throw new Error('Invalid provider budget '+name);return n;};
 const modelName=env=>!env.OPENROUTER_MODEL||env.OPENROUTER_MODEL.toLowerCase()==='sonnet'?DEFAULT_OPENROUTER_MODEL:env.OPENROUTER_MODEL;

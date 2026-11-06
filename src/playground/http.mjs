@@ -2,18 +2,20 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {randomUUID} from 'node:crypto';
 import path from 'node:path';
 import {readJsonObject,ApiError} from '../http-errors.mjs';
-import {sha256} from '../analysis/model.mjs';
+import {sha256,digest} from '../analysis/model.mjs';
 import {openRouterStatus,OpenRouterProvider} from '../swarm/provider.mjs';
 import {analyzeContract,COMPILE_LIMITS} from './compile.mjs';
 import {investigateContract,INVESTIGATION_LIMITS} from './investigate.mjs';
 import {TOOLS,replayDescriptor} from './tools.mjs';
+import {PROFILES,loadUniswapProfileAnalysis} from './profiles.mjs';
+import {budgetStatus,attachSprintBudget,SPRINT_BUDGET_USD} from './budget.mjs';
 const UUID=/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i,HASH=/^[\da-f]{64}$/;
 const reportDigest=value=>{const text=JSON.stringify(value);if(Buffer.byteLength(text)>2*1024*1024)throw Error('REPORT_SIZE_LIMIT');return sha256(text);};
 export function reportMarkdown(report){
  const safe=x=>String(x??'').replace(/[<>`]/g,'').replace(/\r?\n/g,' ');
- return ['# FrameFuzz contract investigation',`Source: ${safe(report.source)}`,`Contract: ${safe(report.contractName)}`,`Source digest: ${report.sourceDigest}`,`Analysis: ${report.analysisId}`,`Status: ${report.status}`,`Model requests: ${report.provider.calls}; accounted USD ${report.provider.costUSD}`,`Execution: local compiler/ABI/AST only; EVM/admission verified: false`,
+ return ['# FrameFuzz contract investigation',`Source: ${safe(report.source)}`,`Profile: ${safe(report.profileId??'byoc')}`,`Contract: ${safe(report.contractName)}`,`Source digest: ${report.sourceDigest}`,`Analysis: ${report.analysisId}`,`Status: ${report.status}`,`Model requests: ${report.provider.calls}; accounted USD ${report.provider.costUSD}`,`Execution: local compiler/ABI/AST or historical evidence; EVM/admission verified: ${report.admissionVerified===true}`,
   ...Object.values(report.agents).map(a=>`Agent ${safe(a.id)}: ${a.calls} calls, ${safe(a.state)}. ${safe(a.objective)}`),
-  ...report.workspace.proposals.flatMap(e=>[`## ${safe(e.proposal.id)} — ${safe(e.state)}`,`Function: ${safe(e.proposal.functionSignature)}. Domain: ${safe(e.proposal.domain)}`,`Original: ${safe(JSON.stringify(e.proposal.originalArgs))}; mutation: ${safe(JSON.stringify(e.proposal.mutatedArgs))}`,`Feasibility: ${safe(e.feasibility?.effective)}. ${safe(e.feasibility?.deterministic.reason)}`,`Outcome: ${safe(e.outcome?.classification)}; expected ${safe(e.outcome?.expectedVerdict)}; observed ${safe(e.outcome?.observedVerdict??'NONE')}`,`Reproduction: ${safe(e.reproduction?.status??'NOT_REQUESTED')}`]),
+  ...report.workspace.proposals.flatMap(e=>[`## ${safe(e.proposal.id)} — ${safe(e.state)}`,`Function/tool: ${safe(e.proposal.functionSignature)} / ${safe(e.proposal.tool)}. Domain: ${safe(e.proposal.domain)}`,`Original: ${safe(JSON.stringify(e.proposal.originalArgs))}; mutation: ${safe(JSON.stringify(e.proposal.mutatedArgs))}`,`Feasibility: ${safe(e.feasibility?.effective)}. ${safe(e.feasibility?.deterministic.reason)}`,`Outcome: ${safe(e.outcome?.classification)}; domain ${safe(e.outcome?.outcomeDomain)}; expected ${safe(e.outcome?.expectedVerdict)}; observed ${safe(e.outcome?.observedVerdict??'NONE')}`,`Reproduction: ${safe(e.reproduction?.status??'NOT_REQUESTED')}`]),
   '## Limitations',...(report.limitations??[]).map(safe),`Content digest: ${report.contentDigest}`,''].join('\n\n');
 }
 export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,setRunning,json,providerFactory}){
@@ -26,31 +28,41 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
  return async(req,res,url)=>{
   if(!url.pathname.startsWith('/api/playground/'))return false;
   if(req.method==='GET'&&url.pathname==='/api/playground/config'){
-   const provider=openRouterStatus(env);json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,canStart:!offlineDemo&&env.FRAMEFUZZ_SWARM==='on'&&(provider.configured||!!providerFactory),offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false});return true;
+   const provider=openRouterStatus(env),budget=await budgetStatus(resultDir);
+   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId},canStart:!offlineDemo&&env.FRAMEFUZZ_SWARM==='on'&&(provider.configured||!!providerFactory),offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,chainBroadcastEnabled:false});return true;
   }
+  if(req.method==='GET'&&url.pathname==='/api/playground/budget'){json(res,200,await budgetStatus(resultDir));return true;}
   if(req.method==='POST'&&url.pathname==='/api/playground/analyze'){
-   const input=await readJsonObject(req,['source','abi','contractName','role'],120000);
+   const input=await readJsonObject(req,['source','abi','contractName','role','profile'],120000);
    for(const [key,entry]of analyses)if(Date.now()-entry.at>600000)analyses.delete(key);
    if(analyses.size>=10)analyses.delete(analyses.keys().next().value);
    const c=new AbortController(),abort=()=>{if(!res.writableEnded)c.abort();};res.once('close',abort);
-   try{const analysis=await analyzeContract(input,{signal:c.signal});if(analysis.status==='READY')analyses.set(analysis.analysisId,{analysis,at:Date.now()});json(res,200,analysis);}
-   catch(e){throw new ApiError(e.message==='COMPILER_BUSY'?429:e.message.includes('TIMEOUT')?504:400,'COMPILER_REJECTED',e.message);}
+   try{
+    let analysis;
+    if(input.profile==='uniswap-v4-paymaster')analysis=await loadUniswapProfileAnalysis();
+    else if(input.profile==='regression-registry'){const sourceDigest=digest({profile:'regression-registry'});analysis={status:'READY',analysisId:digest({profile:'regression-registry',v:1}),sourceDigest,source:'',contractName:'RegressionRegistry',compiler:null,functions:[],sourceFacts:[{id:'registry',kind:'meta',file:'src/arkiv/registry.mjs',startLine:1,endLine:1,sourceDigest,claim:'Arkiv Rabdi publish/query/import uses explicit submit and funded writer'}],capabilities:['ARKIV_MANIFEST','UNSIGNED_IMPORT'],missingPrerequisites:['EXPLICIT_PUBLISH_APPROVAL','FUNDED_ARKIV_WRITER'],diagnostics:[],structure:{functions:[],variables:[],events:[],guards:[],externalCalls:[]},declaredRole:'UNKNOWN',detectedRole:{role:'UNKNOWN',basis:'Registry workflow'},contracts:[],limitations:['No automatic Arkiv write'],profile:{id:'regression-registry',title:'Regression Registry',summary:PROFILES[2].summary}};}
+    else analysis=await analyzeContract(input,{signal:c.signal});
+    if(analysis.status==='READY')analyses.set(analysis.analysisId,{analysis,at:Date.now()});json(res,200,analysis);
+   }catch(e){throw new ApiError(e.message==='COMPILER_BUSY'?429:e.message.includes('TIMEOUT')?504:400,'COMPILER_REJECTED',e.message);}
    finally{res.removeListener('close',abort);}return true;
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/start'){
-   const input=await readJsonObject(req,['analysisId','sourceDigest','authorizeProvider']);
+   const input=await readJsonObject(req,['analysisId','sourceDigest','authorizeProvider','budgetUSD']);
    if(!HASH.test(input.analysisId??'')||!HASH.test(input.sourceDigest??'')||input.authorizeProvider!==true)throw new ApiError(400,'CONSENT_OR_IDENTITY','Exact analysis/source identity and deliberate consent required');
    if(offlineDemo||env.FRAMEFUZZ_SWARM!=='on'||!providerFactory&&!env.OPENROUTER_API_KEY)throw new ApiError(409,'PROVIDER_DISABLED','Investigation requires normal mode, FRAMEFUZZ_SWARM=on, configured provider and consent; compilation remains available offline');
    const cached=analyses.get(input.analysisId);if(!cached||Date.now()-cached.at>600000||cached.analysis.sourceDigest!==input.sourceDigest)throw new ApiError(409,'STALE_ANALYSIS','Analyze the exact current source/selection again');
    if(getRunning())throw new ApiError(409,'BUSY','An experiment is already running');
    if(jobs.size>=10){const old=[...jobs].find(([,j])=>j.state!=='RUNNING');if(old)jobs.delete(old[0]);else throw new ApiError(429,'JOB_LIMIT','Investigation capacity reached');}
-   const id=randomUUID(),controller=new AbortController(),job={state:'RUNNING',controller,timeline:[],report:null};jobs.set(id,job);setRunning(true);json(res,202,{id,state:job.state,sourceDigest:input.sourceDigest,transport:providerFactory?'MOCK_LLM_TRANSPORT':'OPENROUTER'});
-   setImmediate(async()=>{try{
-    const provider=providerFactory?providerFactory():new OpenRouterProvider({env,limits:{maxCalls:10}});
+   const profileId=cached.analysis.profile?.id??'byoc';
+   const maxUSD=typeof input.budgetUSD==='number'&&input.budgetUSD>0&&input.budgetUSD<=SPRINT_BUDGET_USD?input.budgetUSD:(profileId==='uniswap-v4-paymaster'?0.35:0.55);
+   const id=randomUUID(),controller=new AbortController(),job={state:'RUNNING',controller,timeline:[],report:null};jobs.set(id,job);setRunning(true);json(res,202,{id,state:job.state,sourceDigest:input.sourceDigest,transport:providerFactory?'MOCK_LLM_TRANSPORT':'OPENROUTER',budgetUSD:maxUSD,profileId});
+   setImmediate(async()=>{let provider;try{
+    provider=providerFactory?providerFactory():attachSprintBudget(new OpenRouterProvider({env,limits:{maxCalls:8,maxCostUSD:maxUSD,maxTotalTokens:60000}}),resultDir,profileId+':'+id,{maxUSD});
     const report=await investigateContract(cached.analysis,{id,provider,authorizeProvider:true,signal:controller.signal,onEvent:e=>job.timeline.push(e)});
-    report.contentDigest=reportDigest(report);job.report=report;job.state=report.status;
+    report.profileId=profileId;report.contentDigest=reportDigest(report);job.report=report;job.state=report.status;
+    await provider.settleSprint?.({failed:report.status!=='COMPLETE'});
     await mkdir(directory,{recursive:true});await writeFile(path.join(directory,id+'.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
-   }catch{job.state=controller.signal.aborted?'CANCELLED':'INCOMPLETE';job.error='Investigation stopped; no chain transaction was sent';}finally{setRunning(false);}});return true;
+   }catch(e){job.state=controller.signal.aborted?'CANCELLED':'INCOMPLETE';job.error=provider?.protect?.(e.message)??'Investigation stopped; no chain transaction was sent';try{await provider?.settleSprint?.({failed:true});}catch{}}finally{setRunning(false);}});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/job'){
    const job=await load(url.searchParams.get('id'));json(res,200,{state:job.state,timeline:job.timeline,report:job.report,error:job.error});return true;
@@ -66,6 +78,7 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
   if(req.method==='POST'&&url.pathname==='/api/playground/replay'){
    const {id,entryId}=await readJsonObject(req,['id','entryId']);if(typeof entryId!=='string'||entryId.length>200)throw new ApiError(400,'ENTRY','Invalid proposal selection');const job=await load(id),report=job.report;
    const entry=report?.workspace.proposals.find(e=>e.entryId===entryId&&e.state==='EXECUTED');if(!entry)throw new ApiError(409,'NO_DESCRIPTOR','Choose an executed local descriptor');
+   if(report.profileId==='uniswap-v4-paymaster'||entry.proposal.tool==='historical_evidence'){json(res,200,{result:entry.execution,mode:'HISTORICAL_OR_PROFILE_REPLAY_REFUSED',notice:'Historical/profile descriptors are not re-executed as fresh admissions',broadcasts:0,paidCalls:0});return true;}
    const result=await replayDescriptor(entry.execution.descriptor,report.reproductionInput);json(res,200,{result,mode:'LOCAL_STATIC_REPLAY',broadcasts:0,paidCalls:0});return true;
   }
   json(res,404,{error:'Unknown Playground route'});return true;

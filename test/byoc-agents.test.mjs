@@ -12,14 +12,14 @@ test('unseen contract drives independent agent histories, real feedback repair a
  const repair=seen.filter(x=>x.role==='mutation')[1].input;assert.ok(repair.received.some(m=>m.type==='OBJECTION_AND_REPAIR_REQUIREMENTS'));assert.ok(repair.messages.some(m=>m.role==='assistant'));
  assert.ok(seen.find(x=>x.role==='scout').input.facts.functions.some(f=>f.signature==='addQuota(uint8)'));
  const entries=report.workspace.proposals;assert.equal(entries[0].outcome.classification,'SKIPPED_INVALID');assert.equal(entries[1].state,'EXECUTED');assert.equal(entries[1].proposal.mutatedArgs[0],'256');
- assert.equal(entries[1].execution.actual.error,'ABI_INTEGER_RANGE');assert.equal(entries[1].outcome.classification,'XFAIL');assert.equal(entries[1].outcome.outcomeDomain,'ABI_ENCODING');
+ assert.equal(entries[1].proposal.domain,'ABI_TOOL_TEST');assert.equal(entries[1].execution.actual.error,'ABI_INTEGER_RANGE');assert.equal(entries[1].outcome.classification,'XFAIL');assert.equal(entries[1].outcome.outcomeDomain,'ABI_TOOL_TEST');
  assert.equal(entries[1].reproduction.status,'LOCAL_TOOL_MATCH');assert.ok(report.workspace.messages.some(m=>m.type==='FOLLOW_UP_REQUEST'));assert.ok(report.timeline.some(e=>e.stage==='FOLLOW_UP_DEFERRED'));
  assert.ok(report.workspace.toolOutputs.some(t=>t.tool==='query_abi'));assert.equal(report.broadcasts,0);assert.equal(report.evmExecuted,false);
  assert.ok(!report.agents.scout.history.some(m=>m.role==='assistant'&&m.content.includes('mutatedArgs')),'Private histories must not be aliased or automatically copied');
 });
 test('Critic can cause one new model-selected mutation and new Validator/tool work without hidden canned selection',async()=>{
  const r=await investigateContract(await analysis(),{provider:byocTestProvider({forceRepair:false,followUp:true}),authorizeProvider:true});assert.equal(r.status,'COMPLETE',r.error);
- assert.equal(r.workspace.proposals.length,2);assert.equal(r.workspace.proposals[1].proposal.id,'edge-follow');assert.equal(r.workspace.proposals[1].outcome.classification,'XFAIL');
+ assert.equal(r.workspace.proposals.length,2);assert.equal(r.workspace.proposals[1].proposal.id,'edge-follow');assert.equal(r.workspace.proposals[1].outcome.classification,'PASS');assert.equal(r.workspace.proposals[1].outcome.outcomeDomain,'ABI_ENCODING');
  assert.ok(r.agents.mutation.observations.some(m=>m.type==='ACTUAL_OBSERVATION'));assert.equal(r.agents.mutation.calls,2);assert.equal(r.agents.validator.calls,2);
 });
 test('two unseen contracts yield different real facts, identities, signatures and encoded tools',async()=>{
@@ -28,10 +28,12 @@ test('two unseen contracts yield different real facts, identities, signatures an
  assert.notEqual(executeProposal(pa,a).actual.mutatedCalldata,executeProposal(pb,b).actual.mutatedCalldata);
  assert.equal(checkProposal(pa,b).decision,'INVALID');await assert.rejects(replayDescriptor(executeProposal(pa,a).descriptor,{source:CONTRACT_A.replace('addQuota','addQuotaChanged')}),/STALE/);
 });
-test('guards reject accidental type errors and fake fixture identities but retain intentional negative types',async()=>{
- const a=await analysis(),p=byocProposal(agentFacts(a));const invalid={...p,mutatedArgs:['wrong-number']};assert.equal(checkProposal(invalid,a).decision,'INVALID');
- const negative={...invalid,expectedVerdict:'REJECT',negativeObjective:'ABI_REJECTION'};assert.equal(checkProposal(negative,a).decision,'EXECUTABLE');assert.equal(executeProposal(negative,a).outcome.classification,'XFAIL');
- assert.equal(executeProposal({...negative,mutatedArgs:['2']},a).outcome.classification,'XPASS');
+test('guards reject accidental out-of-range ABI as SKIPPED_INVALID but retain explicit ABI_TOOL_TEST',async()=>{
+ const a=await analysis(),p=byocProposal(agentFacts(a));
+ const accidental={...p,mutatedArgs:['256'],expectedVerdict:'REJECT',negativeObjective:'ABI_REJECTION'};assert.equal(checkProposal(accidental,a).decision,'INVALID');
+ const typed={...accidental,domain:'ABI_TOOL_TEST'};assert.equal(checkProposal(typed,a).decision,'EXECUTABLE');assert.equal(executeProposal(typed,a).outcome.classification,'XFAIL');assert.equal(executeProposal(typed,a).outcome.outcomeDomain,'ABI_TOOL_TEST');
+ const wrong={...p,mutatedArgs:['wrong-number']};assert.equal(checkProposal(wrong,a).decision,'INVALID');
+ assert.equal(executeProposal({...p,mutatedArgs:['2']},a).outcome.classification,'PASS');
  assert.equal(checkProposal({...p,domain:'PUBLIC_ADMISSION',preconditions:['FUNDING','FRAME_LAYOUT']},a).decision,'CONDITIONAL');
  assert.equal(checkProposal(p,a,{seen:new Set([proposalKey(p)])}).decision,'DUPLICATE');
  const similar=await analyzeContract({source:CONTRACT_A.replace('FreshQuotaJournal','SenderValidatorUnsafe')});assert.equal(similar.detectedRole.role,'UNKNOWN');assert.ok(!similar.capabilities.includes('OWNED_OFFLINE_CRYPTO'));
