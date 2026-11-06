@@ -1,5 +1,7 @@
 # Build status â€” Arkiv regression registry and mutation engine
 
+Implementation committed as `9e5e4c4`; evidence checkpoint includes sanitized CLI/dashboard reports, standalone regression descriptors, two CLI replays, read-only preflight, screenshot and SHA-256 manifest. No real provider demonstration or push.
+
 ## OpenRouter investigator checkpoint — November 6, 2026
 
 Implemented opt-in bounded offline investigator, OpenRouter Sonnet (`anthropic/claude-sonnet-4.6`, alias `sonnet`), three perspective proposals, deterministic selection, actual ECDSA experiment, observation-conditioned follow-up, fresh-process regression replay, exports and additive Swarm Lab controls. Existing premium shell/Technical Briefing and historical LIVE evidence preserved. **92 tests pass / 0 fail** (83 baseline +9 investigator tests). Evidence guide digest check passes.
@@ -11,6 +13,8 @@ Executed scripted record(1,73) and record(19,10): unsafe owner recovered true, s
 Fresh eight-request read-only preflight: head0x98 age3s, sidecar boot ID ef0fccbaca0c428c, sponsor code empty/balance0. This is consistent with devnet restart/reset, not operator confirmation. Prior disk-full evidence is historical; current write health/hash compatibility unverified. No deployer/owner context. No blockchain writes, Arkiv writes, automatic retries or pushes performed. See docs/INVESTIGATOR.md and docs/LIVE_COMPATIBILITY_AUDIT.md. Earlier milestones below are historical checkpoints, superseded where stated.
 
 ### Exact verification commands and observations
+
+- `node bin/framefuzz.mjs swarm replay evidence/investigator/2026-11-06/regressions.json --variant 0 --output runs/descriptor-only-replay.json` with flagon: passed with standalone descriptors, no transcript input.
 
 - `npm test`: initial restricted-network attempt could not complete loopback-based cases; reran with loopback permitted: **92 passed, 0 failed**, duration19.393s. All original83 retained;9 mocked/local investigator tests. No paid API calls or chain broadcasts in tests.
 - `node --check web/js/app.js` and `node --check src/swarm/http.mjs`: passed.

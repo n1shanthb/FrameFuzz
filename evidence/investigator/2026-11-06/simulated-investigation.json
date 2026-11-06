@@ -1,0 +1,902 @@
+{
+  "schema": "framefuzz.investigation.v1",
+  "generatedAt": "2026-11-06T06:46:19.145Z",
+  "source": "SWARM_SIMULATED — NO REAL LLM",
+  "executionClass": "OFFLINE_SIGNATURE_BINDING",
+  "loop": [
+    "Inspect",
+    "Hypothesize",
+    "Select Mutation",
+    "Execute",
+    "Observe",
+    "Revise",
+    "Verify",
+    "Export"
+  ],
+  "perspectives": [
+    {
+      "id": "validation",
+      "name": "Validation Researcher",
+      "focus": "Inspect signature commitment, omitted calldata, execution approval and frame layout."
+    },
+    {
+      "id": "state",
+      "name": "State Researcher",
+      "focus": "Inspect nonce isolation, immutable context, payer scope and state-drift limitations. Stay within executable calldata tests."
+    },
+    {
+      "id": "differential",
+      "name": "Differential Researcher",
+      "focus": "Compare safe/unsafe authorization and distinguish hash-profile compatibility, policy claims and actual offline evidence."
+    }
+  ],
+  "proposals": [
+    {
+      "perspective": "validation",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "operation",
+        "operation": 7,
+        "parameter": 10,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "PROPOSAL"
+    },
+    {
+      "perspective": "state",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "parameter",
+        "operation": 1,
+        "parameter": 73,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "PROPOSAL"
+    },
+    {
+      "perspective": "differential",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "both",
+        "operation": 11,
+        "parameter": 271,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "PROPOSAL"
+    },
+    {
+      "perspective": "investigator-revision",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "operation",
+        "operation": 19,
+        "parameter": 10,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted follow-up covers another calldata field; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "REVISION"
+    }
+  ],
+  "decisions": [
+    {
+      "selected": {
+        "perspective": "state",
+        "hypothesis": {
+          "suite": "frame-authorization",
+          "assumption": "Deterministic fallback tests omitted calldata commitment",
+          "change": "parameter",
+          "operation": 1,
+          "parameter": 73,
+          "unsafePrediction": "OWNER_RECOVERED",
+          "safePrediction": "OWNER_NOT_RECOVERED",
+          "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+          "revision": "Scripted initial proposal; no LLM chose this"
+        },
+        "origin": "DETERMINISTIC_FALLBACK",
+        "phase": "PROPOSAL",
+        "key": "1:73",
+        "score": 100,
+        "coverageReason": "New field-family coverage"
+      },
+      "candidates": [
+        {
+          "perspective": "state",
+          "hypothesis": {
+            "suite": "frame-authorization",
+            "assumption": "Deterministic fallback tests omitted calldata commitment",
+            "change": "parameter",
+            "operation": 1,
+            "parameter": 73,
+            "unsafePrediction": "OWNER_RECOVERED",
+            "safePrediction": "OWNER_NOT_RECOVERED",
+            "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+            "revision": "Scripted initial proposal; no LLM chose this"
+          },
+          "origin": "DETERMINISTIC_FALLBACK",
+          "phase": "PROPOSAL",
+          "key": "1:73",
+          "score": 100,
+          "coverageReason": "New field-family coverage"
+        },
+        {
+          "perspective": "differential",
+          "hypothesis": {
+            "suite": "frame-authorization",
+            "assumption": "Deterministic fallback tests omitted calldata commitment",
+            "change": "both",
+            "operation": 11,
+            "parameter": 271,
+            "unsafePrediction": "OWNER_RECOVERED",
+            "safePrediction": "OWNER_NOT_RECOVERED",
+            "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+            "revision": "Scripted initial proposal; no LLM chose this"
+          },
+          "origin": "DETERMINISTIC_FALLBACK",
+          "phase": "PROPOSAL",
+          "key": "11:271",
+          "score": 100,
+          "coverageReason": "New field-family coverage"
+        },
+        {
+          "perspective": "validation",
+          "hypothesis": {
+            "suite": "frame-authorization",
+            "assumption": "Deterministic fallback tests omitted calldata commitment",
+            "change": "operation",
+            "operation": 7,
+            "parameter": 10,
+            "unsafePrediction": "OWNER_RECOVERED",
+            "safePrediction": "OWNER_NOT_RECOVERED",
+            "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+            "revision": "Scripted initial proposal; no LLM chose this"
+          },
+          "origin": "DETERMINISTIC_FALLBACK",
+          "phase": "PROPOSAL",
+          "key": "7:10",
+          "score": 100,
+          "coverageReason": "New field-family coverage"
+        }
+      ],
+      "rejected": []
+    },
+    {
+      "selected": {
+        "perspective": "investigator-revision",
+        "hypothesis": {
+          "suite": "frame-authorization",
+          "assumption": "Deterministic fallback tests omitted calldata commitment",
+          "change": "operation",
+          "operation": 19,
+          "parameter": 10,
+          "unsafePrediction": "OWNER_RECOVERED",
+          "safePrediction": "OWNER_NOT_RECOVERED",
+          "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+          "revision": "Scripted follow-up covers another calldata field; no LLM chose this"
+        },
+        "origin": "DETERMINISTIC_FALLBACK",
+        "phase": "REVISION",
+        "key": "19:10",
+        "score": 100,
+        "coverageReason": "New field-family coverage"
+      },
+      "candidates": [
+        {
+          "perspective": "investigator-revision",
+          "hypothesis": {
+            "suite": "frame-authorization",
+            "assumption": "Deterministic fallback tests omitted calldata commitment",
+            "change": "operation",
+            "operation": 19,
+            "parameter": 10,
+            "unsafePrediction": "OWNER_RECOVERED",
+            "safePrediction": "OWNER_NOT_RECOVERED",
+            "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+            "revision": "Scripted follow-up covers another calldata field; no LLM chose this"
+          },
+          "origin": "DETERMINISTIC_FALLBACK",
+          "phase": "REVISION",
+          "key": "19:10",
+          "score": 100,
+          "coverageReason": "New field-family coverage"
+        }
+      ],
+      "rejected": []
+    }
+  ],
+  "experiments": [
+    {
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "parameter",
+        "operation": 1,
+        "parameter": 73,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "perspective": "state",
+      "selection": {
+        "score": 100,
+        "coverageReason": "New field-family coverage"
+      },
+      "execution": {
+        "mutationValues": {
+          "operation": 1,
+          "parameter": 73
+        },
+        "calldata": "0x377144a600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000049",
+        "observation": {
+          "executionClass": "OFFLINE_SIGNATURE_BINDING",
+          "semanticProperties": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false
+            }
+          },
+          "results": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true,
+              "authorizedComputedHash": "0x70257c96153bd47578fa9a8e931138fd50e46783da1d83aa4c03de277121a30b",
+              "tamperedComputedHash": "0x358d064f000178d8b062467c257c563ebcf656b57410e7708270acd19ce3c5d6"
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false,
+              "authorizedComputedHash": "0x64e9423e0f88d799a7dd5abdd74302dc2bea79423fc25feec378ec09cac80874",
+              "tamperedComputedHash": "0x0a7431ad8db8372de04ed61ed9e261f6aa492496bbb7fb931bd9281d9f8acc58"
+            }
+          },
+          "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+          "finding": false,
+          "evmExecuted": false,
+          "admissionVerified": false,
+          "actionExecutionVerified": false,
+          "broadcasts": 0
+        },
+        "predictionSupported": {
+          "unsafe": true,
+          "safe": true
+        },
+        "descriptor": {
+          "schema": "framefuzz.offline-regression.v1",
+          "executionClass": "OFFLINE_SIGNATURE_BINDING",
+          "mutation": {
+            "schema": "framefuzz.frame-mutation.v2",
+            "definition": {
+              "version": "framefuzz.semantic.v2",
+              "suite": "frame-authorization",
+              "seed": 42,
+              "authorizedAction": {
+                "operation": 1,
+                "parameter": 10
+              },
+              "mutation": {
+                "type": "replace-action-calldata",
+                "frameIndex": 2,
+                "operation": 1,
+                "parameter": 73
+              },
+              "invariants": {
+                "retainTarget": true,
+                "retainOwnerAuthorization": true,
+                "retainNonce": true,
+                "frameCount": 3
+              }
+            },
+            "definitionDigest": "5a196061ee978c1cafd57357d914e68496ad604e9166b403c505de9154f77864",
+            "authorized": {
+              "operation": 1,
+              "parameter": 10,
+              "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+            },
+            "tampered": {
+              "operation": 1,
+              "parameter": 73,
+              "data": "0x377144a600000000000000000000000000000000000000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000049"
+            },
+            "targetUnchanged": true,
+            "witnessPolicy": "Reuse the original authorization for A; never sign B"
+          },
+          "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+          "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+          "sourceDigests": {
+            "contracts/SenderValidatorUnsafe.sol": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "contracts/SenderValidatorSafe.sol": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9",
+            "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+            "contracts/OwnedValidatorBase.sol": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d",
+            "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+            "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+            "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+            "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+            "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+            "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+          },
+          "semanticProperties": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false
+            }
+          },
+          "contentDigest": "ec68b648849d0f3163d0a08dd2addef8f10743b991c7fcfe567287bacfba4282"
+        }
+      },
+      "independentReplay": {
+        "schema": "framefuzz.independent-replay.v1",
+        "pid": 33920,
+        "descriptorDigest": "ec68b648849d0f3163d0a08dd2addef8f10743b991c7fcfe567287bacfba4282",
+        "executionClass": "OFFLINE_SIGNATURE_BINDING",
+        "sourceHashesVerified": true,
+        "equivalentSemanticProperties": true,
+        "observation": {
+          "executionClass": "OFFLINE_SIGNATURE_BINDING",
+          "semanticProperties": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false
+            }
+          },
+          "results": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true,
+              "authorizedComputedHash": "0x4ef9621d87efc463dca84db6e3bff555e28f1b57c09dc4e7a75171d793a67b1d",
+              "tamperedComputedHash": "0xd0a6d3029105a3dea216ac43c25fa9f7225fd066aef2cccca114fcc8bc869931"
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false,
+              "authorizedComputedHash": "0xe380b146d68a25f0aa01d1fd9abca0f435c33fce110910abb972211c95ad0e32",
+              "tamperedComputedHash": "0xc2162f682361c1d6cc85686d6f4897a751bcf816bed05e10393912b415b7601d"
+            }
+          },
+          "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+          "finding": false,
+          "evmExecuted": false,
+          "admissionVerified": false,
+          "actionExecutionVerified": false,
+          "broadcasts": 0
+        },
+        "liveVerified": false,
+        "finding": false
+      }
+    },
+    {
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "operation",
+        "operation": 19,
+        "parameter": 10,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted follow-up covers another calldata field; no LLM chose this"
+      },
+      "perspective": "investigator-revision",
+      "selection": {
+        "score": 100,
+        "coverageReason": "New field-family coverage"
+      },
+      "execution": {
+        "mutationValues": {
+          "operation": 19,
+          "parameter": 10
+        },
+        "calldata": "0x377144a60000000000000000000000000000000000000000000000000000000000000013000000000000000000000000000000000000000000000000000000000000000a",
+        "observation": {
+          "executionClass": "OFFLINE_SIGNATURE_BINDING",
+          "semanticProperties": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false
+            }
+          },
+          "results": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true,
+              "authorizedComputedHash": "0x81de3e854e20b008b9d6ed62e4a73073d319d10c587bbd30af66c8c49533cb1f",
+              "tamperedComputedHash": "0xc008d0b16ec06e1e4178425095c6e72de1452fa38e67b6ce4b4621feed930a68"
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false,
+              "authorizedComputedHash": "0x360f9f91f1420be0d163aae55f873e8f7399cfcdb171690454d34382598c895a",
+              "tamperedComputedHash": "0x9bed991cc4950549405f300b97b850e5d2b25b0372e4980004f9274947c2a39e"
+            }
+          },
+          "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+          "finding": false,
+          "evmExecuted": false,
+          "admissionVerified": false,
+          "actionExecutionVerified": false,
+          "broadcasts": 0
+        },
+        "predictionSupported": {
+          "unsafe": true,
+          "safe": true
+        },
+        "descriptor": {
+          "schema": "framefuzz.offline-regression.v1",
+          "executionClass": "OFFLINE_SIGNATURE_BINDING",
+          "mutation": {
+            "schema": "framefuzz.frame-mutation.v2",
+            "definition": {
+              "version": "framefuzz.semantic.v2",
+              "suite": "frame-authorization",
+              "seed": 42,
+              "authorizedAction": {
+                "operation": 1,
+                "parameter": 10
+              },
+              "mutation": {
+                "type": "replace-action-calldata",
+                "frameIndex": 2,
+                "operation": 19,
+                "parameter": 10
+              },
+              "invariants": {
+                "retainTarget": true,
+                "retainOwnerAuthorization": true,
+                "retainNonce": true,
+                "frameCount": 3
+              }
+            },
+            "definitionDigest": "b18553711319161732e580d5358b8e9f801a34b89505fa619ab92c44c82014ad",
+            "authorized": {
+              "operation": 1,
+              "parameter": 10,
+              "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+            },
+            "tampered": {
+              "operation": 19,
+              "parameter": 10,
+              "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000013000000000000000000000000000000000000000000000000000000000000000a"
+            },
+            "targetUnchanged": true,
+            "witnessPolicy": "Reuse the original authorization for A; never sign B"
+          },
+          "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+          "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+          "sourceDigests": {
+            "contracts/SenderValidatorUnsafe.sol": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "contracts/SenderValidatorSafe.sol": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9",
+            "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+            "contracts/OwnedValidatorBase.sol": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d",
+            "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+            "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+            "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+            "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+            "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+            "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+          },
+          "semanticProperties": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false
+            }
+          },
+          "contentDigest": "f2ec4312e709ba9a056144ecd4dc6515e5c803346243a5095576ea38b340edbb"
+        }
+      },
+      "independentReplay": {
+        "schema": "framefuzz.independent-replay.v1",
+        "pid": 19392,
+        "descriptorDigest": "f2ec4312e709ba9a056144ecd4dc6515e5c803346243a5095576ea38b340edbb",
+        "executionClass": "OFFLINE_SIGNATURE_BINDING",
+        "sourceHashesVerified": true,
+        "equivalentSemanticProperties": true,
+        "observation": {
+          "executionClass": "OFFLINE_SIGNATURE_BINDING",
+          "semanticProperties": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false
+            }
+          },
+          "results": {
+            "unsafe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": true,
+              "authorizedComputedHash": "0x2357c09539141e02d6a34817de9bf52891bafcf72eced58a4eb1bffa5ef9aab2",
+              "tamperedComputedHash": "0xba1d8134637b8c82cc9cca401dfde78a7b763f75355619fa27a84aa657e3a490"
+            },
+            "safe": {
+              "sameWitness": true,
+              "sameTarget": true,
+              "canonicalHashChanged": true,
+              "authorizedOwnerRecovered": true,
+              "tamperedOwnerRecovered": false,
+              "authorizedComputedHash": "0x68f62f14642295f13f9b0e363fafadeb87ab3cc5f790e4b99eb2105cde2116e9",
+              "tamperedComputedHash": "0xe84686c0adb56bf5c42f164053cf5054a04d7480c346820205142988e1d9ef8a"
+            }
+          },
+          "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+          "finding": false,
+          "evmExecuted": false,
+          "admissionVerified": false,
+          "actionExecutionVerified": false,
+          "broadcasts": 0
+        },
+        "liveVerified": false,
+        "finding": false
+      }
+    }
+  ],
+  "revisions": [
+    {
+      "perspective": "investigator-revision",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "operation",
+        "operation": 19,
+        "parameter": 10,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted follow-up covers another calldata field; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "REVISION"
+    }
+  ],
+  "timeline": [
+    {
+      "stage": "INSPECT",
+      "scope": "OFFLINE_SIGNATURE_BINDING",
+      "sourceFiles": [
+        "SenderValidatorUnsafe",
+        "SenderValidatorSafe",
+        "OwnedValidatorBase"
+      ],
+      "at": "2026-11-06T06:46:19.148Z"
+    },
+    {
+      "stage": "SIMULATED PROPOSAL",
+      "perspective": "validation",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "operation",
+        "operation": 7,
+        "parameter": 10,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "PROPOSAL",
+      "at": "2026-11-06T06:46:19.148Z"
+    },
+    {
+      "stage": "SIMULATED PROPOSAL",
+      "perspective": "state",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "parameter",
+        "operation": 1,
+        "parameter": 73,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "PROPOSAL",
+      "at": "2026-11-06T06:46:19.148Z"
+    },
+    {
+      "stage": "SIMULATED PROPOSAL",
+      "perspective": "differential",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "both",
+        "operation": 11,
+        "parameter": 271,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted initial proposal; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "PROPOSAL",
+      "at": "2026-11-06T06:46:19.148Z"
+    },
+    {
+      "stage": "SELECT MUTATION",
+      "mutationValues": {
+        "operation": 1,
+        "parameter": 73
+      },
+      "score": 100,
+      "reason": "New field-family coverage",
+      "at": "2026-11-06T06:46:19.157Z"
+    },
+    {
+      "stage": "OBSERVED OFFLINE",
+      "mutationValues": {
+        "operation": 1,
+        "parameter": 73
+      },
+      "observation": {
+        "executionClass": "OFFLINE_SIGNATURE_BINDING",
+        "semanticProperties": {
+          "unsafe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": true
+          },
+          "safe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": false
+          }
+        },
+        "results": {
+          "unsafe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": true,
+            "authorizedComputedHash": "0x70257c96153bd47578fa9a8e931138fd50e46783da1d83aa4c03de277121a30b",
+            "tamperedComputedHash": "0x358d064f000178d8b062467c257c563ebcf656b57410e7708270acd19ce3c5d6"
+          },
+          "safe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": false,
+            "authorizedComputedHash": "0x64e9423e0f88d799a7dd5abdd74302dc2bea79423fc25feec378ec09cac80874",
+            "tamperedComputedHash": "0x0a7431ad8db8372de04ed61ed9e261f6aa492496bbb7fb931bd9281d9f8acc58"
+          }
+        },
+        "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+        "finding": false,
+        "evmExecuted": false,
+        "admissionVerified": false,
+        "actionExecutionVerified": false,
+        "broadcasts": 0
+      },
+      "predictionSupported": {
+        "unsafe": true,
+        "safe": true
+      },
+      "at": "2026-11-06T06:46:21.883Z"
+    },
+    {
+      "stage": "INDEPENDENTLY REPRODUCED",
+      "descriptorDigest": "ec68b648849d0f3163d0a08dd2addef8f10743b991c7fcfe567287bacfba4282",
+      "pid": 33920,
+      "liveVerified": false,
+      "at": "2026-11-06T06:46:25.756Z"
+    },
+    {
+      "stage": "SIMULATED PROPOSAL",
+      "perspective": "investigator-revision",
+      "hypothesis": {
+        "suite": "frame-authorization",
+        "assumption": "Deterministic fallback tests omitted calldata commitment",
+        "change": "operation",
+        "operation": 19,
+        "parameter": 10,
+        "unsafePrediction": "OWNER_RECOVERED",
+        "safePrediction": "OWNER_NOT_RECOVERED",
+        "falsifier": "The retained witness does not split owner recovery in the deterministic engine",
+        "revision": "Scripted follow-up covers another calldata field; no LLM chose this"
+      },
+      "origin": "DETERMINISTIC_FALLBACK",
+      "phase": "REVISION",
+      "at": "2026-11-06T06:46:25.756Z"
+    },
+    {
+      "stage": "SELECT MUTATION",
+      "mutationValues": {
+        "operation": 19,
+        "parameter": 10
+      },
+      "score": 100,
+      "reason": "New field-family coverage",
+      "at": "2026-11-06T06:46:25.756Z"
+    },
+    {
+      "stage": "OBSERVED OFFLINE",
+      "mutationValues": {
+        "operation": 19,
+        "parameter": 10
+      },
+      "observation": {
+        "executionClass": "OFFLINE_SIGNATURE_BINDING",
+        "semanticProperties": {
+          "unsafe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": true
+          },
+          "safe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": false
+          }
+        },
+        "results": {
+          "unsafe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": true,
+            "authorizedComputedHash": "0x81de3e854e20b008b9d6ed62e4a73073d319d10c587bbd30af66c8c49533cb1f",
+            "tamperedComputedHash": "0xc008d0b16ec06e1e4178425095c6e72de1452fa38e67b6ce4b4621feed930a68"
+          },
+          "safe": {
+            "sameWitness": true,
+            "sameTarget": true,
+            "canonicalHashChanged": true,
+            "authorizedOwnerRecovered": true,
+            "tamperedOwnerRecovered": false,
+            "authorizedComputedHash": "0x360f9f91f1420be0d163aae55f873e8f7399cfcdb171690454d34382598c895a",
+            "tamperedComputedHash": "0x9bed991cc4950549405f300b97b850e5d2b25b0372e4980004f9274947c2a39e"
+          }
+        },
+        "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+        "finding": false,
+        "evmExecuted": false,
+        "admissionVerified": false,
+        "actionExecutionVerified": false,
+        "broadcasts": 0
+      },
+      "predictionSupported": {
+        "unsafe": true,
+        "safe": true
+      },
+      "at": "2026-11-06T06:46:25.784Z"
+    },
+    {
+      "stage": "INDEPENDENTLY REPRODUCED",
+      "descriptorDigest": "f2ec4312e709ba9a056144ecd4dc6515e5c803346243a5095576ea38b340edbb",
+      "pid": 19392,
+      "liveVerified": false,
+      "at": "2026-11-06T06:46:29.771Z"
+    }
+  ],
+  "realLLMCalls": 0,
+  "liveExecutions": 0,
+  "broadcasts": 0,
+  "evmVerified": false,
+  "admissionVerified": false,
+  "actionExecutionVerified": false,
+  "finding": false,
+  "status": "COMPLETE_OFFLINE_INVESTIGATION",
+  "provider": {
+    "provider": "none",
+    "model": null,
+    "calls": 0,
+    "requests": []
+  },
+  "uniqueExperiments": 2,
+  "uniqueHypotheses": 4,
+  "independentlyReproduced": true,
+  "limitations": [
+    "OFFLINE_SIGNATURE_BINDING is not EVM execution, admission or successful action execution",
+    "One model with three specialist perspectives, not three autonomous agents",
+    "Current EIP versus workshop hash compatibility remains a separate live blocker",
+    "No finding can be assigned by model prose; deterministic offline observations are not onchain vulnerabilities"
+  ]
+}
