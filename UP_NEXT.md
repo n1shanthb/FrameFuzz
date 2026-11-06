@@ -1,5 +1,15 @@
 # Up next
 
+## Latest OpenRouter attempt - November 6, 2026
+
+The root .env now exists, is Git-ignored, and exposes OPENROUTER_API_KEY when loaded with Node --env-file=.env. Key presence verified without displaying its value; credentials/authentication are not proven by presence alone. Model: anthropic/claude-sonnet-4.6.
+
+Executed: $env:FRAMEFUZZ_SWARM='on'; $env:OPENROUTER_MODEL='anthropic/claude-sonnet-4.6'; node --env-file=.env bin/framefuzz.mjs swarm investigate --mode openrouter --output evidence/investigator/2026-11-06/sonnet-investigation.json
+
+Observed INCOMPLETE: one provider request attempted, OpenRouter request timeout, zero validated model responses, zero generated/executed experiments, zero blockchain broadcasts. No generation ID, response usage or actual charge was received. The reported $0.06163 is a retained conservative reservation, not an observed bill. No automatic retry. Existing 92-test result unchanged; this checkpoint changes only documentation/evidence. Historical fallback and LIVE evidence remain untouched.
+
+Next: diagnose provider/network responsiveness before an explicitly bounded rerun; retain this failed capture and write any later run to a new file. Successful real model investigation remains unverified. Launch future configured processes with --env-file=.env; the existing dashboard process does not automatically load that file.
+
 Implementation committed as `9e5e4c4`; evidence checkpoint includes sanitized CLI/dashboard reports, standalone regression descriptors, two CLI replays, read-only preflight, screenshot and SHA-256 manifest. No real provider demonstration or push.
 
 ## First unfinished task — real Sonnet demonstration

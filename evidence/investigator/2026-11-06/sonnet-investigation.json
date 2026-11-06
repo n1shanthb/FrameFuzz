@@ -1,0 +1,97 @@
+{
+  "schema": "framefuzz.investigation.v1",
+  "generatedAt": "2026-11-06T07:01:47.719Z",
+  "source": "OPENROUTER_MODEL_INVESTIGATION",
+  "executionClass": "OFFLINE_SIGNATURE_BINDING",
+  "loop": [
+    "Inspect",
+    "Hypothesize",
+    "Select Mutation",
+    "Execute",
+    "Observe",
+    "Revise",
+    "Verify",
+    "Export"
+  ],
+  "perspectives": [
+    {
+      "id": "validation",
+      "name": "Validation Researcher",
+      "focus": "Inspect signature commitment, omitted calldata, execution approval and frame layout."
+    },
+    {
+      "id": "state",
+      "name": "State Researcher",
+      "focus": "Inspect nonce isolation, immutable context, payer scope and state-drift limitations. Stay within executable calldata tests."
+    },
+    {
+      "id": "differential",
+      "name": "Differential Researcher",
+      "focus": "Compare safe/unsafe authorization and distinguish hash-profile compatibility, policy claims and actual offline evidence."
+    }
+  ],
+  "proposals": [],
+  "decisions": [],
+  "experiments": [],
+  "revisions": [],
+  "timeline": [
+    {
+      "stage": "INSPECT",
+      "scope": "OFFLINE_SIGNATURE_BINDING",
+      "sourceFiles": [
+        "SenderValidatorUnsafe",
+        "SenderValidatorSafe",
+        "OwnedValidatorBase"
+      ],
+      "at": "2026-11-06T07:01:47.724Z"
+    }
+  ],
+  "realLLMCalls": 0,
+  "liveExecutions": 0,
+  "broadcasts": 0,
+  "evmVerified": false,
+  "admissionVerified": false,
+  "actionExecutionVerified": false,
+  "finding": false,
+  "status": "INCOMPLETE",
+  "error": "OpenRouter request timeout",
+  "provider": {
+    "provider": "OpenRouter",
+    "model": "anthropic/claude-sonnet-4.6",
+    "transport": "OPENROUTER",
+    "calls": 1,
+    "tokens": 8326,
+    "costUSD": 0.061630000000000004,
+    "limits": {
+      "maxCalls": 6,
+      "maxTotalTokens": 60000,
+      "maxCostUSD": 0.25,
+      "maxOutputTokens": 1000,
+      "maxInputBytes": 24000,
+      "timeoutMs": 45000
+    },
+    "requests": [
+      {
+        "call": 1,
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "bada4671ba81c1325dd75ec6cf9c8a9feab22a63fbc240680f1a85ba0175adce",
+        "inputBytes": 6326,
+        "reservedTokens": 8326,
+        "reservedCostUSD": 0.061630000000000004,
+        "state": "FAILED",
+        "error": "OpenRouter request timeout"
+      }
+    ]
+  },
+  "uniqueExperiments": 0,
+  "uniqueHypotheses": 0,
+  "independentlyReproduced": false,
+  "limitations": [
+    "OFFLINE_SIGNATURE_BINDING is not EVM execution, admission or successful action execution",
+    "One model with three specialist perspectives, not three autonomous agents",
+    "Current EIP versus workshop hash compatibility remains a separate live blocker",
+    "No finding can be assigned by model prose; deterministic offline observations are not onchain vulnerabilities"
+  ]
+}
