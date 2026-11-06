@@ -19,6 +19,7 @@ A developer can run a real signed EIP-8141 admission test, compare expected and 
 6. Improve the existing dashboard using saved evidence; run tests and CLI/dashboard smoke checks.
 
 ## Fixed decisions
+- Public identity: FrameFuzz stands on its own demonstrated functionality. Keep competitive research/marketing outside the public project; retain legitimate upstream licenses and technical attribution. Use immutable saved evidence when devnets fail, label its capture time and disable external actions in offline mode. Human feedback/submission is pending unless confirmed.
 - Registry scope authorized after the core gate passed: Arkiv Rabdi chain7794095 only, official SDK, separate test writer, sanitized wallet-owned expiring semantic fixtures. Community reads cross publishers; all community imports are unsigned previews with UNKNOWN local rule confidence. No remote script/fixture-path execution or automatic broadcast. Historical receipts remain publisher claims separate from new outcomes. Do not add unrelated sponsor integrations.
 - Mutation task scope: generate deterministic unsigned models and environment/setup variants, then compile through the proven adapter. Preserve `evidence/live/2026-11-06/` unchanged; new campaign evidence belongs under `evidence/mutations/`. Confidence is explicit and provenance-limited. No automatic remote shrinking or large public campaigns; at most seven selected variants per live invocation.
 - Node.js 20+, dependency-light implementation; no giant frontend rewrite.

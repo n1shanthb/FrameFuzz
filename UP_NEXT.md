@@ -1,7 +1,9 @@
 # Up next
 
-## Active — final submission polish
-Finish README/product copy, `docs/LIVE_EVIDENCE.md` generated from committed captures, four-minute `docs/DEMO_SCRIPT.md`, checklist, project description and recording guidance. Test `saved-demo` offline mode and current Community Cases UI; run all tests and leave clean coherent commits. Preserve successful historical LIVE evidence unchanged.
+## Ready — final submission materials
+README/product copy, generated `docs/LIVE_EVIDENCE.md`, four-minute `docs/DEMO_SCRIPT.md`, checklist, project description, recording guidance, FEEDBACK and sponsor docs are complete.71 tests pass. The offline saved demo and live Arkiv query/import were verified in browser. Exact proof: `evidence/submission/2026-11-06/`. Preserve successful historical LIVE evidence unchanged.
+
+Next: follow `docs/SUBMISSION_CHECKLIST.md` for human video review/recording, authorized push/public-access verification, required Uniswap feedback form and ETHGlobal submission. None is claimed submitted. Port4177 is running wallet-free saved-demo mode; no current registry reads or broadcasts occur. To query live Arkiv, restart normal serve mode explicitly. Optional new fixture publication requires a newly configured funded test-wallet key; the old in-memory key is gone.
 
 External blocker: chain1337 sidecar disk full. Do not retry broadcasts until the operator confirms recovery. The generated Uniswap campaign has4/6 matching decisions,2 infrastructure failures and0 new inclusions. Do not generalize historical successful receipts into a new campaign success. Sponsor feedback form is human-required and not submitted. Push/public submission is not authorized by local commit instructions.
 

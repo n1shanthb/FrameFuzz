@@ -10,6 +10,7 @@ import { readFile } from 'node:fs/promises';
 import {runMutationCampaign,replayMutationDescriptor} from '../src/mutations/campaign.mjs';
 import {arkivCommand} from '../src/arkiv/cli.mjs';
 import {redact} from '../src/safety.mjs';
+import {prepareSavedDemo} from '../src/saved-demo.mjs';
 
 const USAGE = `
 FrameFuzz — EIP-8141 admission testing scaffold
@@ -19,6 +20,7 @@ Usage:
   node bin/framefuzz.mjs serve --results runs [--cases examples/cases] [--port 4177] [--rpc <testnet-url> --allow-chain <id> --submit]
   node bin/framefuzz.mjs demo --results runs
   node bin/framefuzz.mjs help
+  node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177  # offline, wallet-free historical evidence
   node bin/framefuzz.mjs arkiv publish REPORT.json --case-index 0 --expiration-blocks 302400 --submit --output RECEIPT.json
   node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS
   node bin/framefuzz.mjs arkiv fetch --key ENTITY_KEY
@@ -44,7 +46,7 @@ function flags(argv) {
     const x = argv[i];
     if (!x.startsWith('--')) { result._.push(x); continue; }
     const name = x.slice(2);
-    if (name === 'submit' || name === 'preview') { result[name] = true; continue; }
+    if (name === 'submit' || name === 'preview' || name === 'offline') { result[name] = true; continue; }
     if (i + 1 >= argv.length || argv[i + 1].startsWith('--')) throw new Error(`Missing value for ${x}`);
     result[name] = argv[++i];
   }
@@ -100,7 +102,9 @@ async function main() {
     evidence.derivedFrom = path.basename(options._[0]);
     console.log(JSON.stringify({totals:evidence.totals,evidence:await saveReport(evidence,resultDir)},null,2));
     if(evidence.totals.unexpected)process.exitCode=2;else if(evidence.totals.inconclusive)process.exitCode=3;
-  } else if (command === 'serve') {
+  } else if (command === 'serve' || command==='saved-demo') {
+    if((command==='saved-demo'||options.offline)&&options.submit)throw new Error('Offline saved demonstration cannot enable submission');
+    const demo=command==='saved-demo'?await prepareSavedDemo(resultDir):null;
     const port = numericArg(options.port, 4177);
     const server = createDashboardServer({
       resultDir, casesLocation: options.cases ?? 'examples/cases',
@@ -110,6 +114,7 @@ async function main() {
       mutationConfigFile:options.config,mutationRulesFile:options['mutation-rules'],
       allowChainId: numericArg(options['allow-chain'], null),
       submit: Boolean(options.submit), receiptWaitMs: numericArg(options['receipt-wait-ms'], 0),
+      offlineDemo:command==='saved-demo'||Boolean(options.offline),defaultRun:demo?.defaultRun,
     });
     server.listen(port, '127.0.0.1', () => console.log(`FrameFuzz dashboard: http://127.0.0.1:${port}\nLive submission: ${options.submit ? 'enabled with chain guard' : 'DISABLED'}`));
   } else if (command === 'mock-demo') {

@@ -1,13 +1,16 @@
 # Current status
 
 ## Submission polish checkpoint — November6,2026
-Current task: make the existing product judge-ready using immutable saved evidence. Do not broadcast again to the disk-full EIP-8141 sidecar.
+Final polish is implemented and verified using immutable saved evidence. Do not broadcast again to the disk-full EIP-8141 sidecar.
 
 - Generated Uniswap campaign executed three semantic variants and six actual path submissions. Four expected decisions matched; staked-alt and basic-alt passed validation but failed gateway persistence with No space left on device. Zero new confirmed inclusions or genuine discrepancies. Original capture and classification-only derivation are under `evidence/integrated/2026-11-06/`.
 - StateView and PoolManager code hashes/binding are now checked. Current slot0 is zero/uninitialized; this proves real storage access, not active-pool pricing or swap execution. Existing staked/unstaked fixtures remain separate and current stake state is checked.
 - Additional real Arkiv Uniswap entity `0x6779cf38a4398eb90da94b11885e691b84a6bb09dda59974cf5b8f1a21db773e`, transaction `0x44f0084455b54724624fffd3e2c186986146d316c5d6bf27207409872acc9ec2`, successful creation, expiry570761. It honestly preserves the infrastructure failure. Both gas and Uniswap fixtures were queried/imported again through fresh SDK processes; zero-broadcast previews succeeded.
 - Original registry writer key is no longer available after the tool-session reset. It was never persisted. Future publication needs a new funded test-wallet environment setup; public query/import does not.
-- Evidence guide generated from committed gas/historical Uniswap captures; saved-demo offline mode implemented and focused test passes. Submission docs and final full-suite/browser verification are in progress.
+- `docs/LIVE_EVIDENCE.md` is generated/checked from committed gas and historical Uniswap blobs. Offline `saved-demo` restores three reports and disables all external routes. Browser verified gas loading, local unsigned storage generation and historical staked public-reject/alternative-included-success. Normal Community Cases also queried/retrieved/imported the real Uniswap fixture again; zero broadcasts. Screenshots/replay/test/audit proof: `evidence/submission/2026-11-06/`.
+- 71 tests pass. README/hero, four-minute DEMO_SCRIPT, project description, recording guide, checklist, FEEDBACK and all five Arkiv sponsor docs complete. License/AI disclosure retained. No tracked competitive research/marketing content was found; legitimate upstream credits retained. Historical evidence diff is empty and literal private-key assignment scan found no credentials.
+- Port4177 currently serves `saved-demo --results runs/saved-demo`: no wallet/network needed, current Arkiv actions disabled. Stop it and run normal `serve --results runs --port 4177` for live registry queries. Saved LIVE is historical, PREVIEW has no new execution, and no latest full six-match Uniswap run is claimed.
+- Remaining human actions: review/record video, authorize push and verify public repository/FEEDBACK URL, submit Uniswap feedback with required consent, submit ETHGlobal entry. Remote sidecar repair is required only for a fresh successful live campaign, not the saved demonstration. No form/push/submission was performed.
 
 **November 6, 2026 (IST)** · `E:\ethglobalmumbai` · branch `feat/framefuzz-mvp`. Inspect Git status/log before edits. Latest task: Arkiv regression registry; the mutation engine remains complete.
 

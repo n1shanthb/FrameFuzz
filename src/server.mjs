@@ -19,9 +19,9 @@ function json(res, status, value) {
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
-  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry }) {
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun }) {
   let running = false;
-  const configured = Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
+  const configured = !offlineDemo&&Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
   const enabled = Boolean(submit && configured && Number.isSafeInteger(allowChainId) && allowChainId > 1);
   return http.createServer(async (req, res) => {
     const route = new URL(req.url, 'http://localhost');
@@ -33,16 +33,19 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
         res.end(html);
       } else if (req.method === 'GET' && route.pathname === '/api/config') {
-        json(res, 200, { rpcConfigured: configured, submitEnabled: enabled, allowChainId: allowChainId ?? null, casesLocation, running,
+        json(res, 200, { offlineDemo,defaultRun,rpcConfigured: configured, submitEnabled: enabled, allowChainId: allowChainId ?? null, casesLocation, running,
           scenario: scenario ?? 'fixtures', scenarios: [{ id: 'fixtures', label: 'Signed case fixtures' }, ...(adapterFile && rulesFile ? SCENARIOS : [])],
           mutations:{suites:MUTATION_SUITES,maxLiveVariants:MAX_LIVE_MUTATIONS,maxPreviewVariants:1000},
           endpoints: Object.fromEntries(Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([,v]) => v).map(([k,v]) => [k, sanitizedRpcLabel(v)])) });
       } else if(req.method==='GET'&&route.pathname==='/api/community'){
+        if(offlineDemo)return json(res,503,{error:'Saved-evidence offline mode: live Arkiv discovery is disabled. Inspect the saved imported PREVIEW in the evidence library; it is not a fresh query.'});
         const registry=communityRegistry??createRegistry();
         json(res,200,await registry.query({suite:route.searchParams.get('suite')||undefined,ruleId:route.searchParams.get('rule')||undefined,implementation:route.searchParams.get('implementation')||undefined,owner:route.searchParams.get('owner')||undefined}));
       } else if(req.method==='GET'&&route.pathname==='/api/community/case'){
+        if(offlineDemo)return json(res,503,{error:'Live Arkiv reads are disabled in offline mode'});
         json(res,200,await (communityRegistry??createRegistry()).fetch(route.searchParams.get('key')));
       } else if(req.method==='POST'&&route.pathname==='/api/community/import'){
+        if(offlineDemo)return json(res,503,{error:'Live Arkiv import is disabled in offline mode; use the saved imported PREVIEW or generate unsigned local mutations'});
         if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'Invalid Origin'});
         let body='';for await(const chunk of req){body+=chunk;if(body.length>1024)return json(res,413,{error:'Selection too large'});}
         const selection=JSON.parse(body);
@@ -51,6 +54,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         const saved=await saveReport(preview,resultDir);
         json(res,200,{file:path.basename(saved.jsonFile),source:preview.source,submissions:preview.submissions,origin:preview.communityOrigin,owner:retrieved.owner});
       } else if (req.method === 'GET' && route.pathname === '/api/network') {
+        if(offlineDemo)return json(res,200,{offlineDemo:true,endpoints:[]});
         const endpoints = Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([, v]) => v);
         const status = await Promise.all(endpoints.map(async ([id, url]) => {
           try { const chainId = await getChainId(url, { timeoutMs: 3000 }); assertTestChain(chainId, allowChainId); return { id, rpc: sanitizedRpcLabel(url), chainId, state: 'ready' }; }

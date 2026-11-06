@@ -29,8 +29,11 @@
     <div class="sidebar-bottom"><div class="tiny">ENGINE STATUS</div><p id="engineStatus">Reading local configuration…</p><div class="tiny">Only signed, explicit testnet transactions are sent.</div></div>
   </aside>
   <main>
-    <div class="top"><h1>Admission Testing Lab</h1><span class="pill"><span class="dot" id="statusDot"></span><span id="network">Local dashboard</span></span></div>
-    <p class="subtitle">Test Ethereum frame-transaction admission decisions, inspect rule discrepancies and keep reproducible evidence.</p>
+    <div class="top"><h1>FrameFuzz · Admission regression lab</h1><span class="pill"><span class="dot" id="statusDot"></span><span id="network">Local dashboard</span></span></div>
+    <p class="subtitle"><strong>FrameFuzz is a deterministic admission-rule testing and regression platform for EIP-8141 frame transactions.</strong> Find which semantic configurations each admission path accepts, which rule rejects them, and whether a validation change breaks compatibility.</p>
+    <p class="helper">Generate → Compare → Inspect → Publish/Discover → Import → Replay Preview</p>
+    <p class="helper">Semantic mutations · real signed admission results · rule-aware verdicts · receipts and runtime provenance · shared Arkiv fixtures</p>
+    <p class="alert" id="demoMode">Reading saved evidence; no fresh execution is implied.</p>
     <div class="grid">
       <div class="metric"><div class="metric-label">Test cases</div><div class="metric-value" id="count">—</div></div>
       <div class="metric"><div class="metric-label">Expected outcomes</div><div class="metric-value" id="passed" style="color:var(--green)">—</div></div>
@@ -107,8 +110,8 @@ function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&
 function displayCase(c) {
   safeText('caseTitle', c.id); safeText('caseDescription', c.description); safeText('category', c.category); safeText('verdict', c.verdict);
   safeText('receipt', (c.paths ?? []).map(p=>`${p.id}: ${p.observed?.status ?? 'unknown'} / ${p.receipt?.state ?? 'not_checked'}`).join('\n'));
-  safeText('hash', (c.paths ?? []).map(p=>`${p.id}: ${p.observed?.hash ?? 'none'}`).join('\n'));
-  safeText('detailJson', JSON.stringify({paths:c.paths,mutation:c.mutation,ruleProvenance:c.ruleProvenance,reproduction:c.reproduction,notes:c.notes},null,2));
+  safeText('hash', (c.paths ?? []).map(p=>`${p.id}: ${p.observed?.hash ? 'returned '+p.observed.hash : p.metadata?.transaction?.hash ? 'computed only (not admitted) '+p.metadata.transaction.hash : 'none'}`).join('\n'));
+  safeText('detailJson', JSON.stringify({paths:c.paths,mutation:c.mutation,ruleProvenance:c.ruleProvenance,reproduction:c.reproduction,communityOrigin:active.communityOrigin,network:active.network,uniswap:active.uniswap,notes:c.notes},null,2));
   safeText('ruleSummary',(c.paths??[]).map(p=>`${p.id}: ${p.comparison?.reason??''}${p.observed?.message ? ` · ${p.observed.message}` : ''}`).join('\n'));
   safeText('repro', c.reproduction?.cli ?? `Case ${c.id} · chain ${active.chainId}. Rebuild with its original fixture/adapter and pinned rules. Export replay metadata for exact observed inputs.`);
 }
@@ -117,6 +120,8 @@ async function loadRun(name) {
     const response = await fetch(`/api/run?id=${encodeURIComponent(name)}`);
     if (!response.ok) throw new Error(await response.text());
     const data = await response.json(); active = data; runId = name;
+    safeText('executionStatus','Viewing saved evidence; no transaction is sent by selecting a report.');
+    safeText('demoMode',`Saved ${data.source} evidence · captured ${data.generatedAt}. This view does not rerun transactions. Admission, inclusion and execution are separate.`);
     const synthetic = /SYNTHETIC|MOCK/.test(data.source);
     safeText('sourceBadge', synthetic ? data.source : data.source);
     $('notice').textContent = /PREVIEW/.test(data.source) ? 'PREVIEW: generated unsigned models and expectations only. No RPC, signing, setup or broadcast.' : synthetic ? `${data.source}: test data only. No real devnet execution is proven.` : 'An admission hash is not proof of execution; check each transaction receipt separately.';
@@ -135,14 +140,16 @@ async function refresh() {
   try {
     const [config,r] = await Promise.all([fetch('/api/config').then(r=>r.json()), fetch('/api/runs').then(r=>r.json())]);
     enabled = config.submitEnabled; $('runButton').disabled = !enabled || config.running;
+    $('queryCommunity').disabled=Boolean(config.offlineDemo);$('checkNetwork').disabled=Boolean(config.offlineDemo);
+    if(config.offlineDemo){safeText('communityStatus','Offline saved-evidence mode. Live Arkiv discovery/import is disabled. Select saved-arkiv-import-preview in the evidence library to inspect the previously retrieved fixture; Preview mutations regenerates unsigned local semantics.');safeText('engineStatus','Saved-evidence demo · no external requests');}
     $('submitMutation').disabled=!enabled||config.running;$('previewMutation').disabled=config.running;
     if (!$('scenarioSelect').dataset.loaded) { $('scenarioSelect').innerHTML = config.scenarios.map(s=>`<option value="${esc(s.id)}">${esc(s.label)}</option>`).join(''); $('scenarioSelect').value=config.scenario; $('scenarioSelect').dataset.loaded='true'; }
-    $('runHelp').textContent = config.submitEnabled ? `Ready to run signed fixtures from ${config.casesLocation} on explicitly authorized testnet chain ${config.allowChainId}.` : 'Read-only mode. Start the server with --rpc, --allow-chain and --submit to enable live submissions.';
-    $('engineStatus').textContent = config.submitEnabled ? 'Live testnet submission enabled' : 'Local read-only mode';$('statusDot').className = config.submitEnabled ? 'dot live':'dot';
+    $('runHelp').textContent = config.offlineDemo?'Saved-evidence mode. Live tests and network checks are disabled. Generate unsigned previews locally or inspect the historical reports.':config.submitEnabled ? `Ready to run signed fixtures from ${config.casesLocation} on explicitly authorized testnet chain ${config.allowChainId}.` : 'Read-only mode. Start the server with --rpc, --allow-chain and --submit to enable live submissions.';
+    $('engineStatus').textContent = config.offlineDemo?'Saved-evidence demo · external requests disabled':config.submitEnabled ? 'Live testnet submission enabled' : 'Local read-only mode';$('statusDot').className = config.submitEnabled ? 'dot live':'dot';
     safeText('network',config.submitEnabled?`Chain ${config.allowChainId} · submission enabled`:'No live submission');
     safeText('executionStatus',config.running?'Running…':'Idle'); runs=r.runs??[];
     $('runSelect').innerHTML = runs.map(x=>`<option value="${esc(x.id)}">${esc(x.generatedAt)} · ${esc(x.source)}</option>`).join('') || '<option>No evidence files</option>';
-    if(runs.length){const saved=active?.generatedAt;const hit=runs.find(x=>x.generatedAt===saved);await loadRun(hit?.id??runs[0].id);$('runSelect').value=hit?.id??runs[0].id;}
+    if(runs.length){const saved=active?.generatedAt;const hit=runs.find(x=>x.generatedAt===saved);const chosen=hit?.id??config.defaultRun??runs[0].id;await loadRun(chosen);$('runSelect').value=chosen;}
   } catch(e){ safeText('notice',`Local dashboard error: ${e.message}`); }
 }
 $('runSelect').addEventListener('change', e=>loadRun(e.target.value));
