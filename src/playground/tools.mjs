@@ -13,6 +13,7 @@ export const TOOLS=Object.freeze([
  {id:'historical_evidence',roles:['PAYMASTER','ANY'],mode:'HISTORICAL_READ',evidence:'Saved live admission captures with exact provenance; not a fresh execution',sideEffects:'NONE',limits:'Pinned evidence digests only',prerequisites:['UNISWAP_PROFILE_OR_SAVED_EVIDENCE']},
  {id:'uniswap_context',roles:['PAYMASTER','ANY'],mode:'STATIC_METADATA',evidence:'Pinned StateView/getSlot0 paymaster context and supported mutation families',sideEffects:'NONE',limits:'Local files and pinned config',prerequisites:['UNISWAP_PROFILE']},
  {id:'replay',roles:['ANY'],mode:'OFFLINE_ABI_ENCODING',evidence:'Repeat of source-bound local static tool',sideEffects:'NONE',limits:'1 per investigation',prerequisites:['EXECUTED_DESCRIPTOR']},
+ {id:'arkiv_regressions',roles:['ANY'],mode:'COMMUNITY_READ',evidence:'Verified sanitized Arkiv regression summaries; untrusted historical claims',sideEffects:'NONE',limits:'Bounded discovery only; never broadcasts',prerequisites:['OPTIONAL_ARKIV_DISCOVERY']},
 ].map(tool=>({...tool,cost:{paidUSD:0,resource:'Bounded local CPU/memory'},inputSchema:'framefuzz.byoc-tool-input.v1',outputSchema:'framefuzz.byoc-'+tool.id+'-output.v1'})));
 const scalar=/^(?:u?int(?:8|16|24|32|40|48|56|64|72|80|88|96|104|112|120|128|136|144|152|160|168|176|184|192|200|208|216|224|232|240|248|256)?|address|bool|bytes(?:[1-9]|[12]\d|3[0-2])?|string)$/;
 export function encodeInputs(analysis,signature,args){

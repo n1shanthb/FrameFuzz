@@ -1,6 +1,10 @@
 import {readFile} from 'node:fs/promises';
 import {validateRegressionCase} from './case.mjs';
-const FILES=['evidence/arkiv/2026-11-06/publish.json','evidence/integrated/2026-11-06/arkiv-publish.json'];
+const FILES=[
+  'evidence/arkiv/2026-11-06/publish.json',
+  'evidence/integrated/2026-11-06/arkiv-publish.json',
+  'evidence/arkiv/2026-11-07/publish-receipt.json',
+];
 /** Historical publication snapshots only. No current expiry assertion or replay permission. */
 export async function savedCommunity({suite,ruleId,implementation,owner}={}){
   const cases=[];
@@ -14,5 +18,5 @@ export async function savedCommunity({suite,ruleId,implementation,owner}={}){
   }
   return {source:'SAVED_ARKIV_PUBLICATIONS — NOT A FRESH QUERY',mode:'saved',chainId:7794095,currentBlock:null,
     reader:{mode:'offline',walletAddress:null,authenticated:false},cases,rejected:[],
-    discovery:{limit:2,returned:cases.length,possiblyTruncated:false,paginationSupported:false,notice:'Two committed historical publications only; current expiry/availability unknown. Inspect an already saved PREVIEW; no new import is offered.'}};
+    discovery:{limit:FILES.length,returned:cases.length,possiblyTruncated:false,paginationSupported:false,notice:'Committed historical publications only; current expiry/availability unknown. Fresh live query/import remains separate.'}};
 }

@@ -695,6 +695,11 @@ h1, h2, h3, h4, .summary { overflow-wrap: anywhere; }
 .byoc-editor { min-height:320px; }
 .byoc-abi { min-height:140px; }
 .byoc-agents { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.arkiv-intel { margin-top:16px; padding:16px; border:1px solid var(--border); border-radius:var(--radius); background:linear-gradient(180deg,var(--accent-soft),var(--surface)); }
+.arkiv-intel h3 { margin:0 0 8px; font-size:16px; color:var(--accent); }
+.arkiv-case { margin-top:10px; padding:12px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); }
+.arkiv-case h4 { margin:0 0 6px; font-size:13px; }
+.arkiv-usage { margin-top:10px; font-size:12px; color:var(--muted); }
 #byocPanels { overflow-wrap:anywhere; }
 #byocPanels .details, #byocAnalysis .details { max-height:420px; overflow:auto; white-space:pre-wrap; }
 @media(max-width:700px) { .byoc-agents { grid-template-columns:1fr; } .byoc-editor { min-height:260px; } }

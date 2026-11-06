@@ -46,7 +46,7 @@ async function serveStatic(res, pathname) {
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
-  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env,apiReadTimeoutMs=10000,playgroundProviderFactory,capabilityMode }) {
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env,apiReadTimeoutMs=10000,playgroundProviderFactory,capabilityMode,arkivRegistryFactory,arkivSavedLookup,arkivPublishSubmit }) {
   if(!Number.isSafeInteger(apiReadTimeoutMs)||apiReadTimeoutMs<1||apiReadTimeoutMs>15000)throw new Error('Invalid bounded API read timeout');
   let running = false;
   const configured = !offlineDemo&&Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
@@ -54,7 +54,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
   const enabled = Boolean(capabilities.mode==='LIVE_AUTHORIZED'&&submit && configured && EXECUTION_CHAINS.includes(allowChainId));
   const selectedReport=async id=>{if(!/^[\w.-]+\.json$/.test(id??''))throw new ApiError(400,'INVALID_REPORT_ID','Invalid report filename');try{return evidenceView(await loadReport(resultDir,id));}catch(e){if(e.code==='ENOENT')throw new ApiError(404,'REPORT_NOT_FOUND','Saved report not found');throw e;}};
   const swarmRoutes=createSwarmRoutes({resultDir,offlineDemo,getRunning:()=>running,setRunning:value=>{running=value;},runner:swarmRunner,env:swarmEnvironment});
-  const playgroundRoutes=createPlaygroundRoutes({resultDir,offlineDemo,env:swarmEnvironment,getRunning:()=>running,setRunning:value=>{running=value;},json,providerFactory:playgroundProviderFactory});
+  const playgroundRoutes=createPlaygroundRoutes({resultDir,offlineDemo,env:swarmEnvironment,getRunning:()=>running,setRunning:value=>{running=value;},json,providerFactory:playgroundProviderFactory,arkivRegistryFactory,arkivSavedLookup,arkivPublishSubmit});
   const server=http.createServer(async (req, res) => {
     const route = new URL(req.url, 'http://localhost');
     try {
