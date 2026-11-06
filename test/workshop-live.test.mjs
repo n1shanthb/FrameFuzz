@@ -11,9 +11,24 @@ import { RpcResponseError } from '../src/rpc.mjs';
 import { describeRpcError, compareAdmission } from '../src/verdict.mjs';
 import { deployReserve } from '../src/adapters/workshop-setup.mjs';
 import { refreshEvidence } from '../src/refresh.mjs';
+import { createScenarioCases } from '../src/scenarios.mjs';
 
 const payer = `0x${'1'.repeat(40)}`, recipient = `0x${'2'.repeat(40)}`, registry = `0x${'3'.repeat(40)}`;
 const config = { chainId:1337, recipient, stakingRegistry:registry, authorizedEndpoints:['http://127.0.0.1:9999'],paymasters:{basic:payer} };
+test('generic scenario composes the actual LIVE adapter through both final RPC methods', async () => {
+  const rpcFn = async (_, method) => method === 'eth_chainId' ? '0x539' : method === 'eth_getCode' ? '0x6000' : method === 'eth_getBalance' || method === 'eth_getTransactionCount' ? '0x0' : `0x${'0'.repeat(192)}`;
+  const adapter = createAdapter(workshopPlugin({...config,minSponsorBalanceWei:'0'}, {rpcFn}));
+  const cases = createScenarioCases({scenario:'verification-gas',adapter,rules:{status:'VERIFIED',sidecarVersion:'test-boundary',reference:'mock transport only',verifiedAt:'2026-11-06',verificationGas:{boundary:67200,acceptedSide:'at-or-below',rejectionRule:'MAX_VERIFY_GAS',setup:{configuration:{kind:'basic'},staked:false}}}});
+  const calls = [];
+  const report = await runSuite(cases,{rpcUrl:config.authorizedEndpoints[0],allowChainId:1337,submit:true,evidenceSource:'MOCK',rpcFn:async (_,method,params)=>{
+    if(method==='eth_chainId')return '0x539';
+    calls.push([method,typeof params[0]]);
+    return `0x${'a'.repeat(64)}`;
+  }});
+  assert.equal(report.submissions,6);
+  assert.deepEqual(calls,Array.from({length:3},()=>[['eth_sendRawTransaction','string'],['eth_sendFrameTransaction','object']]).flat());
+  assert.ok(report.results.every(c=>c.paths.every(p=>p.observed.status==='accepted')));
+});
 test('real workshop encoding roundtrips and recovers the actual sender for each re-signed gas variant', async () => {
   const key = generatePrivateKey(), sender = privateKeyToAccount(key).address;
   const raws = new Set();

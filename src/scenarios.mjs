@@ -40,7 +40,7 @@ export function createScenarioCases({ scenario, adapter, rules }) {
       mutation: mutation ?? null, ruleProvenance: provenance, paths: [] };
     for (const pathId of ['public', 'alt']) {
       const exp = expectation(expectations?.[pathId]);
-      c.paths.push({ id: pathId, method: 'eth_sendFrameTransaction', ...exp,
+      c.paths.push({ id: pathId, method: adapter.mode === 'LIVE' && pathId === 'public' ? 'eth_sendRawTransaction' : 'eth_sendFrameTransaction', ...exp,
         adapterMode: adapter.mode,
         prepare: ({ rpcUrl, chainId }) => adapter.build({ caseId: id, pathId, rpcUrl, chainId, model, setup }) });
     }

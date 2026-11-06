@@ -1,3 +1,9 @@
+## Completion sprint — Pass 0
+
+Fixed generic LIVE scenario method mapping (public raw, alternative frame). Default `npm run run:preview` generates seven unsigned offline variants without credentials or RPC. Regression composes the real workshop signer/adapter/scenario/runner with mocked final transport; no network writes.
+
+Verification: `npm test` with loopback permission: 109 pass, 0 fail (107 baseline retained). Restricted first run could not reach loopback mock gateways. Next: Pass 1 local reliability improvements; no PARTIAL feature expansion, paid calls, chain writes or push.
+
 # Build status — Arkiv regression registry and mutation engine
 
 ## Phase3B self-funded feasibility - preparation complete

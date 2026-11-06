@@ -12,7 +12,7 @@
     "start": "node ./bin/framefuzz.mjs serve --cases examples/cases --results runs --port 4177",
     "demo": "node ./bin/framefuzz.mjs demo --results runs",
     "demo:mock": "node ./bin/framefuzz.mjs mock-demo --results runs",
-    "run:preview": "node ./bin/framefuzz.mjs run examples/cases --allow-chain 1337"
+    "run:preview": "node ./bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --preview"
   },
   "engines": {
     "node": ">=20.12"

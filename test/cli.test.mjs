@@ -9,6 +9,17 @@ import path from 'node:path';
 import { createDashboardServer } from '../src/server.mjs';
 const exec = promisify(execFile);
 
+test('documented npm preview runs unsigned offline without credentials', async () => {
+  const directory = await mkdtemp(path.join(tmpdir(), 'framefuzz-preview-'));
+  try {
+    const {readFile} = await import('node:fs/promises');
+    const command = JSON.parse(await readFile('package.json','utf8')).scripts['run:preview'].split(' ').slice(1);
+    const {stdout} = await exec(process.execPath,[...command,'--results',directory],{env:{...process.env,OPENROUTER_API_KEY:'',ARKIV_PRIVATE_KEY:'',FRAMEFUZZ_DEPLOYER_KEY:''}});
+    assert.match(stdout,/PREVIEW/);
+    assert.match(stdout,/"submissions":\s*0/);
+  } finally { await rm(directory,{recursive:true,force:true}); }
+});
+
 test('CLI runs full mock demo, documents flags, and returns nonzero for incomplete runs', async () => {
   const directory = await mkdtemp(path.join(tmpdir(), 'framefuzz-cli-'));
   const server = createServer(async (req, res) => {
