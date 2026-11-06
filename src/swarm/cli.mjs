@@ -4,9 +4,13 @@ import {assertSwarmEnabled,rejectNetworkWrites} from './gate.mjs';
 const stringify=value=>JSON.stringify(value,(_,v)=>typeof v==='bigint'?String(v):v,2);
 export async function swarmCommand(options){
   assertSwarmEnabled();rejectNetworkWrites(options);
-  for(const key of Object.keys(options))if(!['_','output','seed','deployer','owner','mode','offline','variant','investigation','preflight','head'].includes(key))throw new Error('Unsupported swarm option '+key);
+  for(const key of Object.keys(options))if(!['_','output','seed','deployer','owner','mode','offline','variant','investigation','preflight','head','context'].includes(key))throw new Error('Unsupported swarm option '+key);
   const [action='offline']=options._;let report;
-  if(action==='offline')report=await(await import('./offline.mjs')).offlineSwarm({seed:options.seed===undefined?42:Number(options.seed)});
+  if(action==='sponsored-plan'){
+    if(!options.investigation||!options.context)throw new Error('Sponsored plan requires --investigation and --context JSON files');
+    report=await(await import('./sponsored-plan.mjs')).prepareSponsoredPlan({investigation:JSON.parse(await readFile(options.investigation,'utf8')),context:JSON.parse(await readFile(options.context,'utf8')),variant:Number(options.variant??1)});
+  }
+  else if(action==='offline')report=await(await import('./offline.mjs')).offlineSwarm({seed:options.seed===undefined?42:Number(options.seed)});
   else if(action==='preflight')report=await(await import('./preflight.mjs')).swarmPreflight({deployer:options.deployer,owner:options.owner});
   else if(['readiness','self-funded-readiness'].includes(action)){
     if(!options.investigation||!options.preflight||!options.head)throw new Error('Readiness requires --investigation, --preflight and --head evidence files');

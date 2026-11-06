@@ -1,3 +1,9 @@
+## Completion sprint — Pass 2 in progress
+
+Baseline HEAD e44bce4 was clean; baseline npm test119 passed,0failed/skipped. Implemented deterministic offline sponsored manifest with strict public-address/profile inputs and explicit unresolved live gates. Added candidate raw receipt/event/state consistency ingestion; it NEVER asserts live action/authorization proof. Focused plan/proof tests22pass, including18 adversarial negatives. No keys/RPC accepted by preparation; no chain writes/model calls/push.
+
+Active: Registry lifecycle/offline snapshots, evidence-derived briefing and responsive/accessibility verification. Next: verify actual browser flows, align canonical docs and read-only delivery status. Do not start dead-weight cleanup or live deployment.
+
 ## Completion sprint — Pass 0 + Pass 1 complete
 
 Both broken workflows FIXED. Final `npm test`:119 passed,0failed,0skipped (all107 baseline retained); `npm run verify`:57 modules; `npm audit --package-lock-only --ignore-scripts --json`:0 known vulnerabilities; evidence guide check passes. Exact dispositions, supported scopes, commands and limitations: docs/COMPLETION_SPRINT.md.
