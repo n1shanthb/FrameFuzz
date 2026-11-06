@@ -17,6 +17,7 @@ export async function runSuite(cases, options = {}) {
   const { allowChainId, submit = false, receiptWaitMs = 0, rpcTimeoutMs = 15000, rpcFn = rpc } = options;
   if (!Number.isSafeInteger(allowChainId) || allowChainId <= 0) throw new Error('Specify --allow-chain with the exact intended TESTNET chain ID');
   if (!Array.isArray(cases) || !cases.length) throw new Error('No test cases selected');
+  if(submit&&cases.reduce((n,c)=>n+c.paths.length,0)>14)throw new Error('Submission budget is at most14 paths per invocation');
   const endpoints = new Set(cases.flatMap(c => c.paths.map(p => endpointFor(p, options))));
   for (const c of cases) for (const p of c.paths) if (p.adapterMode === 'MOCK' || p.metadata?.mode === 'MOCK') {
     const host = new URL(endpointFor(p, options)).hostname;

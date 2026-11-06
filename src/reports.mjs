@@ -2,14 +2,16 @@ import { mkdir, writeFile, readdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { redact } from './safety.mjs';
+import {evidenceView,savedEvidenceClass} from './evidence-status.mjs';
 
 const slug = x => String(x).replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 60);
 
 export function toMarkdown(output) {
-  output = redact(output);
+  output = redact(evidenceView(output));
   const lines = [
     '# FrameFuzz admission evidence', '',
     `- Source: **${output.source}**`,
+    `- Evidence class: **${output.evidenceClassification}**`,
     `- Chain ID: **${output.chainId}**`,
     `- RPC host: ${output.rpc}`,
     `- Generated: ${output.generatedAt}`, '',
@@ -47,7 +49,7 @@ export function toMarkdown(output) {
 }
 
 export async function saveReport(output, directory) {
-  output = redact(output);
+  output = redact(evidenceView(output));
   await mkdir(directory, { recursive: true });
   const base = `${new Date().toISOString().replace(/[:.]/g, '-')}-${slug(output.source)}-${randomUUID().slice(0, 8)}`;
   const jsonFile = path.resolve(directory, `${base}.json`);
@@ -62,7 +64,7 @@ export async function saveReport(output, directory) {
 }
 
 export function toReplay(output) {
-  return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,campaign:output.campaign,coverage:output.coverage,communityOrigin:output.communityOrigin,
+  return redact({ schema: 'framefuzz.replay.v1', source: output.source,evidenceClassification:savedEvidenceClass(output), chainId: output.chainId,campaign:output.campaign,coverage:output.coverage,communityOrigin:output.communityOrigin,
     broadcastAllowed: false,
     reproductionKind: output.campaign ? 'SEMANTIC_REGENERATION_WITH_HISTORICAL_RECORDS' : 'HISTORICAL_RECORDS_ONLY',
     historicalSignedData: output.results.some(c=>c.paths.some(p=>p.replay?.signedRaw)),

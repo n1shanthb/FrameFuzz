@@ -26,3 +26,6 @@ No new EIP-8141 transaction hash/receipt, funding, deployment, Arkiv publication
 The sponsored preparation fee envelope remains0.064 test ETH excluding unresolved sponsor funding; no spending authorized. Self-funded candidate remains separate/unverified. Current gateway/sponsor/runtime viability is not established by historical success. Manual delivery steps remain in docs/DELIVERY_PASS2.md.
 
 Implementation commits and final handoff checkpoint: inspect Git history. Stop before further passes or external actions.
+
+## Stability checkpoint — 2026-11-06
+158/158 tests pass;69 modules verify; saved-demo browser checked with execution default off. Exact commands, results and limitations: docs/STABILITY_FOUNDATION_REPORT.md. No original evidence changes, paid calls or chain writes. Internal foundation checkpoint follows in Git history.

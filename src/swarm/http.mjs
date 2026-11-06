@@ -9,8 +9,9 @@ export function createSwarmRoutes({resultDir,offlineDemo,getRunning,setRunning,e
  return async(req,res,url)=>{
   if(!url.pathname.startsWith('/api/swarm/'))return false;
   const enabled=env.FRAMEFUZZ_SWARM==='on',provider=openRouterStatus(env);
-  if(req.method==='GET'&&url.pathname==='/api/swarm/config'){json(res,200,{enabled,provider,canCallProvider:enabled&&provider.configured&&!offlineDemo,offlineDemo,executionClass:'OFFLINE_SIGNATURE_BINDING',liveWrites:false,running:getRunning()});return true;}
-  if(!enabled){json(res,409,{error:'Swarm disabled; set FRAMEFUZZ_SWARM=on explicitly'});return true;}
+  if(req.method==='GET'&&url.pathname==='/api/swarm/config'){json(res,200,{enabled,provider,canCallProvider:enabled&&provider.configured&&!offlineDemo,offlineDemo,canReadSaved:offlineDemo||enabled,executionClass:'OFFLINE_SIGNATURE_BINDING',liveWrites:false,running:getRunning()});return true;}
+  const savedRead=offlineDemo&&req.method==='GET'&&['/api/swarm/recent','/api/swarm/transcript','/api/swarm/export'].includes(url.pathname);
+  if(!enabled&&!savedRead){json(res,409,{error:'Swarm disabled; set FRAMEFUZZ_SWARM=on explicitly'});return true;}
   if(req.method==='GET'&&url.pathname==='/api/swarm/recent'){
    const items=[];try{for(const name of (await readdir(directory)).filter(n=>n.endsWith('.json')&&ID.test(n.slice(0,-5))).slice(-30)){try{const r=JSON.parse(await readFile(path.join(directory,name),'utf8'));if(r.schema==='framefuzz.investigation.v1')items.push({id:name.slice(0,-5),generatedAt:r.generatedAt,source:r.source,status:r.status,model:r.provider?.model??null});}catch{}}}catch{}
    json(res,200,{investigations:items.sort((a,b)=>String(b.generatedAt).localeCompare(String(a.generatedAt))).slice(0,10)});return true;

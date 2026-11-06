@@ -39,7 +39,7 @@ test('complete mock demo exports honest evidence and dashboard serves selection 
       assert.equal(response.status, 200); assert.match(response.headers.get('content-disposition'), /attachment/);
       assert.match(await response.text(), /MOCK/);
     }
-    assert.equal((await fetch(`${base}/api/export?id=..%2Fpackage.json`)).status, 500);
+    assert.equal((await fetch(`${base}/api/export?id=..%2Fpackage.json`)).status, 400);
   } finally {
     if (server?.listening) await new Promise(resolve => server.close(resolve));
     await rm(directory, { recursive: true, force: true });

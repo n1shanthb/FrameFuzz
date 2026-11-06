@@ -54,7 +54,7 @@ function setStatus(msg) {
 }
 
 function navigate(page) {
-  if(state.page==='arkiv'&&page!=='arkiv')cancelCommunity('Cancelled on navigation.');
+  if(state.page==='arkiv'&&page!=='arkiv'&&state.communityBusy)cancelCommunity('Cancelled on navigation.');
   if (state.presenting) exitPresent();
   state.page = page;
   document.querySelectorAll('.nav-item').forEach((el) => {
@@ -238,6 +238,7 @@ function caseDetailHtml(report, c) {
       ${tag(c.verdict)}
     </div>
     ${c.mutation?.parameter ? `<p class="mono muted">Semantic input: ${esc(JSON.stringify(c.mutation.parameter))}</p>` : ''}
+    <p class="muted">Evidence class: ${esc(report.evidenceClassification??'UNVERIFIED')} · admission, inclusion and action proof are separate.</p>
     ${paths}
     <details><summary class="muted">Mutation, rules, metadata & raw evidence</summary>
       <pre class="code-box">${esc(JSON.stringify({
@@ -553,7 +554,7 @@ function renderSwarm() {
         <span class="pill">${config?.provider?.configured?'Provider credentials configured':'No OpenRouter key visible'}</span>
         <button class="btn btn-secondary" id="swarmRefresh">Check configuration</button>
       </div>
-      <p class="summary">${config?.offlineDemo?'Saved-demo mode prohibits external model calls. Simulation and local cryptographic execution remain available.':'A real investigation allows up to six explicitly authorized OpenRouter requests within a $0.25 client budget. Calls are reserved before sending; reported usage is checked afterwards. Blockchain writes are never available.'}</p>
+      <p class="summary">${config?.offlineDemo?'Saved-demo mode prohibits external model calls. Saved evidence is readable without enabling execution; local simulation requires FRAMEFUZZ_SWARM=on.':'A real investigation allows up to six explicitly authorized OpenRouter requests within a $0.25 client budget. Calls are reserved before sending; reported usage is checked afterwards. Blockchain writes are never available.'}</p>
       <label class="row" style="margin:14px 0"><input type="checkbox" id="swarmConsent" ${state.swarmBusy?'disabled':''}> I authorize the bounded OpenRouter model calls; no blockchain transactions.</label>
       <div class="row">
         <button class="btn btn-primary" id="swarmAI" ${!config?.canCallProvider||state.swarmBusy?'disabled':''}>Start offline AI investigation</button>
@@ -928,7 +929,7 @@ function bindPage() {
   }
 }
 
-async function refreshSwarm(){try{state.swarmConfig=await api.swarmConfig();if(state.swarmConfig.enabled)state.swarmRecent=(await api.swarmRecent()).investigations;if(state.page==='swarm')render();}catch(e){setStatus(`Swarm configuration: ${e.message}`);}}
+async function refreshSwarm(){try{state.swarmConfig=await api.swarmConfig();if(state.swarmConfig.enabled||state.swarmConfig.canReadSaved)state.swarmRecent=(await api.swarmRecent()).investigations;if(state.page==='swarm')render();}catch(e){setStatus(`Swarm configuration: ${e.message}`);}}
 async function startSwarm(mode){
   const authorized=mode==='simulated'||$('swarmConsent')?.checked;
   if(!authorized){setStatus('Explicit OpenRouter request authorization is required.');return;}
