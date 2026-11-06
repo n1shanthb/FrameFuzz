@@ -14,6 +14,7 @@ import {arkivClients,ARKIV_CHAIN_ID} from '../arkiv/client.mjs';
 import {createRegistry} from '../arkiv/registry.mjs';
 import {saveReport} from '../reports.mjs';
 import {admissionReadiness} from './admission.mjs';
+import {liveAdmissionReadiness,prepareLiveComparison,runLiveComparison} from './live-admission.mjs';
 const UUID=/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i,HASH=/^[\da-f]{64}$/;
 const reportDigest=value=>{const text=JSON.stringify(value);if(Buffer.byteLength(text)>2*1024*1024)throw Error('REPORT_SIZE_LIMIT');return sha256(text);};
 const operatorConfigured=env=>/^0x[\da-fA-F]{64}$/.test(env?.ARKIV_PRIVATE_KEY||'');
@@ -90,7 +91,47 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    if(!cached||Date.now()-cached.at>600000)throw new ApiError(409,'STALE_ANALYSIS','Analyze the current source again');
    if(offlineDemo){json(res,200,{schema:'framefuzz.admission-readiness.v1',classification:'BLOCKED_PRECONDITION',sourceCompiled:cached.analysis.status==='READY'?'READY':'FAILED',publicEndpoint:{status:'UNAVAILABLE'},alternativeEndpoint:{status:'UNAVAILABLE'},deployment:{status:'MISSING'},walletAndFunding:{status:'MISSING'},signedComparisonCandidate:'BLOCKED',liveExecution:'BLOCKED',blockers:['Saved demo disables network reads and writes'],writes:0});return true;}
    let config={};try{config=JSON.parse(await readFile(new URL('../../examples/live/devnet.json',import.meta.url),'utf8'));}catch{}
-   json(res,200,await admissionReadiness(cached.analysis,{env,config}));return true;
+   const base=await admissionReadiness(cached.analysis,{env,config});
+   const live=await liveAdmissionReadiness(cached.analysis,{
+     wallet:url.searchParams.get('wallet'),
+     foreign:url.searchParams.get('foreign'),
+     owner:url.searchParams.get('owner'),
+   });
+   json(res,200,{...base,liveAdmission:live,primaryOutput:'PUBLIC_VS_ALTERNATIVE_ADMISSION'});return true;
+  }
+  if(req.method==='POST'&&url.pathname==='/api/playground/live-prepare'){
+   if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot prepare live admissions');
+   if(capabilityMode!=='LIVE_AUTHORIZED')throw new ApiError(403,'LIVE_AUTHORIZED_REQUIRED','Live comparison preparation requires --mode LIVE_AUTHORIZED on an operator-controlled server');
+   const input=await readJsonObject(req,['analysisId','sourceDigest','wallet','owner','foreign','verifyData'],4096);
+   if(!HASH.test(input.analysisId??'')||!HASH.test(input.sourceDigest??''))throw new ApiError(400,'IDENTITY','Exact analysis/source identity required');
+   const cached=analyses.get(input.analysisId);
+   if(!cached||cached.analysis.sourceDigest!==input.sourceDigest||Date.now()-cached.at>600000)throw new ApiError(409,'STALE_ANALYSIS','Analyze the exact current source again');
+   const readiness=await liveAdmissionReadiness(cached.analysis,{wallet:input.wallet,foreign:input.foreign,owner:input.owner});
+   const ownerKey=env.FRAMEFUZZ_OWNER_KEY||env.FRAMEFUZZ_SENDER_KEY;
+   if(!ownerKey)throw new ApiError(409,'OWNER_KEY_MISSING','Configure FRAMEFUZZ_OWNER_KEY (devnet-only) on the operator server; judges never receive it');
+   const candidate=await prepareLiveComparison({analysis:cached.analysis,readiness,privateKey:ownerKey,wallet:input.wallet,owner:input.owner,verifyData:input.verifyData??'0x01'});
+   const id=randomUUID();
+   jobs.set(id,{state:'PREPARED',controller:new AbortController(),timeline:[],report:null,candidate,readiness});
+   json(res,200,{id,state:'PREPARED',candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest,requests:{public:{method:candidate.requests.public.method,endpoint:candidate.requests.public.endpoint},alternative:{method:candidate.requests.alternative.method,endpoint:candidate.requests.alternative.endpoint}}},readiness,broadcasts:0,notice:'Prepared only. Confirm with live-run after reviewing the exact fee/write packet.'});return true;
+  }
+  if(req.method==='POST'&&url.pathname==='/api/playground/live-run'){
+   if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot broadcast');
+   if(capabilityMode!=='LIVE_AUTHORIZED')throw new ApiError(403,'LIVE_AUTHORIZED_REQUIRED','Live comparison requires --mode LIVE_AUTHORIZED');
+   const input=await readJsonObject(req,['id','confirmHash','authorizeWrites'],2048);
+   if(input.authorizeWrites!==true)throw new ApiError(400,'CONSENT','authorizeWrites must be true');
+   const job=jobs.get(input.id);
+   if(!job?.candidate)throw new ApiError(404,'NO_PREPARED','Prepare a live comparison first');
+   if(job.candidate.hash!==input.confirmHash)throw new ApiError(409,'HASH_MISMATCH','Confirm the exact prepared transaction hash');
+   if(getRunning())throw new ApiError(409,'BUSY','Another experiment is running');
+   setRunning(true);job.state='RUNNING';
+   try{
+    const comparison=await runLiveComparison({candidate:job.candidate,authorizeWrites:true});
+    job.report=comparison;job.state=comparison.divergence==='POLICY_DIVERGENCE'?'COMPLETE':comparison.canonical.status==='ACCEPTED'?'STOPPED_CANONICAL_ACCEPTED':'INCOMPLETE';
+    await mkdir(directory,{recursive:true});
+    await writeFile(path.join(directory,input.id+'-live.json'),JSON.stringify(comparison,null,2)+'\n',{flag:'wx'});
+    json(res,200,{id:input.id,state:job.state,comparison,table:comparison.table});return true;
+   }catch(e){job.state='INCOMPLETE';job.error=String(e.message??e);throw new ApiError(500,'LIVE_COMPARISON_FAILED',job.error);}
+   finally{setRunning(false);}
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/analyze'){
    const input=await readJsonObject(req,['source','abi','contractName','role','profile'],120000);

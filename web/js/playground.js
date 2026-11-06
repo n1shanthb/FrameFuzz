@@ -1,5 +1,5 @@
 import {esc} from './utils.js';
-const s={mode:'byoc',source:'',abi:'',role:'UNKNOWN',contractName:'',contracts:[],config:null,analysis:null,admission:null,job:null,report:null,timeline:[],phase:'IDLE',error:'',version:0,active:false,controller:null,filter:'all',replay:null,budget:null,arkivImport:null,arkivPublish:null};
+const s={mode:'byoc',source:'',abi:'',role:'UNKNOWN',contractName:'',contracts:[],config:null,analysis:null,admission:null,job:null,report:null,timeline:[],phase:'IDLE',error:'',version:0,active:false,controller:null,filter:'all',replay:null,budget:null,arkivImport:null,arkivPublish:null,liveWallet:'',liveForeign:'',liveOwner:'',livePrepared:null,liveComparison:null};
 const $=id=>document.getElementById(id);
 async function request(route,body,signal){const res=await fetch('/api/playground/'+route,{...(body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}),signal:signal??AbortSignal.timeout(20000)});const data=await res.json();if(!res.ok)throw Error(data.error??'Request failed');return data;}
 const isBusy=()=>['ANALYZING','INVESTIGATING','CANCELLING'].includes(s.phase);
@@ -42,9 +42,47 @@ function arkivIntelHtml(){
     :`<p class="muted" style="margin-top:10px">Judges may query, verify and import. Wallet-backed publish requires an authenticated operator.</p>`}
  </section>`;
 }
-function admissionHtml(){const r=s.admission;if(s.mode!=='byoc')return '';if(!r)return '<section class="card"><h3>ADMISSION TEST READINESS</h3><p>Analyze pasted source to inspect frame and endpoint prerequisites.</p></section>';
- const rows=[['Source compiled',r.sourceCompiled],['EIP-8141 frame context',r.frameContext??'BLOCKED'],['Public endpoint',r.publicEndpoint?.status??'UNAVAILABLE'],['Alternative endpoint',r.alternativeEndpoint?.status??'UNAVAILABLE'],['Deployment state',r.deployment?.status??'MISSING'],['Wallet and funding',r.walletAndFunding?.status??'MISSING'],['Signed comparison candidate',r.signedComparisonCandidate??'BLOCKED'],['Live execution',r.liveExecution??'BLOCKED']];
- return `<section class="card"><h3>ADMISSION TEST READINESS</h3><p>Detected frame role: ${esc(r.supportedFrameRole??'NONE')} · chain 1337 · ${esc(r.classification)}</p>${rows.map(([name,status])=>`<p><strong>${esc(name)}:</strong> ${esc(status)}</p>`).join('')}<p>Public: ${esc(r.publicEndpoint?.submissionMethod??'eth_sendRawTransaction')} · Alternative: ${esc(r.alternativeEndpoint?.submissionMethod??'eth_sendFrameTransaction')}</p><p class="muted">${esc(r.comparisonCapability??'No signed candidate exists yet.')}</p><details open><summary>Exact blockers and remediation</summary><ul>${(r.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul></details><p class="muted">Read-only preparation · no observed admission verdicts · no broadcast.</p></section>`;
+function liveTableHtml(){
+ const rows=s.liveComparison?.table??[];
+ if(!rows.length)return '<p class="muted">No live admission rows yet. Table fills only from fresh RPC responses after Run Live Comparison.</p>';
+ return `<div class="table-wrap"><table class="data"><thead><tr><th>Mutation</th><th>Canonical</th><th>Alternative</th><th>Divergence</th><th>Inclusion</th><th>Evidence</th></tr></thead><tbody>
+ ${rows.map(row=>`<tr>
+  <td>${esc(row.mutation)}</td>
+  <td class="${/REJECTED_POLICY/.test(row.canonicalVerdict)?'cell-bad':/ACCEPTED/.test(row.canonicalVerdict)?'cell-ok':''}">${esc(row.canonicalVerdict)}</td>
+  <td class="${/ACCEPTED/.test(row.alternativeVerdict)?'cell-ok':/REJECTED/.test(row.alternativeVerdict)?'cell-bad':''}">${esc(row.alternativeVerdict)}</td>
+  <td>${esc(row.divergence)}</td>
+  <td>${esc(row.inclusion??'n/a')}</td>
+  <td class="mono tiny">hash ${esc(row.evidence?.hash??'')} · digest ${esc(String(row.evidence?.sourceDigest??'').slice(0,16))}… · sidecar ${esc(row.evidence?.sidecarAdmissionId??'n/a')} · ${esc(row.evidence?.rule??'')} · ${esc(row.evidence?.provenance??'')}</td>
+ </tr>`).join('')}
+ </tbody></table></div>`;
+}
+function admissionHtml(){const r=s.admission;if(s.mode!=='byoc')return '';if(!r)return '<section class="card"><h3>PUBLIC vs ALTERNATIVE ADMISSION</h3><p>Analyze the supported storage-access validator source to begin.</p></section>';
+ const live=r.liveAdmission;
+ const liveCapable=s.analysis?.capabilities?.includes('LIVE_STORAGE_ACCESS_ADMISSION');
+ return `<section class="card"><h3>PUBLIC vs ALTERNATIVE ADMISSION</h3>
+ <p>Primary live output · provenance <strong>LIVE</strong> only · no historical rows.</p>
+ <p>Detected frame role: ${esc(r.supportedFrameRole??s.analysis?.detectedRole?.role??'NONE')} · chain 1337 · readiness ${esc(live?.classification??r.classification)}</p>
+ <p>Public: ${esc(r.publicEndpoint?.url??'')} · ${esc(r.publicEndpoint?.submissionMethod??'eth_sendRawTransaction')} · ${esc(live?.canonical?.clientVersion??r.publicEndpoint?.clientVersion??'')}</p>
+ <p>Alternative: ${esc(r.alternativeEndpoint?.url??'')} · ${esc(r.alternativeEndpoint?.submissionMethod??'eth_sendFrameTransaction')} · ${esc(live?.alternative?.clientVersion??r.alternativeEndpoint?.clientVersion??'')}</p>
+ ${liveCapable?`<p class="alert">Supported interface: storage-access ViolatingWallet. Runtime hash ${esc(s.analysis.runtimeBytecodeHash||'n/a')}. Arbitrary Solidity is not live-tested.</p>
+ <div class="grid-2">
+  <label class="field">Deployed wallet<input id="liveWallet" value="${esc(s.liveWallet)}" placeholder="0x… ViolatingWallet"></label>
+  <label class="field">Foreign target<input id="liveForeign" value="${esc(s.liveForeign)}" placeholder="0x… Foreign"></label>
+  <label class="field">Owner address<input id="liveOwner" value="${esc(s.liveOwner)}" placeholder="0x… owner / signer"></label>
+ </div>
+ <div class="row" style="margin-top:10px">
+  <button class="btn btn-secondary" id="liveRefresh" type="button">Refresh live readiness</button>
+  <button class="btn btn-secondary" id="livePrepare" type="button">Prepare fresh admission experiment</button>
+  <button class="btn btn-primary" id="liveRun" type="button" ${s.livePrepared?'':'disabled'}>Run Live Comparison</button>
+ </div>
+ <p class="muted">Protocol: ethrex first → require StorageReadNonSender + unchanged nonce → same signed bytes to Skandha. Operator server must use LIVE_AUTHORIZED; judges never hold the signing key.</p>
+ ${live?`<details open><summary>Live blockers</summary><ul>${(live.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')||'<li>None</li>'}</ul></details>`:''}
+ ${s.livePrepared?`<p class="mono tiny">Prepared hash ${esc(s.livePrepared.candidate.hash)} · nonce ${esc(s.livePrepared.candidate.nonce)} · wallet ${esc(s.livePrepared.candidate.wallet)}</p>`:''}
+ <h4 style="margin-top:16px">Live comparison table</h4>${liveTableHtml()}
+ ${s.liveComparison?`<details open><summary>Raw live comparison</summary><pre class="details">${esc(JSON.stringify(s.liveComparison,null,2))}</pre></details>`:''}`
+ :`<p class="muted">Paste examples/contracts/StorageAccessValidator.sol and select ViolatingWallet to enable the live storage-access path.</p>
+ <details><summary>Generic readiness blockers</summary><ul>${(r.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul></details>`}
+ </section>`;
 }
 function analysisHtml(){const a=s.analysis;if(!a)return '<p class="muted">Choose a mode, then analyze. BYOC uses pasted source. Uniswap loads pinned paymaster + historical admission evidence. Registry discovers Arkiv regressions without automatic writes.</p>';
  return `<p><strong>${esc(a.status)}</strong> · profile ${esc(a.profile?.id??'byoc')} · ${esc(a.compiler??'profile/source')} · digest ${esc(a.sourceDigest)}</p>${a.analysisId?`<p class="mono tiny">Analysis identity: ${esc(a.analysisId)}</p>`:''}
@@ -81,6 +119,12 @@ function paint(){if(!s.active||!$('byocPanels'))return;
  }
  $('byocAnalysis').innerHTML=analysisHtml();$('byocPanels').innerHTML=`<h2>Live agent sessions</h2>${agentCards()}<h2 style="margin-top:24px">Mutation workbench & experiment results</h2>${resultsHtml()}${s.replay?`<pre class="details">${esc(JSON.stringify(s.replay,null,2))}</pre>`:''}${s.timeline.length?`<details><summary>Trace (${s.timeline.length} events)</summary><pre class="details">${esc(JSON.stringify(s.timeline,null,2))}</pre></details>`:''}`;
  $('byocFilter')?.addEventListener('change',e=>{s.filter=e.target.value;paint();});
+ $('liveWallet')?.addEventListener('change',e=>{s.liveWallet=e.target.value.trim();});
+ $('liveForeign')?.addEventListener('change',e=>{s.liveForeign=e.target.value.trim();});
+ $('liveOwner')?.addEventListener('change',e=>{s.liveOwner=e.target.value.trim();});
+ $('liveRefresh')?.addEventListener('click',async()=>{try{s.liveWallet=$('liveWallet')?.value.trim()||s.liveWallet;s.liveForeign=$('liveForeign')?.value.trim()||s.liveForeign;s.liveOwner=$('liveOwner')?.value.trim()||s.liveOwner;await refreshLiveReadiness();s.error='';}catch(e){s.error=e.message;}paint();});
+ $('livePrepare')?.addEventListener('click',async()=>{s.liveWallet=$('liveWallet')?.value.trim()||'';s.liveForeign=$('liveForeign')?.value.trim()||'';s.liveOwner=$('liveOwner')?.value.trim()||'';await prepareLive();});
+ $('liveRun')?.addEventListener('click',()=>runLive());
  document.querySelectorAll('[data-byoc-replay]').forEach(el=>el.addEventListener('click',async()=>{const version=s.version;el.disabled=true;try{const result=await request('replay',{id:s.job,entryId:el.dataset.byocReplay});if(version===s.version)s.replay=result;}catch(e){s.error=e.message;}if(version===s.version)paint();}));
  document.querySelectorAll('[data-arkiv-import]').forEach(el=>el.addEventListener('click',async()=>{const version=s.version;el.disabled=true;try{const result=await request('arkiv/import',{entityKey:el.dataset.arkivImport,analysisId:s.analysis?.analysisId});if(version===s.version){s.arkivImport=result;s.error='';}}catch(e){if(version===s.version)s.error=e.message;}if(version===s.version)paint();}));
  $('arkivPublishBtn')?.addEventListener('click',async()=>{
@@ -99,7 +143,31 @@ function paint(){if(!s.active||!$('byocPanels'))return;
  });
 }
 async function cancel(){s.controller?.abort();if(s.job&&s.phase==='INVESTIGATING'){s.phase='CANCELLING';try{await request('cancel',{id:s.job});}catch(e){s.error=e.message;}}else if(s.phase==='ANALYZING')s.phase='CANCELLED';paint();}
-function invalidate(){const oldJob=s.job;if(oldJob&&['INVESTIGATING','CANCELLING'].includes(s.phase))request('cancel',{id:oldJob}).catch(()=>{});s.controller?.abort();s.version++;s.analysis=null;s.admission=null;s.report=null;s.job=null;s.timeline=[];s.replay=null;s.arkivImport=null;s.arkivPublish=null;s.phase='IDLE';s.error='Context changed: previous conclusions invalidated.';if($('byocConsent'))$('byocConsent').checked=false;paint();}
+function invalidate(){const oldJob=s.job;if(oldJob&&['INVESTIGATING','CANCELLING'].includes(s.phase))request('cancel',{id:oldJob}).catch(()=>{});s.controller?.abort();s.version++;s.analysis=null;s.admission=null;s.report=null;s.job=null;s.timeline=[];s.replay=null;s.arkivImport=null;s.arkivPublish=null;s.livePrepared=null;s.liveComparison=null;s.phase='IDLE';s.error='Context changed: previous conclusions invalidated.';if($('byocConsent'))$('byocConsent').checked=false;paint();}
+async function refreshLiveReadiness(){
+ if(!s.analysis?.analysisId)return;
+ const q=new URLSearchParams({analysisId:s.analysis.analysisId});
+ if(s.liveWallet)q.set('wallet',s.liveWallet);if(s.liveForeign)q.set('foreign',s.liveForeign);if(s.liveOwner)q.set('owner',s.liveOwner);
+ const r=await request('admission-readiness?'+q.toString());s.admission=r;
+}
+async function prepareLive(){
+ s.error='';paint();
+ try{
+  const prepared=await request('live-prepare',{analysisId:s.analysis.analysisId,sourceDigest:s.analysis.sourceDigest,wallet:s.liveWallet,owner:s.liveOwner,foreign:s.liveForeign,verifyData:'0x01'});
+  s.livePrepared=prepared;s.phase='PREPARED';
+ }catch(e){s.error=e.message;}
+ paint();
+}
+async function runLive(){
+ if(!s.livePrepared?.candidate?.hash){s.error='Prepare a fresh candidate first.';paint();return;}
+ if(!confirm('Broadcast the exact prepared hash '+s.livePrepared.candidate.hash+' to ethrex first, then Skandha only after a policy rejection?'))return;
+ s.phase='LIVE_COMPARING';s.error='';paint();
+ try{
+  const result=await request('live-run',{id:s.livePrepared.id,confirmHash:s.livePrepared.candidate.hash,authorizeWrites:true},AbortSignal.timeout(120000));
+  s.liveComparison=result.comparison;s.phase=result.state;s.livePrepared=null;
+ }catch(e){s.error=e.message;s.phase='INCOMPLETE';}
+ paint();
+}
 async function analyze(){const version=++s.version;s.phase='ANALYZING';s.error='';s.controller=new AbortController();paint();try{
  const input=s.mode==='byoc'?{source:s.source,role:s.role,profile:'byoc',...(s.contractName?{contractName:s.contractName}:{}),...(s.abi.trim()?{abi:JSON.parse(s.abi)}:{})}:{profile:s.mode};
  const a=await request('analyze',input,AbortSignal.any([s.controller.signal,AbortSignal.timeout(20000)]));if(version!==s.version)return;
@@ -118,7 +186,7 @@ async function start(){if(!$('byocConsent')?.checked){s.error='Explicit consent 
 export function renderPlayground(){return `<section class="card"><div class="eyebrow">Investigation playground</div><h1>Contract · Uniswap · Registry</h1><p class="summary">Analyze a contract and FrameFuzz automatically queries Arkiv for relevant community regressions. Agents cite verified cases; import stays unsigned; publish is operator-confirm only.</p>
  <div class="row" id="byocModes">${[['byoc','Bring Your Own Contract'],['uniswap-v4-paymaster','Uniswap Paymaster Admission'],['regression-registry','Regression Registry']].map(([id,label])=>`<button class="btn ${s.mode===id?'btn-primary':'btn-secondary'}" data-mode="${id}" type="button">${label}</button>`).join('')}</div>
  <p class="alert" id="byocModeHelp"></p><p class="muted" id="byocBudget">Budget…</p>
- <div id="byocSourceWrap"><label class="field">Solidity source<textarea id="byocSource" class="byoc-editor" spellcheck="false" placeholder="Paste a self-contained Solidity contract…">${esc(s.source)}</textarea></label><p class="muted">solc 0.8.28 · ≤64 KiB · imports disabled · no shell/file/URL resolution.</p>
+ <div id="byocSourceWrap"><label class="field">Solidity source<textarea id="byocSource" class="byoc-editor" spellcheck="false" placeholder="Paste StorageAccessValidator.sol (Foreign + ViolatingWallet)…">${esc(s.source)}</textarea></label><p class="muted">solc 0.8.28 · ≤64 KiB · HegotaSupport imports allowed only from local @forshtat/hegota-support · live path supports the labeled storage-access validator.</p>
  <div class="grid-2"><label class="field">Optional ABI JSON<textarea id="byocAbi" class="byoc-abi" spellcheck="false">${esc(s.abi)}</textarea></label><div><label class="field">Contract name<select id="byocContract"><option value="">Auto-select</option></select></label><label class="field">Declared role<select id="byocRole">${['UNKNOWN','EXECUTION_TARGET','SENDER_VALIDATOR','PAYMASTER'].map(r=>`<option ${s.role===r?'selected':''}>${r}</option>`).join('')}</select></label></div></div></div>
  <div class="row"><button class="btn btn-primary" id="byocAnalyze">Detect / Analyze</button><button class="btn btn-secondary" id="byocCancel">Cancel</button></div><p id="byocStatus" role="status" aria-live="polite"></p><div id="byocAnalysis"></div>
  <hr><label class="row"><input type="checkbox" id="byocConsent"> Consent placeholder</label><p class="muted" id="byocConfig">Reading configuration…</p><button class="btn btn-primary" id="byocStart">Start Investigation</button></section><section class="card" id="byocPanels"></section>`;}

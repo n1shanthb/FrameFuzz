@@ -1,0 +1,256 @@
+{
+  "schema": "framefuzz.storage-access-approval.v1",
+  "observedAt": "2026-11-06T22:24:30.840Z",
+  "writes": 0,
+  "broadcasts": 0,
+  "capability": "STORAGE_ACCESS_VALIDATOR_V1",
+  "reference": "https://docs.altmempool.wtf/guides/quickstart/ steps 4/6/7/8",
+  "source": {
+    "file": "examples/contracts/StorageAccessValidator.sol",
+    "contractName": "ViolatingWallet",
+    "companion": "Foreign",
+    "sourceDigest": "05e4454685fa6755f0d691a382a47b8a2f941458ea075d58e823c75e2e1f6959",
+    "analysisId": "845042822fed6d5debf3513348fcb37d9d59915be093babeb995dcaf1adace3f",
+    "runtimeBytecodeHash": "0xa0b282997f1eacc54f302d398988e4cae8124b9fc8fd0ca3c2e2f21d326ec1ea",
+    "creationBytecodeHash": "0x1005237c323c3dfefe4f7304fe0aee2f9b342eaa10b1c330196789c25149cf13",
+    "detectedRole": {
+      "role": "SENDER_VALIDATOR",
+      "basis": "Source matches the supported storage-access ViolatingWallet interface (FOREIGN.staticcall during VERIFY + HegotaSupport approve)."
+    }
+  },
+  "endpoints": {
+    "canonical": {
+      "url": "https://altmempool.forshtat.com",
+      "role": "CANONICAL_EXECUTION",
+      "status": "READY",
+      "chainId": 1337,
+      "clientVersion": "ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383/x86_64-unknown-linux-gnu/rustc-v1.93.1",
+      "identity": {
+        "role": "CANONICAL_EXECUTION",
+        "clientFamily": "ethrex",
+        "submissionMethod": "eth_sendRawTransaction",
+        "parameterShape": "SIGNED_TYPE_0X06_BYTES"
+      },
+      "blockNumber": 9539,
+      "skandhaInfo": null,
+      "readOnly": true
+    },
+    "alternative": {
+      "url": "https://altmempool.forshtat.com/rpc/",
+      "role": "ALTERNATIVE_SIDECAR",
+      "status": "READY",
+      "chainId": 1337,
+      "clientVersion": "skandha/v4.1.1-",
+      "identity": {
+        "role": "ALTERNATIVE_SIDECAR",
+        "clientFamily": "skandha",
+        "submissionMethod": "eth_sendFrameTransaction",
+        "parameterShape": "STRUCTURED_SIGNED_FRAME",
+        "healthy": true
+      },
+      "blockNumber": 9539,
+      "skandhaInfo": {
+        "protocolVersion": 1,
+        "chainId": 1337,
+        "version": "v4.1.1",
+        "commit": "",
+        "bundlingMode": "auto",
+        "p2pEnabled": true,
+        "latestSeq": 5224,
+        "oldestSeq": 1,
+        "historyCapacity": 10000,
+        "bootId": "6ba711bc5014aeb0",
+        "minInclusionDenominator": 10,
+        "throttlingSlack": 10,
+        "banSlack": 50
+      },
+      "readOnly": true
+    }
+  },
+  "chain": {
+    "id": 1337,
+    "head": 9540,
+    "gasPriceWei": "2000000000",
+    "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f"
+  },
+  "operatorSender": {
+    "address": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+    "balanceWei": "419592000000000",
+    "pendingNonce": 2,
+    "codeEmpty": true,
+    "note": "Current balance is insufficient for Foreign+ViolatingWallet deploy+stake; top-up required before approved writes."
+  },
+  "minimumTransactionSequence": [
+    {
+      "step": 1,
+      "action": "FUND_OPERATOR_EOA",
+      "valueWei": "78780408000000000",
+      "purpose": "Cover two contract creations, 0.03 wallet funding, 0.012 stake, and gas"
+    },
+    {
+      "step": 2,
+      "action": "DEPLOY_FOREIGN",
+      "contract": "Foreign",
+      "valueWei": "0"
+    },
+    {
+      "step": 3,
+      "action": "DEPLOY_VIOLATING_WALLET",
+      "contract": "ViolatingWallet",
+      "constructor": [
+        "owner",
+        "foreign"
+      ],
+      "valueWei": "30000000000000000"
+    },
+    {
+      "step": 4,
+      "action": "VERIFY_RUNTIME_HASH",
+      "expected": "0xa0b282997f1eacc54f302d398988e4cae8124b9fc8fd0ca3c2e2f21d326ec1ea"
+    },
+    {
+      "step": 5,
+      "action": "STAKE_WALLET",
+      "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+      "stakeWei": "12000000000000000",
+      "unstakeDelaySec": 86400,
+      "path": "frame VERIFY(clean)+SENDER(addStake)"
+    },
+    {
+      "step": 6,
+      "action": "SIGN_POLICY_CANDIDATE",
+      "verifyData": "0x01",
+      "sameIdentityBothPaths": true
+    },
+    {
+      "step": 7,
+      "action": "SUBMIT_CANONICAL_FIRST",
+      "method": "eth_sendRawTransaction",
+      "expect": "StorageReadNonSender"
+    },
+    {
+      "step": 8,
+      "action": "CONFIRM_NONCE_UNCHANGED_NULL_RECEIPT"
+    },
+    {
+      "step": 9,
+      "action": "SUBMIT_ALTERNATIVE",
+      "method": "eth_sendFrameTransaction",
+      "expect": "accepted when staked"
+    },
+    {
+      "step": 10,
+      "action": "QUERY_INCLUSION_AND_SIDECAR_REPORT"
+    }
+  ],
+  "costs": {
+    "maxTestEthExposureWei": "79200000000000000",
+    "maxTestEthExposureEth": 0.0792,
+    "requiredTopUpWei": "78780408000000000",
+    "requiredTopUpEth": 0.078780408,
+    "stakeLockedWei": "12000000000000000",
+    "walletCreationFundingWei": "30000000000000000",
+    "gasPriceCeilingWei": "3000000000"
+  },
+  "readiness": {
+    "schema": "framefuzz.live-admission-readiness.v1",
+    "capability": "STORAGE_ACCESS_VALIDATOR_V1",
+    "classification": "BLOCKED_PRECONDITION",
+    "sourceDigest": "05e4454685fa6755f0d691a382a47b8a2f941458ea075d58e823c75e2e1f6959",
+    "analysisId": "845042822fed6d5debf3513348fcb37d9d59915be093babeb995dcaf1adace3f",
+    "contractName": "ViolatingWallet",
+    "runtimeBytecodeHash": "0xa0b282997f1eacc54f302d398988e4cae8124b9fc8fd0ca3c2e2f21d326ec1ea",
+    "owner": null,
+    "canonical": {
+      "status": "READY",
+      "url": "https://altmempool.forshtat.com",
+      "chainId": 1337,
+      "clientVersion": "ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383/x86_64-unknown-linux-gnu/rustc-v1.93.1",
+      "identity": {
+        "role": "CANONICAL_EXECUTION",
+        "clientFamily": "ethrex",
+        "submissionMethod": "eth_sendRawTransaction",
+        "parameterShape": "SIGNED_TYPE_0X06_BYTES"
+      },
+      "blockNumber": 9539,
+      "skandhaInfo": null,
+      "readOnly": true
+    },
+    "alternative": {
+      "status": "READY",
+      "url": "https://altmempool.forshtat.com/rpc/",
+      "chainId": 1337,
+      "clientVersion": "skandha/v4.1.1-",
+      "identity": {
+        "role": "ALTERNATIVE_SIDECAR",
+        "clientFamily": "skandha",
+        "submissionMethod": "eth_sendFrameTransaction",
+        "parameterShape": "STRUCTURED_SIGNED_FRAME",
+        "healthy": true
+      },
+      "blockNumber": 9539,
+      "skandhaInfo": {
+        "protocolVersion": 1,
+        "chainId": 1337,
+        "version": "v4.1.1",
+        "commit": "",
+        "bundlingMode": "auto",
+        "p2pEnabled": true,
+        "latestSeq": 5224,
+        "oldestSeq": 1,
+        "historyCapacity": 10000,
+        "bootId": "6ba711bc5014aeb0",
+        "minInclusionDenominator": 10,
+        "throttlingSlack": 10,
+        "banSlack": 50
+      },
+      "readOnly": true
+    },
+    "deployment": {
+      "status": "MISSING",
+      "wallet": null,
+      "foreign": null
+    },
+    "stake": {
+      "status": "UNKNOWN"
+    },
+    "nonce": null,
+    "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+    "recipient": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+    "fundingHints": {
+      "walletCreationValueWei": "30000000000000000",
+      "stakeWei": "12000000000000000",
+      "minStakeExclusiveWei": "10000000000000000"
+    },
+    "protocol": {
+      "order": [
+        "VERIFY_CHAIN_CODE_STAKE_NONCE",
+        "SUBMIT_CANONICAL_FIRST",
+        "REQUIRE_POLICY_REJECTION",
+        "CONFIRM_NONCE_UNCHANGED_AND_NULL_RECEIPT",
+        "SUBMIT_SAME_SIGNED_BYTES_TO_SKANDHA",
+        "QUERY_ADMISSION_REPORT_AND_INCLUSION"
+      ],
+      "racePolicy": "NO_PARALLEL_SUBMISSION"
+    },
+    "blockers": [
+      "Provide the deployed ViolatingWallet address after operator-approved deployment"
+    ],
+    "writes": 0,
+    "notice": "Read-only. No deployment, stake, funding or admission broadcast from this call."
+  },
+  "recordingWorkflow": [
+    "Serve with --mode LIVE_AUTHORIZED and FRAMEFUZZ_OWNER_KEY on an operator-only host (not public judges).",
+    "Paste examples/contracts/StorageAccessValidator.sol, select ViolatingWallet, Analyze.",
+    "After approved setup writes, enter wallet/foreign/owner addresses and Refresh live readiness.",
+    "Prepare fresh admission experiment → confirm exact hash → Run Live Comparison.",
+    "Table must show REJECTED_POLICY vs ACCEPTED with LIVE provenance and sidecar admission id."
+  ],
+  "approvalStatus": "AWAITING_EXPLICIT_USER_APPROVAL",
+  "hardStops": [
+    "No automatic writes from this packet",
+    "No OpenRouter spend",
+    "No Uniswap/Arkiv/Swarm work",
+    "No historical rows in the live table"
+  ]
+}

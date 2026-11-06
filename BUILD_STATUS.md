@@ -85,3 +85,6 @@ Observed real browser proof: normal server loaded `.env`; OpenRouter was configu
 
 ## Incomplete-run budget completion fix — 2026-11-07
 Exact QuotaVault gate: `maxInputBytes` 24749>24000 mislabeled as run-budget exhaustion while sprint showed $0.8849 remaining. Fixed distinct gates, history/input budgets, execute-READY-before-repair, skip identical-arg repairs, Critic continuation, sprint PRIOR_IMPORT reconcile ($0.62201304 + $0.11505780 → spent $0.73707084 / remaining $0.26292916). `npm test` 214/214. No new paid calls or chain writes in this fix pass.
+
+## Storage-access live admission prep — 2026-11-07
+Workshop ViolatingWallet+Foreign path bound into Playground as the only live paste interface. Runtime hash `0xa0b28299…c1ea`. Rejection-first ethrex→Skandha protocol + live table UI. Approval packet SHA-256 `6c55073e…a6b4`. Focused admission tests 12/12. Chain writes 0. Awaiting user approval before fund/deploy/stake/compare.
