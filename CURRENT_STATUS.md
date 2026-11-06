@@ -1,24 +1,25 @@
-# Current status — Arkiv createEntity PUBLISHED (one-shot)
+# Current status — Arkiv native in Playground investigation
 
-Explicit user approval of intent `be8bb848e49f63f3d14c3418e239d3b1eccd8b6360eb1c326ec192a5ddd40ff4` / max fee `0.001` tGLM was consumed once. Preflight passed; **one** Rabdi `createEntity` submitted; no retry; no EF / funding / LLM / push.
+Arkiv is wired into Contract Playground analyze → agent investigation → import → optional operator publish. No new chain writes or paid LLM calls this pass. Full suite **205/205** pass.
 
-## Confirmed publication
-- **tx:** `0x007bd10f4d720a124c4dd0b44449f235b32f364a4b68e7657917f1717a307c00`
-- **receipt:** `success` at block `302519`
-- **entityKey:** `0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1`
-- **creator/owner:** `0x20370BE5BA867Ab4779ad0686963A55ADc0722b1`
-- **expiresAtBlock:** `345303`
-- **contentDigest:** `0f7f014559fbfb6ea828820cc954401f1562937b66c2fe24360959dcb5196b25` (fresh fetch + owner query MATCH)
-- **fee paid:** `0.000278489` tGLM (`gasUsed` `278489` × `1 gwei`) — under `0.001` ceiling
-- **import:** unsigned preview `PREVIEW_COMMUNITY — UNTRUSTED, NO BROADCAST`, `submissions: 0`
-- **explorer:** none verified/pinned for Rabdi in-repo (not invented)
+## Product behavior (verified)
+- **Analyze** auto-runs bounded Arkiv discovery (no consent). Uniswap profile: `AVAILABLE` with relevant `uniswap-storage` + `verification-gas` cases and relevance reasons. Generic ERC-20: `NO_APPLICABLE_QUERY` (no fishing).
+- Live Rabdi may rate-limit → **SAVED_FALLBACK** with honest labeling; investigation continues.
+- Agents receive `COMMUNITY_REGRESSION_INTELLIGENCE` + `arkiv_regressions` tool; usage recorded in `report.arkivIntelligence`.
+- **Import** `/api/playground/arkiv/import` → unsigned preview, `broadcasts:0` (confirmed for entity `0xf1089c05…06a1`).
+- **Publish** preview/confirm for operator only (`ARKIV_PRIVATE_KEY`); public gets 403. Intent digest + fee ceiling; no auto-retry.
+- Browser (http://127.0.0.1:4188): Playground Uniswap analyze shows **Community Regression Intelligence** with 3 cases including our published entity; Start Investigation disabled without `FRAMEFUZZ_SWARM=on` (expected for this serve mode).
 
-## Evidence
-- `evidence/arkiv/2026-11-07/publish-receipt.json`
-- `evidence/arkiv/2026-11-07/fresh-fetch.json`
-- `evidence/arkiv/2026-11-07/unsigned-import-preview.json`
-- `evidence/arkiv/2026-11-07/confirmation-summary.json`
-- Gate: `src/arkiv/approval-gate.mjs` (11/11 tests); submit lock cleared after one-shot
+## Key files
+- `src/playground/arkiv-intelligence.mjs` — discovery, relevance, sanitize, publish confirmation
+- `src/playground/{investigate,http,session,tools,schemas}.mjs` — agent + API wiring
+- `web/js/playground.js` + `web/css/app.css` — Community Regression Intelligence UI
+- Tests: `test/arkiv-intelligence.test.mjs`, `test/playground-arkiv-http.test.mjs`
 
-## Not done
-EF Uniswap path still blocked (empty paymasters). No Git push authorized.
+## Prior Arkiv one-shot (unchanged)
+Entity `0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1` · contentDigest `0f7f0145…` · evidence under `evidence/arkiv/2026-11-07/`.
+
+## Limitations
+- Saved snapshots mark `replayAllowed:false`; import still re-verifies live when clicked.
+- Agent decision influence with a **paid** Uniswap run not re-executed this pass (no paid LLM); covered by mock-provider tests.
+- EF Uniswap live path still paymaster-blocked. No push.
