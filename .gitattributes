@@ -1,0 +1,2 @@
+# Preserve historical evidence digests on every OS; never convert capture bytes.
+evidence/** -text

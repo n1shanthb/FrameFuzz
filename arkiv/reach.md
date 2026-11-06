@@ -2,7 +2,7 @@
 
 This is a developer tool for execution-client, mempool/sidecar, paymaster and EIP-8141 compatibility testing. A developer can find a fixture by suite, rule or implementation version without knowing the original author's repository layout, then inspect publisher/owner and regenerate the semantic case locally.
 
-Measured in this implementation: **one real published entity**, retrieved by a fresh CLI process and a separately started dashboard server, and imported into unsigned replay previews. The real demo involves one writer wallet; no independent external developer adoption has been measured. Automated cross-owner fixtures verify the protocol is not tied to that wallet. No user testimonials, active-user numbers or community adoption are claimed.
+Measured in this implementation: **two real published entities** (gas and Uniswap), queried from fresh SDK processes and imported into unsigned replay previews. The real demo involves one writer wallet; no independent external developer adoption has been measured. The additional Uniswap case honestly preserves the current sidecar infrastructure failure. Automated cross-owner fixtures verify the protocol is not tied to that wallet. No user testimonials, active-user numbers or community adoption are claimed.
 
 The user-facing distribution surface is FrameFuzz's existing dashboard Community Cases view and its `arkiv query`, `fetch` and `import` commands. Read access is public and unsigned. Current owner and immutable publisher are visible; readers are explicitly shown as anonymous public readers unless an optional read-only wallet label is configured. That label is not authentication.
 

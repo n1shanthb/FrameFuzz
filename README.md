@@ -1,10 +1,40 @@
-# FrameFuzz — EIP-8141 admission testing lab
+# FrameFuzz
 
-FrameFuzz builds independently signed frame transactions, compares canonical and alternative admission rules, tracks execution separately, and exports reproducible evidence.
+**FrameFuzz is a deterministic admission-rule testing and regression platform for EIP-8141 frame transactions.**
 
-**Verified November 6, 2026:** seven generated gas variants produced **14/14 matching live decisions**, eight included successfully and six expected cap rejections. **66 automated tests pass**, including all original tests and eight Arkiv registry tests. Historical live evidence remains unchanged. No USDC reimbursement or Uniswap swap is claimed.
+Frame transactions can behave differently across public and alternative mempool admission policies. Developers need to know which transaction configurations will be admitted, which rules reject them, and whether a change in their contracts or validation setup breaks compatibility.
+
+FrameFuzz generates semantic transaction variations, signs and submits them to supported admission paths, classifies expected versus observed rule decisions, and publishes reusable regression cases for other developers to inspect and replay. It mutates unsigned models rather than corrupting signed bytes. Real RPC results, receipts and runtime provenance support the verdicts; an intended policy difference is not a discovered vulnerability.
+
+**Workflow:** Generate → Compare → Inspect → Publish/Discover → Import → Replay Preview.
+
+## Quickstart — no wallet or devnet required
+
+Requires Node20.12+; tested on22.13.0. From this repository:
+
+```powershell
+npm ci
+npm test
+node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177
+```
+
+Open http://127.0.0.1:4177. The offline demonstration copies committed historical LIVE reports and a previously imported Arkiv PREVIEW into a local library. Network checks, live submissions and current Arkiv discovery/import are disabled. Select the gas campaign, the historical Uniswap report, or `saved-arkiv-import-preview.json`. Preview mutations still generates unsigned local scenarios. Saved evidence is never presented as a fresh execution or current registry query.
+
+For current Arkiv discovery, stop that server and use `node bin/framefuzz.mjs serve --results runs --port 4177`; public reads require no funded wallet. Real reads still depend on Rabdi availability and entity expiry. The experimental EIP-8141 sidecar last reported a full disk; do not repeat live campaigns until its operator confirms recovery.
+
+Start here: [generated LIVE evidence matrix](docs/LIVE_EVIDENCE.md), [four-minute demo](docs/DEMO_SCRIPT.md), [submission checklist](docs/SUBMISSION_CHECKLIST.md), [project description](docs/PROJECT_DESCRIPTION.md), [recording guidance](docs/RECORDING_GUIDE.md), [developer feedback](FEEDBACK.md).
+
+## Architecture
+
+`semantic definition + seed → unsigned model/setup → fresh signer adapter → public/alternative gateways → rule-aware classifier → receipt/evidence exports`.
+
+The generator and confidence-aware oracle are pure modules under `src/mutations/`; `src/adapters/` checks deployment/stake/nonce/funding state and reuses the proven frame codec. The runner separates admission from execution. `src/arkiv/` publishes sanitized portable descriptors, queries indexed metadata and verifies retrieved schema/digests/ownership/expiry. Community imports feed only constrained semantic data to the existing generator as PREVIEW; they cannot supply executable plugins, RPC configuration or stale signatures. The existing localhost dashboard exposes this workflow. Full reports remain offchain in Git; their digests and selected summaries accompany the onchain fixture.
+
+**Verified November 6, 2026:** seven generated gas variants produced **14/14 matching live decisions**, eight included successfully and six expected cap rejections. **71 automated tests pass**, retaining all previous tests. Historical Uniswap baseline cases show basic ACCEPT/ACCEPT, unstaked pool read REJECT/REJECT and staked pool read REJECT/ACCEPT with successful historical receipts. The new generated Uniswap campaign made six real submissions: four expected decisions, two sidecar disk failures, zero new confirmed inclusions and zero genuine rule discrepancies. Historical evidence is unchanged. No USDC reimbursement, swap settlement or mainnet EIP-8141 support is claimed.
 
 ## Arkiv Community Cases — real testnet registry
+
+Additional real Uniswap fixture: `0x6779cf38a4398eb90da94b11885e691b84a6bb09dda59974cf5b8f1a21db773e`; creation transaction `0x44f0084455b54724624fffd3e2c186986146d316c5d6bf27207409872acc9ec2`, successful Rabdi receipt, expiry block570761. Query: `node bin/framefuzz.mjs arkiv query --suite uniswap-storage --rule STORAGE_ACCESS`. It records actual contract/stake references and the new campaign's honest INFRASTRUCTURE_FAILURE outcome; it does not claim the failed staked attempt was admitted. Both this and the original gas entity were re-fetched and safely imported from fresh processes during final verification. No additional signing key remains configured after the in-memory writer session ended; no extra MAX_VERIFY_GAS rejection entity was published.
 
 FrameFuzz now publishes sanitized semantic regression fixtures, discovers cases across developers, verifies their integrity and opens a selected fixture in the existing mutation runner as an unsigned **PREVIEW**. The real publish → fresh-process query → retrieve → dashboard import → preview cycle succeeded. No EIP-8141 transaction is broadcast by community import.
 
