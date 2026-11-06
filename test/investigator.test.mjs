@@ -4,6 +4,7 @@ import {OpenRouterProvider} from '../src/swarm/provider.mjs';import {validateHyp
 import {executeHypothesis,replayRegression} from '../src/swarm/experiment.mjs';import {independentlyReplay} from '../src/swarm/replay.mjs';import {investigate} from '../src/swarm/investigate.mjs';
 import {ACTION_ABI} from '../src/mutations/frames.mjs';import {createDashboardServer} from '../src/server.mjs';
 import {frameDigest} from '../src/mutations/frames.mjs';
+import {roleTransport} from '../scripts/test-support/agentic.mjs';
 process.env.FRAMEFUZZ_SWARM='on';
 const key='test-provider-credential-never-export';
 const h=(operation=7,parameter=10)=>({suite:'frame-authorization',assumption:'Test omitted calldata commitment',change:operation===1?'parameter':parameter===10?'operation':'both',operation,parameter,unsafePrediction:'OWNER_RECOVERED',safePrediction:'OWNER_NOT_RECOVERED',falsifier:'Recovery or canonical hash invariants do not show the predicted differential',revision:'Initial hypothesis, no finding assigned'});
@@ -44,13 +45,9 @@ test('different model values change actual ABI calldata and deterministic observ
  const changed=structuredClone(a.descriptor);changed.compilerInputDigest='bad';await assert.rejects(replayRegression(changed),/integrity/);
  const {contentDigest,...body}=changed;const forged={...body,contentDigest:frameDigest(body)};await assert.rejects(replayRegression(forged),/provenance/);
 });
-test('three mocked perspective calls and an observation-conditioned revision execute two unique tests and independent replays',async()=>{
- const inputs=[];let n=0;const p=provider(async(_,request)=>{const body=JSON.parse(request.body),context=JSON.parse(body.messages[1].content);inputs.push(context);n++;
-  if(n<=3)return response([h(13,10),h(1,73),h(2,999)][n-1]);
-  const observed=context.untrusted.experiments[0];assert.equal(observed.actualObservation.results.safe.tamperedOwnerRecovered,false);
-  const proposal=observed.hypothesis.change==='operation'?h(1,567):h(29,10);proposal.revision='Actual observation supports the offline split; isolate the other calldata field, while EVM execution remains untested';return response(proposal);
- });
- const report=await investigate({mode:'openrouter',authorizeProvider:true,provider:p});assert.equal(report.status,'COMPLETE_OFFLINE_INVESTIGATION');assert.equal(report.proposals.length,4);assert.equal(report.experiments.length,2);assert.notEqual(report.experiments[0].hypothesis.change,report.experiments[1].hypothesis.change);assert.equal(report.independentlyReproduced,true);assert.equal(report.realLLMCalls,0);assert.match(report.source,/MOCK/);assert.equal(report.finding,false);assert.equal(report.broadcasts,0);assert.equal(inputs[3].untrusted.experiments.length,1);assert(report.timeline.some(e=>e.stage==='SELECT MUTATION'));
+test('mocked role calls validate proposals before execution and critique actual observations',async()=>{
+ const inputs=[];const p=provider(roleTransport({inspect:(role,context)=>inputs.push({role,context})}));
+ const report=await investigate({mode:'openrouter',authorizeProvider:true,provider:p});assert.equal(report.status,'COMPLETE_OFFLINE_INVESTIGATION',report.error);assert.equal(report.proposals.length,2);assert.equal(report.experiments.length,2);assert.notEqual(report.experiments[0].hypothesis.change,report.experiments[1].hypothesis.change);assert.equal(report.realLLMCalls,0);assert.match(report.source,/MOCK/);assert.equal(report.finding,false);assert.equal(report.broadcasts,0);assert.equal(inputs.find(i=>i.role==='critic').context.observations.length,2);assert(report.timeline.some(e=>e.stage==='DETERMINISTIC GATES'));
 });
 test('invalid model output produces an incomplete report rather than fabricated fallback results',async()=>{
  const report=await investigate({mode:'openrouter',authorizeProvider:true,provider:provider(async()=>response({...h(),finding:true}))});assert.equal(report.status,'INCOMPLETE');assert.equal(report.experiments.length,0);assert.equal(report.finding,false);assert.match(report.source,/MOCK/);

@@ -16,7 +16,7 @@ node bin/framefuzz.mjs saved-demo --results runs/demo --port 4192
 
 Open http://127.0.0.1:4192. If the port is occupied, choose another local port. No `.env`, key or RPC is needed. `npm ci` initially downloads pinned dependencies; after installation the demonstration is local.
 
-Show gas/Uniswap captures in Evidence Explorer; inspect JSON, Markdown and replay. In Arkiv Registry, choose **Inspect saved registry snapshots**. These are two historical publications, with current validity UNKNOWN and fresh import disabled. **Open saved imported PREVIEW** opens an already saved report; it does not regenerate an expired record or claim a fresh query. Swarm Lab → Load saved investigation shows four actual historical Sonnet responses, two selected experiments and two independent-process replays. Technical Briefing → Present to EF uses the same evidence-derived facts.
+Show gas/Uniswap captures in Evidence Explorer; inspect JSON, Markdown and replay. In Arkiv Registry, choose **Inspect saved registry snapshots**. These are two historical publications, with current validity UNKNOWN and fresh import disabled. **Open saved imported PREVIEW** opens an already saved report; it does not regenerate an expired record or claim a fresh query. Swarm Lab → newest saved investigation shows the genuine feasibility-gated run: four actual role calls, one cryptographic experiment and one gas-policy evaluation, with one fresh-process replay. The older four-response/two-experiment investigation remains separately selectable. Technical Briefing → Present to EF uses the same evidence-derived facts.
 
 ## Historical live evidence
 
@@ -56,4 +56,8 @@ Public GitHub access, authorized push, video recording/upload, ETHGlobal submiss
 
 ## Internal foundation checkpoint
 
-158 passing Node tests. src/analysis exposes versioned ContractInput/AnalysisContext/SemanticTest/AnalysisResult and prepare → generate → evaluate for existing gas-policy and owned offline crypto fixtures. Ordinary contracts return UNVERIFIED prerequisites. No Playground UI, arbitrary-source HTTP compilation or new live support. Exact scope: [foundation](CONTRACT_ANALYSIS_FOUNDATION.md); executed checks: [stability report](STABILITY_FOUNDATION_REPORT.md).
+164 passing Node tests. src/analysis exposes versioned ContractInput/AnalysisContext/SemanticTest/AnalysisResult and prepare → generate → evaluate for existing gas-policy and owned offline crypto fixtures. Ordinary contracts return UNVERIFIED prerequisites. No Playground UI, arbitrary-source HTTP compilation or new live support. Exact scope: [foundation](CONTRACT_ANALYSIS_FOUNDATION.md); executed checks: [stability report](STABILITY_FOUNDATION_REPORT.md).
+
+## Genuine feasibility-gated investigator
+
+Real mode now invokes distinct Scout, Mutation, Validator and Critic calls to one role-conditioned Sonnet model. Deterministic feasibility guards can veto model approvals; rejected/deferred cases and one bounded repair remain in the trace. Local outcome classifications preserve expected/observed separation and never promote predictions to PASS/XFAIL. The completed genuine demo and11-call cumulative cost ($0.19351332), source/provenance limits and UI behavior are documented in [AGENTIC_FEASIBILITY.md](AGENTIC_FEASIBILITY.md). No live validator action, arbitrary Solidity execution or security finding is established.

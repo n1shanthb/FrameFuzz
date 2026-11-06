@@ -5,7 +5,7 @@ async function dashboard(options,work){const dir=await mkdtemp(path.join(tmpdir(
 test('saved demo reads real Sonnet and exports while execution stays disabled without opt-in',async()=>{
  await dashboard({offlineDemo:true,swarmEnvironment:{OPENROUTER_API_KEY:'mock-key-never-called'},swarmRunner:()=>assert.fail('no execution')},async(base,demo)=>{
   const config=await(await fetch(base+'/api/swarm/config')).json();assert.equal(config.enabled,false);assert.equal(config.canReadSaved,true);assert.equal(config.canCallProvider,false);
-  assert.equal((await(await fetch(base+'/api/swarm/recent')).json()).investigations.length,1);
+  assert.equal((await(await fetch(base+'/api/swarm/recent')).json()).investigations.length,2);
   const report=await(await fetch(base+'/api/swarm/transcript?id='+demo.investigation)).json();assert.equal(report.report.realLLMCalls,4);
   assert.equal((await fetch(base+'/api/swarm/run',{method:'POST',body:JSON.stringify({mode:'simulated'})})).status,409);
   const preview=await(await fetch(base+'/api/mutate',{method:'POST',body:JSON.stringify({suite:'verification-gas',count:3,preview:true})})).json();assert.match(preview.source,/PREVIEW/);

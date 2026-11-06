@@ -1,9 +1,9 @@
 # Up next
 
-## Stop after stability and internal foundation
+## Stop after agentic feasibility checkpoint
 
-Authorized sprint completed. Read CURRENT_STATUS.md, docs/CONTRACT_ANALYSIS_FOUNDATION.md and docs/STABILITY_FOUNDATION_REPORT.md. Resume only with a new explicit instruction. Do not start Playground UI or archived TODOs automatically.
+Current authorized work is implemented and tested. Read CURRENT_STATUS.md and docs/AGENTIC_FEASIBILITY.md. Preserve branch feat/framefuzz-mvp and E:\ethglobalmumbai when switching IDEs. Git history records coherent commits; do not resume archived TODOs automatically.
 
-A future UI can consume prepareContractAnalysis → generateSemanticTests → evaluateSemanticTest for the two supported fixture families, exposing unknown context and prerequisites. Arbitrary-source compilation/behavioral analysis requires a separate security design. Current foundation does not authorize network execution.
+New real investigations require deliberate paid-run selection/consent. Do not rerun the stored demo automatically: all attempts cost$0.19351332/11 requests; the latest run completes the local acceptance flow. Reports retain wrong model expectations and speculation as model prose, not verified facts.
 
-Runtime blockers: compatible pinned client/signing hash, deployed owned-validator integration, funding/state and real action evidence plus independent reproduction. Existing E7/G6 remain partial. No funding/deployment/chain requests/paid models/Arkiv publication/push/forms without separate authorization. Preserve original captures, premium UI, branch feat/framefuzz-mvp and folder E:\ethglobalmumbai when switching IDEs.
+Supported: exact owned-validator local ECDSA experiments and unsigned gas-policy predictions, bounded Validator review/repair, fail-closed deterministic gates and one Critic-requested local replay. Unsupported: arbitrary Solidity execution, deployment/funding, live admission/action execution and automatic Arkiv/push. Compatible runtime/deployed account state, funding and real action proof still require separate explicit authorization. A future generic Playground UI is separate work.

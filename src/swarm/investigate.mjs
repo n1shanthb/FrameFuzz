@@ -13,6 +13,7 @@ function simulated(index,context){
 export async function investigate(options={}){
  assertSwarmEnabled();rejectNetworkWrites(options);
  const mode=options.mode??'simulated';if(!['simulated','openrouter'].includes(mode))throw new Error('Investigation mode must be simulated or openrouter');
+ if(mode==='openrouter')return (await import('./agentic.mjs')).investigateAgentic(options);
  if(mode==='openrouter'&&options.authorizeProvider!==true)throw new Error('Explicit provider authorization required');
  const provider=mode==='openrouter'?(options.provider??new OpenRouterProvider()):null;
  const fallback=!provider||!process.env.OPENROUTER_API_KEY&&!options.provider;

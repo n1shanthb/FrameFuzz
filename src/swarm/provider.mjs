@@ -1,7 +1,7 @@
 import {createHash} from 'node:crypto';
 import {HYPOTHESIS_SCHEMA,validateHypothesis} from './hypothesis.mjs';
 export const DEFAULT_OPENROUTER_MODEL='anthropic/claude-sonnet-4.6';
-export const DEFAULT_LIMITS={maxCalls:6,maxTotalTokens:60000,maxCostUSD:0.25,maxOutputTokens:1000,maxInputBytes:24000,timeoutMs:45000};
+export const DEFAULT_LIMITS={maxCalls:6,maxTotalTokens:60000,maxCostUSD:0.50,maxOutputTokens:2000,maxInputBytes:24000,timeoutMs:45000};
 const digest=x=>createHash('sha256').update(x).digest('hex');
 const bounded=(n,min,max,name)=>{if(!Number.isFinite(n)||n<min||n>max)throw new Error('Invalid provider budget '+name);return n;};
 const modelName=env=>!env.OPENROUTER_MODEL||env.OPENROUTER_MODEL.toLowerCase()==='sonnet'?DEFAULT_OPENROUTER_MODEL:env.OPENROUTER_MODEL;
@@ -20,17 +20,18 @@ export class OpenRouterProvider {
   this.logs=[];this.calls=0;this.tokens=0;this.costUSD=0;
  }
  protect(value){const raw=String(value);return (this.#key?raw.split(this.#key).join('[REDACTED]'):raw).replace(/sk-or-[\w-]+/g,'[REDACTED]');}
- async propose(messages){
+ async propose(messages){return this.structured(messages,{name:'framefuzz_hypothesis',schema:HYPOTHESIS_SCHEMA,validate:validateHypothesis});}
+ async structured(messages,{name,schema,validate,onResponse}){
   if(!this.#key)throw new Error('OPENROUTER_API_KEY is not configured');
-  const input=JSON.stringify({messages,schema:HYPOTHESIS_SCHEMA}),bytes=Buffer.byteLength(input),reserveTokens=bytes+1000+this.limits.maxOutputTokens;
+  const input=JSON.stringify({messages,schema}),bytes=Buffer.byteLength(input),reserveTokens=bytes+1000+this.limits.maxOutputTokens;
   // Conservative reservation with an enforced OpenRouter provider price ceiling ($/million tokens).
   const reserveCost=(bytes+1000)*5/1e6+this.limits.maxOutputTokens*25/1e6;
   if(bytes>this.limits.maxInputBytes||this.calls>=this.limits.maxCalls||this.tokens+reserveTokens>this.limits.maxTotalTokens||this.costUSD+reserveCost>this.limits.maxCostUSD)throw new Error('OpenRouter run budget exhausted before request');
   this.calls++;this.tokens+=reserveTokens;this.costUSD+=reserveCost;
-  const log={call:this.calls,provider:'OpenRouter',model:this.model,endpointHost:new URL(this.endpoint).host,promptDigest:digest(input),inputBytes:bytes,reservedTokens:reserveTokens,reservedCostUSD:reserveCost,state:'STARTED'};this.logs.push(log);
+  const log={call:this.calls,role:name,provider:'OpenRouter',model:this.model,endpointHost:new URL(this.endpoint).host,promptDigest:digest(input),inputBytes:bytes,reservedTokens:reserveTokens,reservedCostUSD:reserveCost,state:'STARTED'};this.logs.push(log);
   const controller=new AbortController();let timer;
   try{
-   const task=(async()=>{const r=await this.fetchImpl(this.endpoint,{method:'POST',headers:{Authorization:`Bearer ${this.#key}`,'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({model:this.model,messages,max_tokens:this.limits.maxOutputTokens,stream:false,reasoning:{enabled:false},provider:{require_parameters:true,max_price:{prompt:5,completion:25}},response_format:{type:'json_schema',json_schema:{name:'framefuzz_hypothesis',strict:true,schema:HYPOTHESIS_SCHEMA}}})});if(!r.ok)throw new Error('OpenRouter HTTP '+r.status);const body=await r.text();if(body.length>131072)throw new Error('OpenRouter response too large');return JSON.parse(body);})();
+   const task=(async()=>{const r=await this.fetchImpl(this.endpoint,{method:'POST',headers:{Authorization:`Bearer ${this.#key}`,'Content-Type':'application/json'},signal:controller.signal,body:JSON.stringify({model:this.model,messages,max_tokens:this.limits.maxOutputTokens,stream:false,reasoning:{enabled:false},provider:{require_parameters:true,max_price:{prompt:5,completion:25}},response_format:{type:'json_schema',json_schema:{name,strict:true,schema}}})});if(!r.ok)throw new Error('OpenRouter HTTP '+r.status);const body=await r.text();if(body.length>131072)throw new Error('OpenRouter response too large');return JSON.parse(body);})();
    const result=await Promise.race([task,new Promise((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(new Error('OpenRouter request timeout'));},this.limits.timeoutMs);})]);
    const usage=result.usage??{},tokens=usage.total_tokens??((usage.prompt_tokens??0)+(usage.completion_tokens??0)),cost=usage.cost;
    if(Number.isSafeInteger(tokens)&&tokens>0){this.tokens+=tokens-reserveTokens;log.tokens=tokens;}
@@ -40,8 +41,9 @@ export class OpenRouterProvider {
    if(this.costUSD>this.limits.maxCostUSD||this.tokens>this.limits.maxTotalTokens)throw new Error('Provider reported usage exceeding run budget; stopping');
    const choice=result.choices?.[0];if(choice?.finish_reason!=='stop'||typeof choice.message?.content!=='string')throw new Error('Incomplete structured model response');
    const parsed=JSON.parse(this.protect(choice.message.content));
+   onResponse?.(structuredClone(parsed));
    log.textLengths=Object.fromEntries(['assumption','falsifier','revision'].filter(k=>typeof parsed?.[k]==='string').map(k=>[k,parsed[k].length]));
-   const hypothesis=validateHypothesis(parsed);log.state='VALIDATED';return hypothesis;
+   const validated=validate(parsed);log.state='VALIDATED';return validated;
   }catch(error){log.state='FAILED';const message=/^OpenRouter HTTP \d+$|^OpenRouter request timeout$|budget|hypothesis|mutation|structured|response too large/i.test(error.message)?this.protect(error.message):'OpenRouter request or schema validation failed';log.error=message;throw new Error(message);}
   finally{clearTimeout(timer);}
  }

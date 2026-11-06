@@ -68,3 +68,7 @@ Read AGENTS.md, AUTHORITY.md, CURRENT_STATUS.md and UP_NEXT.md in this same repo
 ## Internal contract-analysis foundation
 
 Versioned input/context and semantic-test adapters reuse the existing gas and owned-validator engines. See [foundation scope and executed fixtures](docs/CONTRACT_ANALYSIS_FOUNDATION.md) and [stability verification](docs/STABILITY_FOUNDATION_REPORT.md). This adds no Playground UI or arbitrary Solidity compiler. Saved transcript reading needs no execution opt-in; offline cryptographic execution still requires FRAMEFUZZ_SWARM=on.
+
+## Genuine feasibility-gated agents
+
+[Current agent pipeline and actual evidence](docs/AGENTIC_FEASIBILITY.md): Scout → Mutation → Validator → Executor → Critic through separate Sonnet calls. Two model-selected supported local cases evaluated; Validator advice cannot override deterministic gates. The latest saved investigation includes a local XPASS candidate, gas PREDICTED/observed null, and a Critic-requested matching replay. No live validator action or vulnerability is claimed. Default paid-run ceiling is $0.50/6 calls with explicit consent; saved viewing makes no provider request. All164 tests pass.

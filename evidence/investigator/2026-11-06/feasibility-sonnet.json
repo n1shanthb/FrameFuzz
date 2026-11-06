@@ -1,0 +1,341 @@
+{
+  "schema": "framefuzz.investigation.v1",
+  "pipelineVersion": "framefuzz.agentic-feasibility.v1",
+  "generatedAt": "2026-11-06T15:49:59.437Z",
+  "source": "OPENROUTER_MODEL_INVESTIGATION",
+  "executionClass": "OFFLINE_SIGNATURE_BINDING",
+  "loop": [
+    "Scout",
+    "Mutation",
+    "Validator",
+    "Executor",
+    "Critic"
+  ],
+  "perspectives": [],
+  "proposals": [],
+  "decisions": [],
+  "rejectedDeferred": [],
+  "experiments": [],
+  "revisions": [],
+  "agentMessages": [
+    {
+      "role": "scout",
+      "request": {
+        "task": "Inspect the owned fixture source facts, actual ABI and supplied profile. Identify role, entry points, owner binding, payer/nonce/layout/gas dependencies and unknown runtime prerequisites. Cite fact IDs.",
+        "data": {
+          "profile": "workshop-0.0.1-empty-elision",
+          "facts": [
+            {
+              "id": "unsafe-binding",
+              "file": "contracts/SenderValidatorUnsafe.sol",
+              "line": 9,
+              "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            {
+              "id": "safe-binding",
+              "file": "contracts/SenderValidatorSafe.sol",
+              "line": 9,
+              "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+              "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            {
+              "id": "frame-layout",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 20,
+              "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "payer-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 24,
+              "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "owner-check",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 41,
+              "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "execution-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 43,
+              "quote": "approve(Scope.EXECUTION);",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "record-abi",
+              "file": "contracts/ActionRecorder.sol",
+              "line": 8,
+              "quote": "function record(uint256 operation, uint256 parameter) external {",
+              "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            },
+            {
+              "id": "pool-read",
+              "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+              "line": 33,
+              "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+              "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+            }
+          ],
+          "sourceDigests": {
+            "authorization": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "paymaster": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+          },
+          "originalAuthorization": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "originalGas": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 50000
+          },
+          "gasValues": [
+            67198,
+            67202,
+            67200,
+            67210,
+            67201,
+            67190,
+            67199
+          ],
+          "gasBoundary": 67200,
+          "accounts": {
+            "chainId": 1337,
+            "payer": "0x00000000000000000000000000000000000000c8",
+            "target": "0x000000000000000000000000000000000000012c",
+            "nonce": 0,
+            "senders": {
+              "unsafe": "0x0000000000000000000000000000000000000065",
+              "safe": "0x0000000000000000000000000000000000000066"
+            }
+          },
+          "availableModes": [
+            "OFFLINE_SIGNATURE_BINDING",
+            "POLICY_PREDICTION"
+          ],
+          "liveState": {
+            "funding": "UNKNOWN",
+            "nonce": "UNKNOWN",
+            "deployment": "UNKNOWN",
+            "stake": "UNKNOWN",
+            "runtime": "UNKNOWN"
+          },
+          "requirements": "Offline crypto needs no deployed/funded account; virtual context fixed. Runtime-required proposals are CONDITIONAL. Gas is unsigned prediction only. No source/ABI inference beyond these fixtures.",
+          "abi": {
+            "record": {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "operation",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "parameter",
+                  "type": "uint256"
+                }
+              ],
+              "name": "record",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          },
+          "sources": {
+            "contracts/SenderValidatorUnsafe.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\nimport {OwnedValidatorBase} from \"./OwnedValidatorBase.sol\";\nimport {TxParam} from \"@forshtat/hegota-support/contracts/Params.sol\";\n/// INTENTIONALLY UNSAFE owned fixture: calldata is absent from the owner's authorization.\ncontract SenderValidatorUnsafe is OwnedValidatorBase {\n    constructor(address owner, address action, address payer) OwnedValidatorBase(owner, action, payer) {}\n    function _authorizationHash() internal view override returns (bytes32) {\n        return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));\n    }\n}\n",
+              "sha256": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            "contracts/SenderValidatorSafe.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\nimport {OwnedValidatorBase} from \"./OwnedValidatorBase.sol\";\nimport {TxParam} from \"@forshtat/hegota-support/contracts/Params.sol\";\n/// Corrected research control: bind authorization to the executing client's canonical transaction hash.\ncontract SenderValidatorSafe is OwnedValidatorBase {\n    constructor(address owner, address action, address payer) OwnedValidatorBase(owner, action, payer) {}\n    function _authorizationHash() internal view override returns (bytes32) {\n        return bytes32(txparam(TxParam.SIG_HASH));\n    }\n}\n",
+              "sha256": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            "contracts/OwnedValidatorBase.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\nimport {HegotaSupport, Devnet, Scope, TxParam, FrameParam, SigParam} from \"@forshtat/hegota-support/contracts/HegotaSupport.sol\";\n\n/// Owned research fixtures only. No production account security model is claimed.\nabstract contract OwnedValidatorBase is HegotaSupport(Devnet.ERC8421_WORKSHOP) {\n    address public immutable OWNER;\n    address public immutable ACTION;\n    address public immutable PAYER;\n    uint256 constant HALF_N = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0;\n    error InvalidFrameLayout();\n    error InvalidWitness();\n    error AuthorizationRejected();\n    constructor(address owner, address action, address payer) {\n        require(owner != address(0) && action != address(0) && payer != address(0));\n        OWNER = owner; ACTION = action; PAYER = payer;\n    }\n    function _authorizationHash() internal view virtual returns (bytes32);\n    fallback() external {\n        if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||\n            txparam(TxParam.CURRENT_FRAME_INDEX) != 0 ||\n            frameparam(0, FrameParam.RESOLVED_TARGET) != uint160(address(this)) ||\n            frameparam(0, FrameParam.MODE) != 1 || frameparam(0, FrameParam.FLAGS) != 2 ||\n            frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||\n            frameparam(1, FrameParam.MODE) != 1 || frameparam(1, FrameParam.FLAGS) != 1 ||\n            frameparam(2, FrameParam.RESOLVED_TARGET) != uint160(ACTION) ||\n            frameparam(2, FrameParam.MODE) != 2 || frameparam(2, FrameParam.FLAGS) != 0 ||\n            frameparam(0, FrameParam.VALUE) != 0 || frameparam(1, FrameParam.VALUE) != 0 ||\n            frameparam(2, FrameParam.VALUE) != 0) revert InvalidFrameLayout();\n        // Empty msg avoids self-referential signing. Never introspect ARBITRARY resolved_signer.\n        if (sigparam(0, SigParam.SCHEME) != 0 || sigparam(0, SigParam.MSG) != 0 ||\n            sigparam(0, SigParam.SIGNATURE_LENGTH) != 65) revert InvalidWitness();\n        bytes memory witness = sigdatacopy(0, 65, 0);\n        bytes32 r; bytes32 s; uint8 v;\n        assembly (\"memory-safe\") {\n            r := mload(add(witness, 32))\n            s := mload(add(witness, 64))\n            v := byte(0, mload(add(witness, 96)))\n        }\n        if ((v != 27 && v != 28) || uint256(r) == 0 || uint256(s) == 0 || uint256(s) > HALF_N) revert InvalidWitness();\n        if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();\n        // This executes in the sender account, never the separate payer.\n        approve(Scope.EXECUTION);\n    }\n}\n",
+              "sha256": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            "contracts/ActionRecorder.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n/// Owned test action only. Records actual individual action execution per sender account.\ncontract ActionRecorder {\n    struct Action { uint256 operation; uint256 parameter; uint256 count; }\n    mapping(address => Action) public actions;\n    event ActionRecorded(address indexed caller, uint256 operation, uint256 parameter, uint256 count);\n    function record(uint256 operation, uint256 parameter) external {\n        uint256 count = actions[msg.sender].count + 1;\n        actions[msg.sender] = Action(operation, parameter, count);\n        emit ActionRecorded(msg.sender, operation, parameter, count);\n    }\n}\n",
+              "sha256": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            }
+          }
+        }
+      },
+      "requestDigest": "e0ab67013dcf053da7ce216aee552da9b9d65f26f114478f0aac899d0b993451",
+      "state": "FAILED"
+    }
+  ],
+  "timeline": [
+    {
+      "stage": "SCOUT REQUEST",
+      "requestDigest": "e0ab67013dcf053da7ce216aee552da9b9d65f26f114478f0aac899d0b993451",
+      "at": "2026-11-06T15:50:02.520Z"
+    },
+    {
+      "stage": "INVESTIGATION STOPPED",
+      "message": "Invalid structured string",
+      "at": "2026-11-06T15:50:10.809Z"
+    }
+  ],
+  "realLLMCalls": 0,
+  "liveExecutions": 0,
+  "broadcasts": 0,
+  "evmVerified": false,
+  "admissionVerified": false,
+  "actionExecutionVerified": false,
+  "finding": false,
+  "status": "INCOMPLETE",
+  "context": {
+    "profile": "workshop-0.0.1-empty-elision",
+    "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+    "sourceDigests": {
+      "contracts/SenderValidatorUnsafe.sol": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+      "contracts/SenderValidatorSafe.sol": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9",
+      "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+      "contracts/OwnedValidatorBase.sol": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d",
+      "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+      "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+      "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+      "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+      "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+      "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+    },
+    "facts": [
+      {
+        "id": "unsafe-binding",
+        "file": "contracts/SenderValidatorUnsafe.sol",
+        "line": 9,
+        "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+      },
+      {
+        "id": "safe-binding",
+        "file": "contracts/SenderValidatorSafe.sol",
+        "line": 9,
+        "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+        "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+      },
+      {
+        "id": "frame-layout",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 20,
+        "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "payer-scope",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 24,
+        "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "owner-check",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 41,
+        "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "execution-scope",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 43,
+        "quote": "approve(Scope.EXECUTION);",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "record-abi",
+        "file": "contracts/ActionRecorder.sol",
+        "line": 8,
+        "quote": "function record(uint256 operation, uint256 parameter) external {",
+        "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+      },
+      {
+        "id": "pool-read",
+        "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+        "line": 33,
+        "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+        "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+      }
+    ],
+    "accounts": {
+      "chainId": 1337,
+      "payer": "0x00000000000000000000000000000000000000c8",
+      "target": "0x000000000000000000000000000000000000012c",
+      "nonce": 0,
+      "senders": {
+        "unsafe": "0x0000000000000000000000000000000000000065",
+        "safe": "0x0000000000000000000000000000000000000066"
+      }
+    },
+    "liveState": {
+      "funding": "UNKNOWN",
+      "nonce": "UNKNOWN",
+      "deployment": "UNKNOWN",
+      "stake": "UNKNOWN",
+      "runtime": "UNKNOWN"
+    },
+    "limits": {
+      "candidates": 2,
+      "repairsPerProposal": 1,
+      "executions": 2,
+      "reproductions": 1,
+      "broadcasts": 0,
+      "paidToolCalls": 0
+    }
+  },
+  "error": "Invalid structured string",
+  "provider": {
+    "provider": "OpenRouter",
+    "model": "anthropic/claude-sonnet-4.6",
+    "transport": "OPENROUTER",
+    "calls": 1,
+    "tokens": 3797,
+    "costUSD": 0.014365889999999992,
+    "limits": {
+      "maxCalls": 6,
+      "maxTotalTokens": 60000,
+      "maxCostUSD": 0.5,
+      "maxOutputTokens": 2000,
+      "maxInputBytes": 24000,
+      "timeoutMs": 45000
+    },
+    "requests": [
+      {
+        "call": 1,
+        "role": "framefuzz_scout",
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "4f0b093139f665f54676c8c6a20f7c86f3c8bd60d7336a214d30cf909f243b44",
+        "inputBytes": 10205,
+        "reservedTokens": 13205,
+        "reservedCostUSD": 0.10602500000000001,
+        "state": "FAILED",
+        "tokens": 3797,
+        "costUSD": 0.01436589,
+        "generationId": "gen-1793980202-fApy1ilQ9aHI64552cbP",
+        "reportedModel": "anthropic/claude-sonnet-4.6",
+        "textLengths": {},
+        "error": "Invalid structured string"
+      }
+    ]
+  },
+  "uniqueExperiments": 0,
+  "uniqueHypotheses": 0,
+  "independentlyReproduced": false,
+  "limitations": [
+    "One role-conditioned model via distinct real calls, not separate autonomous models",
+    "Only exact repository fixtures and existing bounded local tools; no arbitrary source execution",
+    "Offline owner recovery is not mempool admission or EVM action evidence",
+    "Gas outcomes are predictions with observedVerdict=null",
+    "No model-assigned security finding; all blockchain and Arkiv writes disabled"
+  ]
+}

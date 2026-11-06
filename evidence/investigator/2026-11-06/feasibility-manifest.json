@@ -1,0 +1,46 @@
+{
+  "schema": "framefuzz.agentic-demonstration-manifest.v1",
+  "entries": [
+    {
+      "file": "evidence/investigator/2026-11-06/feasibility-sonnet.json",
+      "sha256": "1bf02c58a05943a29c471cbd40f97e6b73ba30e5bc36431daf6cf54f06e56725",
+      "status": "INCOMPLETE",
+      "calls": 1,
+      "validatedCalls": 0,
+      "reportedCostUSD": 0.01436589,
+      "unknownCostRequests": 0
+    },
+    {
+      "file": "evidence/investigator/2026-11-06/feasibility-sonnet-2.json",
+      "sha256": "e82b7fe205959c3030999efd7555a2965a7ef439e586903a3d197389f915a8ca",
+      "status": "INCOMPLETE",
+      "calls": 5,
+      "validatedCalls": 4,
+      "reportedCostUSD": 0.07489449,
+      "unknownCostRequests": 0
+    },
+    {
+      "file": "evidence/investigator/2026-11-06/feasibility-sonnet-3.json",
+      "sha256": "a448db1aa47262918ffd20a40e9a43fecf1a344f8b1fc61c197f9a09dc8e28b4",
+      "status": "INCOMPLETE",
+      "calls": 1,
+      "validatedCalls": 0,
+      "reportedCostUSD": 0.01723194,
+      "unknownCostRequests": 0
+    },
+    {
+      "file": "evidence/investigator/2026-11-06/feasibility-sonnet-4.json",
+      "sha256": "aab1943f2b861e9e19c89c39bc5470ce1166516b425ce899503bb2db20c2cf19",
+      "status": "COMPLETE_OFFLINE_INVESTIGATION",
+      "calls": 4,
+      "validatedCalls": 4,
+      "reportedCostUSD": 0.087021,
+      "unknownCostRequests": 0
+    }
+  ],
+  "totalCalls": 11,
+  "totalReportedCostUSD": 0.19351332,
+  "authorizedCostCeilingUSD": 0.5,
+  "blockchainWrites": 0,
+  "realModel": "anthropic/claude-sonnet-4.6"
+}

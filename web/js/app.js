@@ -30,6 +30,7 @@ const state = {
   swarmJob: null,
   swarmBusy: false,
   swarmRecent: [],
+  proposalFilter: 'all',
 };
 
 let presentationReturnFocus=null;
@@ -526,6 +527,17 @@ function renderArkiv() {
     </div>`;
 }
 
+function renderAgenticProposals(report){
+ const filters=[['all','All proposals'],['executed','Executed'],['expected','Expected rejections'],['unexpected','Unexpected results'],['invalid','Invalid/filtered'],['missing','Missing prerequisites']];
+ const visible=report.proposals.filter(p=>state.proposalFilter==='all'||state.proposalFilter==='executed'&&p.state==='EXECUTED'||state.proposalFilter==='expected'&&Object.values(p.candidate.expectedVerdict).includes('REJECT')||state.proposalFilter==='unexpected'&&p.outcomes?.some(o=>o.findingCandidate)||state.proposalFilter==='invalid'&&['INVALID','DUPLICATE','UNSUPPORTED'].includes(p.feasibility?.decision)||state.proposalFilter==='missing'&&p.feasibility?.decision==='CONDITIONAL');
+ return `<h3>Scout → Mutation → Validator → Executor → Critic</h3><p>One role-conditioned model, distinct calls. ${report.provider?.calls??0} requests · $${Number.isFinite(report.provider?.costUSD)?report.provider.costUSD.toFixed(8):'unknown'} accounted (reservations retained when usage is absent). Blockchain writes disabled.</p>
+ <label>Proposal filter <select id="proposalFilter">${filters.map(([v,label])=>`<option value="${v}" ${state.proposalFilter===v?'selected':''}>${label}</option>`).join('')}</select></label>
+ ${visible.map(p=>`<div class="card" style="margin-top:12px"><h4>${esc(p.id)} · revision ${p.revision} · ${esc(p.state)}</h4><p class="tag ${p.outcomes?.some(o=>o.findingCandidate)?'warn':'info'}">${esc(p.feasibility?.decision??'Awaiting validator')}</p><p><strong>Model hypothesis:</strong> ${esc(p.candidate.hypothesis)}</p><p>Target: ${esc(p.candidate.targetFunction)} · ${esc(p.candidate.verificationMethod)} · ${esc(p.candidate.contractRole)}</p><p>Original ${esc(JSON.stringify(p.candidate.originalInput))} → mutation ${esc(JSON.stringify(p.candidate.mutatedInput))}</p><p><strong>Validator reasoning:</strong> ${esc(p.feasibility?.modelReason??'No validated response')}</p><p><strong>Deterministic gates:</strong> ${esc(p.feasibility?.reason??'Pending')} ${p.feasibility?.disagreement?'MODEL / DETERMINISTIC DISAGREEMENT — fail-closed gates applied':''}</p>
+ ${p.outcomes?.map(o=>`<p class="tag ${o.findingCandidate?'warn':'info'}">${esc(o.classification)} · ${esc(o.fixture??'policy')} · expected ${esc(o.expectedVerdict)} / observed ${esc(o.observedVerdict??'NONE')} · ${esc(o.provenance)}</p><p>${esc(o.meaning??'Unsigned policy prediction is not an observed admission result')} · oracle match ${esc(o.oracleMatch??'UNKNOWN')} · reproduction ${esc(o.reproductionStatus)} · verified vulnerability: false</p>`).join('')??''}
+ <p>Evidence required: ${esc(p.candidate.evidenceNeeded)}. Confidence: ${p.state==='EXECUTED'&&p.candidate.verificationMethod==='OFFLINE_SIGNATURE_BINDING'?'local cryptographic observation only':'no current runtime proof'}.</p>
+ <details><summary>Source references, gate checks and reproducible proposal</summary><pre class="details">${esc(JSON.stringify({references:p.feasibility?.references,gates:p.feasibility?.gates,candidate:p.candidate},null,2))}</pre></details></div>`).join('')||'<p>No proposals match this filter.</p>'}
+ ${report.critic?`<h4>Critic — model assessment</h4><p>${esc(report.critic.assessment)}</p><p>${esc(report.critic.concerns.join('; '))}</p><p>Requested reproductions: ${esc(report.critic.reproduceIds.join(', ')||'none')}. Model security claims cannot establish findings.</p>`:''}`;
+}
 function renderSwarm() {
   const s = BRIEFING.swarm;
   const config=state.swarmConfig,report=state.swarmReport;
@@ -534,7 +546,7 @@ function renderSwarm() {
     { title: 'Offline signature binding', status: s.offlineSignatureBinding ? 'Verified' : 'Not done', ok: s.offlineSignatureBinding, note: 'Frame Mutation Engine v2 calldata mutation + ECDSA checks' },
     { title: 'Devnet preflight', status: s.readOnlyPreflight ? 'Read-only verified' : 'Not done', ok: s.readOnlyPreflight, note: 'Allowlisted RPC reads only · no broadcast' },
     { title: 'Live authorization experiment', status: 'Not executed', ok: false, note: 'Requires separate live approval and funded deployer' },
-    { title: 'LLM-driven investigation', status: report?.realLLMCalls ? `${report.realLLMCalls} real calls recorded` : 'Implemented · no real calls shown', ok: Boolean(report?.realLLMCalls), note: 'OpenRouter · one model · three specialist perspectives' },
+    { title: 'LLM-driven investigation', status: report?.realLLMCalls ? `${report.realLLMCalls} real calls recorded` : 'Implemented · no real calls shown', ok: Boolean(report?.realLLMCalls), note: report?.pipelineVersion?'OpenRouter · one model · distinct Scout / Mutation / Validator / Critic calls':'Historical or simulated perspective pipeline' },
     { title: 'Independent live reproduction', status: 'Not executed', ok: false, note: 'No unauthorized action proven' },
   ];
   return `
@@ -543,7 +555,7 @@ function renderSwarm() {
         <div>
           <div class="eyebrow">Experimental</div>
           <h2>Swarm Lab</h2>
-          <p class="summary">LLM Hypothesis → Semantic Mutation → Deterministic Executor → Independent Verifier → Regression Case</p>
+          <p class="summary">Scout → Mutation → Validator → Executor → Critic · supported owned fixtures only</p>
         </div>
         <span class="pill idle">${config?.enabled?'OFFLINE INVESTIGATOR ENABLED':'FRAMEFUZZ_SWARM defaults off'}</span>
       </div>
@@ -554,7 +566,7 @@ function renderSwarm() {
         <span class="pill">${config?.provider?.configured?'Provider credentials configured':'No OpenRouter key visible'}</span>
         <button class="btn btn-secondary" id="swarmRefresh">Check configuration</button>
       </div>
-      <p class="summary">${config?.offlineDemo?'Saved-demo mode prohibits external model calls. Saved evidence is readable without enabling execution; local simulation requires FRAMEFUZZ_SWARM=on.':'A real investigation allows up to six explicitly authorized OpenRouter requests within a $0.25 client budget. Calls are reserved before sending; reported usage is checked afterwards. Blockchain writes are never available.'}</p>
+      <p class="summary">${config?.offlineDemo?'Saved-demo mode prohibits external model calls. Saved evidence is readable without enabling execution; local simulation requires FRAMEFUZZ_SWARM=on.':'A real investigation allows up to six explicitly authorized OpenRouter requests within a $0.50 client budget. Calls are reserved before sending; reported usage is checked afterwards. Blockchain writes are never available.'}</p>
       <label class="row" style="margin:14px 0"><input type="checkbox" id="swarmConsent" ${state.swarmBusy?'disabled':''}> I authorize the bounded OpenRouter model calls; no blockchain transactions.</label>
       <div class="row">
         <button class="btn btn-primary" id="swarmAI" ${!config?.canCallProvider||state.swarmBusy?'disabled':''}>Start offline AI investigation</button>
@@ -563,17 +575,13 @@ function renderSwarm() {
       </div>
       <div class="row" style="margin:12px 0"><select id="swarmSaved" aria-label="Saved investigations">${state.swarmRecent.map(r=>`<option value="${esc(r.id)}">${esc(r.generatedAt)} · ${esc(r.source)} · ${esc(r.status)}</option>`).join('')||'<option value="">No saved investigation</option>'}</select><button class="btn btn-secondary" id="swarmLoad" ${state.swarmBusy?'disabled':''}>Load saved investigation</button></div>
       <p class="muted" style="margin:12px 0">${state.swarmBusy?'Running: only actual completed events appear below.':esc(report?.source??'Not run. No placeholder investigation results.')}</p>
-      ${report?`<div class="card" style="margin:16px 0"><strong>${esc(report.status)}</strong><p>${esc(report.executionClass)} · ${report.uniqueExperiments} unique experiments · ${report.realLLMCalls} real model calls · ${report.independentlyReproduced?'INDEPENDENTLY REPRODUCED':'Replay not complete'} · LIVE NOT VERIFIED</p>${report.error?`<p>${esc(report.error)}</p>`:''}
-        ${report.experiments.map(e=>`<div style="margin-top:12px"><span class="tag info">${report.realLLMCalls?'AI HYPOTHESIS':'SIMULATED / TEST PROPOSAL'}</span> record(${e.hypothesis.operation},${e.hypothesis.parameter}) · ${esc(e.hypothesis.change)}<p>${esc(e.hypothesis.assumption)}</p><p>Prediction: unsafe ${esc(e.hypothesis.unsafePrediction)}, safe ${esc(e.hypothesis.safePrediction)}. Falsifier: ${esc(e.hypothesis.falsifier)}</p><span class="tag ok">OBSERVED OFFLINE</span><p>Owner recovered after tampering: unsafe ${e.execution.observation.results.unsafe.tamperedOwnerRecovered}; safe ${e.execution.observation.results.safe.tamperedOwnerRecovered}. ${esc(e.execution.observation.verdict)}; no finding.</p><p>${e.independentReplay?.equivalentSemanticProperties?'INDEPENDENTLY REPRODUCED in fresh process '+e.independentReplay.pid:'Independent replay not verified'}</p></div>`).join('')}
-        ${report.revisions.map(r=>`<p><strong>${report.realLLMCalls?'Model revision':'Scripted / test revision'}:</strong> ${esc(r.hypothesis.revision)} → record(${r.hypothesis.operation},${r.hypothesis.parameter})</p>`).join('')}</div>`:''}
-      <div class="milestone-grid" style="margin:16px 0">${[['validation','Validation Researcher'],['state','State Researcher'],['differential','Differential Researcher']].map(([id,name])=>{const p=report?.proposals?.find(p=>p.perspective===id)??state.swarmTimeline.find(e=>e.perspective===id);return `<div class="milestone"><h4>${name}</h4>${p?`<span class="tag info">${esc(p.origin)}</span><p>${esc(p.hypothesis.assumption)}</p><p>record(${p.hypothesis.operation},${p.hypothesis.parameter}) · ${esc(p.hypothesis.change)}</p>`:'<p>No proposal recorded yet.</p>'}</div>`;}).join('')}</div>
+      ${report?`<div class="card" style="margin:16px 0"><strong>${esc(report.status)}</strong><p>${esc(report.executionClass)} · ${report.pipelineVersion?`${report.experiments.length} cryptographic experiments · ${report.predictions?.length??0} policy evaluations`:`${report.uniqueExperiments} unique experiments`} · ${report.realLLMCalls} real model calls · ${report.independentlyReproduced?'INDEPENDENTLY REPRODUCED':'Replay not complete'} · LIVE NOT VERIFIED</p>${report.error?`<p>${esc(report.error)}</p>`:''}
+        ${report.pipelineVersion?renderAgenticProposals(report):report.experiments.map(e=>`<div style="margin-top:12px"><span class="tag info">${report.realLLMCalls?'AI HYPOTHESIS':'SIMULATED / TEST PROPOSAL'}</span> record(${e.hypothesis.operation},${e.hypothesis.parameter}) · ${esc(e.hypothesis.change)}<p>${esc(e.hypothesis.assumption)}</p><p>Prediction: unsafe ${esc(e.hypothesis.unsafePrediction)}, safe ${esc(e.hypothesis.safePrediction)}. Falsifier: ${esc(e.hypothesis.falsifier)}</p><span class="tag ok">OBSERVED OFFLINE</span><p>Owner recovered after tampering: unsafe ${e.execution.observation.results.unsafe.tamperedOwnerRecovered}; safe ${e.execution.observation.results.safe.tamperedOwnerRecovered}. ${esc(e.execution.observation.verdict)}; no finding.</p><p>${e.independentReplay?.equivalentSemanticProperties?'INDEPENDENTLY REPRODUCED in fresh process '+e.independentReplay.pid:'Independent replay not verified'}</p></div>`).join('')}
+        ${report.pipelineVersion?'':report.revisions.map(r=>`<p><strong>${report.realLLMCalls?'Model revision':'Scripted / test revision'}:</strong> ${esc(r.hypothesis.revision)} → record(${r.hypothesis.operation},${r.hypothesis.parameter})</p>`).join('')}</div>`:''}
+      ${report?.pipelineVersion?`<div class="milestone-grid" style="margin:16px 0">${report.agentMessages.map(m=>`<div class="milestone"><h4>${esc(m.role)}</h4><span class="tag info">${esc(m.state)}</span><details><summary>Actual model response</summary><pre class="details">${esc(JSON.stringify(m.response??{error:'No validated response'},null,2))}</pre></details></div>`).join('')}</div>`:`<div class="milestone-grid" style="margin:16px 0">${[['validation','Validation Researcher'],['state','State Researcher'],['differential','Differential Researcher']].map(([id,name])=>{const p=report?.proposals?.find(p=>p.perspective===id)??state.swarmTimeline.find(e=>e.perspective===id);return `<div class="milestone"><h4>${name}</h4>${p?`<span class="tag info">${esc(p.origin)}</span><p>${esc(p.hypothesis.assumption)}</p><p>record(${p.hypothesis.operation},${p.hypothesis.parameter}) · ${esc(p.hypothesis.change)}</p>`:'<p>No proposal recorded yet.</p>'}</div>`;}).join('')}</div>`}
       ${state.swarmTimeline.length?`<div class="card" style="margin:16px 0"><h3>Evidence-driven investigation timeline</h3>${state.swarmTimeline.map(e=>`<details style="margin:10px 0"><summary>${esc(e.stage)} · ${esc(e.phase??e.scope??(e.mutationValues?JSON.stringify(e.mutationValues):''))}</summary><pre class="details">${esc(JSON.stringify(e,null,2))}</pre></details>`).join('')}</div>`:''}
       <div class="pipeline" style="margin:18px 0">
-        <div class="node">LLM Hypothesis</div><div class="arrow">→</div>
-        <div class="node">Semantic Mutation</div><div class="arrow">→</div>
-        <div class="node">Deterministic Executor</div><div class="arrow">→</div>
-        <div class="node">Independent Verifier</div><div class="arrow">→</div>
-        <div class="node">Regression Case</div>
+        ${(report?.pipelineVersion?['Scout','Mutation','Validator','Executor','Critic']:['LLM Hypothesis','Semantic Mutation','Deterministic Executor','Independent Verifier','Regression Case']).map((label,i)=>`${i?'<div class="arrow">→</div>':''}<div class="node">${label}</div>`).join('')}
       </div>
       <div class="milestone-grid">
         ${milestones.map((m) => `
@@ -583,7 +591,7 @@ function renderSwarm() {
             <p>${esc(m.note)}</p>
           </div>`).join('')}
       </div>
-      <p class="muted" style="margin-top:16px;font-size:12px">Artifact: <code class="mono">${esc(s.artifact)}</code>. Live submission controls are not exposed here.</p>
+      <p class="muted" style="margin-top:16px;font-size:12px">${report?.pipelineVersion?'Selected saved investigation is exportable above':`Artifact: <code class="mono">${esc(s.artifact)}</code>`}. Live submission controls are not exposed here.</p>
     </div>`;
 }
 
@@ -910,6 +918,7 @@ function bindPage() {
   $('openSavedCommunityPreview')?.addEventListener('click',async()=>{const run=findRunByHint('saved-arkiv-import-preview');if(!run){setStatus('Use saved-demo to restore the already imported PREVIEW. No current expiry check is implied.');return;}await loadRun(run.id);navigate('campaigns');});
   $('importCommunity')?.addEventListener('click', importCommunity);
   $('swarmRefresh')?.addEventListener('click',refreshSwarm);
+  $('proposalFilter')?.addEventListener('change',e=>{state.proposalFilter=e.target.value;render();});
   $('swarmAI')?.addEventListener('click',()=>startSwarm('openrouter'));
   $('swarmSimulate')?.addEventListener('click',()=>startSwarm('simulated'));
   $('swarmLoad')?.addEventListener('click',async()=>{const id=$('swarmSaved')?.value;if(!id)return;try{const job=await api.swarmTranscript(id);state.swarmJob=id;state.swarmReport=job.report;state.swarmTimeline=job.timeline;render();}catch(e){setStatus(e.message);}});

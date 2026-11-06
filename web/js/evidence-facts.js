@@ -124,7 +124,7 @@ export const EVIDENCE_FACTS = {
   "testCheckpoint": {
     "schema": "framefuzz.test-checkpoint.v1",
     "command": "npm test",
-    "passed": 158,
+    "passed": 164,
     "failed": 0,
     "skipped": 0,
     "observedAt": "2026-11-06",
