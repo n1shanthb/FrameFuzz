@@ -1,5 +1,10 @@
 # Build status — Arkiv regression registry and mutation engine
 
+## Swarm milestone1 — offline, no live finding
+Compiled owned unsafe/safe validators and ActionRecorder with exact solc0.8.28; creation bytecode4311/4206/508 bytes. Added v2 calldata mutation without modifying v1 definitions, explicit current-EIP versus workshop hash profiles, real ECDSA differential and closed deterministic false-positive classification. Swarm opt-in gate and write-flag rejection protect the existing product.79 tests passed, including all71 previous tests. Artifact: `evidence/swarm/milestone-1/offline.json`; no contract bytecode or frame lifecycle was executed. Source SWARM_SIMULATED — NO LLM. All live finding/reproduction/LLM claims are NO.
+
+Baseline was safely pushed through0b1040c with remote SHA verified. Public HTTP branch URL returned404; no public visibility or sponsor form submission is claimed. Compiler install initially exposed tmp advisories; override tmp0.2.7 preserves solc0.8.28 and final install audit reports0 vulnerabilities. Current EIP signing-length/envelope differences are explicit; safe client canonical hash compatibility remains unverified. Exact milestone commands, test counts and limitations: `docs/SWARM_MILESTONES.md`. Next authorized action: read-only milestone2 preparation, then stop for separate live approval.
+
 ## Final submission polish — verified November6,2026 IST
 
 - Clear independent product description and Generate → Compare → Inspect → Publish/Discover → Import → Replay Preview workflow in README/dashboard. No competitive research was imported; protocol/workshop/SDK attribution retained.

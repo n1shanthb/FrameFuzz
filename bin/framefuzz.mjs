@@ -20,6 +20,7 @@ Usage:
   node bin/framefuzz.mjs serve --results runs [--cases examples/cases] [--port 4177] [--rpc <testnet-url> --allow-chain <id> --submit]
   node bin/framefuzz.mjs demo --results runs
   node bin/framefuzz.mjs help
+  node bin/framefuzz.mjs swarm offline --output runs/swarm-offline.json  # requires FRAMEFUZZ_SWARM=on
   node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177  # offline, wallet-free historical evidence
   node bin/framefuzz.mjs arkiv publish REPORT.json --case-index 0 --expiration-blocks 302400 --submit --output RECEIPT.json
   node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS
@@ -62,6 +63,11 @@ function numericArg(value, fallback) {
 async function main() {
   const [command = 'help', ...rest] = process.argv.slice(2);
   if (command === 'help' || command === '--help') return process.stdout.write(USAGE);
+  if(command==='swarm'){
+    const {assertSwarmEnabled}=await import('../src/swarm/gate.mjs');assertSwarmEnabled();
+    if(rest.some(x=>['--deploy','--submit','--publish'].includes(x)))throw new Error('Swarm milestones 1–2 cannot deploy, broadcast or publish; separate human approval required');
+    const {swarmCommand}=await import('../src/swarm/cli.mjs');return swarmCommand(flags(rest));
+  }
   const options = flags(rest);
   const resultDir = options.results ?? 'runs';
   if(command==='arkiv')return arkivCommand(options);

@@ -1,5 +1,8 @@
 # Up next
 
+## Active — approved swarm, stop after read-only milestone2
+Milestone1 complete with79 tests. Read `docs/SWARM_MILESTONES.md` for actual evidence and signing-hash compatibility limitation. Implement/run only read-only preflight and conditional deployment/submission manifest next. No live deployment, broadcast, LLM execution claim or Arkiv write is authorized. Secure funded wallet, healthy authorized chain1337 endpoint, verified canonical hash behavior and separate human approval are prerequisites for the next phase. Preserve all71 baseline tests and v1 fixture digests.
+
 ## Ready — final submission materials
 README/product copy, generated `docs/LIVE_EVIDENCE.md`, four-minute `docs/DEMO_SCRIPT.md`, checklist, project description, recording guidance, FEEDBACK and sponsor docs are complete.71 tests pass. The offline saved demo and live Arkiv query/import were verified in browser. Exact proof: `evidence/submission/2026-11-06/`. Preserve successful historical LIVE evidence unchanged.
 

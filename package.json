@@ -22,5 +22,11 @@
     "@arkiv-network/sdk": "1.0.1",
     "@forshtat/hegota-support": "0.0.1",
     "viem": "2.57.7"
+  },
+  "devDependencies": {
+    "solc": "0.8.28"
+  },
+  "overrides": {
+    "tmp": "0.2.7"
   }
 }

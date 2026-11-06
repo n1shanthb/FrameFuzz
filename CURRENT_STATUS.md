@@ -1,5 +1,10 @@
 # Current status
 
+## Swarm milestone1 checkpoint
+User approved offline implementation and read-only milestone2 only. Baseline through0b1040c was pushed and remote SHA verified; public URL returned404, visibility unverified. User subsequently requested implementation.
+
+Milestone1 implemented: solc0.8.28 compiles unsafe/safe owned sender validators plus ActionRecorder; v2 calldata-only mutation, real ECDSA binding checks, independent hash profiles, false-positive-aware oracle and opt-in CLI. `FRAMEFUZZ_SWARM=on` required; all write flags rejected. **79 tests pass**, retaining all71. Evidence `evidence/swarm/milestone-1/offline.json`. No LLM calls, no deployments, no real EIP-8141 execution, no unauthorized action proven, no independent live reproduction. See `docs/SWARM_MILESTONES.md`. Next: read-only preflight and exact deployment manifest, then STOP for live approval. Existing demo/UI/registry/historical evidence retained.
+
 ## Submission polish checkpoint — November6,2026
 Final polish is implemented and verified using immutable saved evidence. Do not broadcast again to the disk-full EIP-8141 sidecar.
 
