@@ -8,6 +8,24 @@ export const LIVE_ADMISSION_CAPABILITY='STORAGE_ACCESS_VALIDATOR_V1';
 const ADDRESS=/^0x[0-9a-fA-F]{40}$/;
 const clean=e=>String(e?.message??e).slice(0,200);
 
+/** Compare on-chain runtime to solc template after zeroing immutable slots (constructor-filled). */
+export function runtimeMatchesTemplate(onChainCode,templateCode,immutableReferences=null){
+  if(!onChainCode||!templateCode||onChainCode==='0x'||templateCode==='0x')return false;
+  if(onChainCode.toLowerCase()===templateCode.toLowerCase())return true;
+  const a=Buffer.from(onChainCode.slice(2),'hex'),b=Buffer.from(templateCode.slice(2),'hex');
+  if(a.length!==b.length)return false;
+  const mask=Buffer.alloc(a.length,0);
+  for(const sites of Object.values(immutableReferences??{})){
+    for(const site of sites??[]){
+      const start=Number(site.start),len=Number(site.length);
+      if(!Number.isFinite(start)||!Number.isFinite(len)||start<0||len<0||start+len>mask.length)return false;
+      mask.fill(1,start,start+len);
+    }
+  }
+  for(let i=0;i<a.length;i++)if(!mask[i]&&a[i]!==b[i])return false;
+  return true;
+}
+
 async function endpointSnapshot(url,expected){
   try{
     const [chain,client,head]=await Promise.all([rpc(url,'eth_chainId'),rpc(url,'web3_clientVersion'),rpc(url,'eth_blockNumber')]);
@@ -59,8 +77,9 @@ export async function liveAdmissionReadiness(analysis,{wallet=null,foreign=null,
         rpc(EF_CANONICAL_ENDPOINT,'eth_getTransactionCount',[wallet,'pending']),
       ]);
       const codeHash=code==='0x'?'EMPTY':keccak256(code);
-      const bound=analysis.runtimeBytecodeHash&&codeHash===analysis.runtimeBytecodeHash;
-      deployment={status:code!=='0x'&&bound?'READY':code==='0x'?'MISSING':'CODE_MISMATCH',wallet,foreign,codeHash,expectedRuntimeHash:analysis.runtimeBytecodeHash,balanceWei:String(BigInt(bal)),bound};
+      const exact=analysis.runtimeBytecodeHash&&codeHash===analysis.runtimeBytecodeHash;
+      const bound=exact||runtimeMatchesTemplate(code,analysis.runtimeBytecode,analysis.immutableReferences);
+      deployment={status:code!=='0x'&&bound?'READY':code==='0x'?'MISSING':'CODE_MISMATCH',wallet,foreign,codeHash,expectedRuntimeHash:analysis.runtimeBytecodeHash,balanceWei:String(BigInt(bal)),bound,boundMode:exact?'EXACT_HASH':bound?'IMMUTABLE_SLOTS':null};
       nonce=Number(BigInt(pending));
       stake=await stakeOf(wallet);
       if(deployment.status!=='READY')blockers.push(deployment.status==='MISSING'?'Deploy Foreign + ViolatingWallet and bind runtime bytecode hash':'On-chain wallet bytecode does not match compiled source digest/runtime hash');

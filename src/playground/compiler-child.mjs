@@ -23,7 +23,7 @@ if(!isMainThread){
  try{
   const {default:solc}=await import('solc');
   const wantBytecode=workerData.emitBytecode===true||workerData.role==='SENDER_VALIDATOR'||/ViolatingWallet|FOREIGN\.staticcall|StorageReadNonSender/i.test(workerData.source??'');
-  const selection=wantBytecode?{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object']}:{'*':['abi']};
+  const selection=wantBytecode?{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object','evm.deployedBytecode.immutableReferences']}:{'*':['abi']};
   const input={language:'Solidity',sources:{'UserInput.sol':{content:workerData.source}},settings:{optimizer:{enabled:true,runs:200},outputSelection:{'*':{'':['ast'],...selection}}}};
   const raw=solc.compile(JSON.stringify(input),{import:resolveHegotaImport});
   if(Buffer.byteLength(raw)>4*1024*1024)throw Error('COMPILER_OUTPUT_LIMIT');

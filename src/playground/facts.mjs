@@ -13,6 +13,7 @@ export function extractFacts(input,output,compiler){
  if(abi.length>128)throw Error('ABI_OUTPUT_LIMIT');
  const creationBytecode=artifact.evm?.bytecode?.object?('0x'+artifact.evm.bytecode.object):null;
  const runtimeBytecode=artifact.evm?.deployedBytecode?.object?('0x'+artifact.evm.deployedBytecode.object):null;
+ const immutableReferences=artifact.evm?.deployedBytecode?.immutableReferences??null;
  const creationBytecodeHash=creationBytecode&&creationBytecode!=='0x'?keccak256(creationBytecode):null;
  const runtimeBytecodeHash=runtimeBytecode&&runtimeBytecode!=='0x'?keccak256(runtimeBytecode):null;
  const param=p=>({type:p.type,...(p.components?{components:p.components.map(param)}:{})});
@@ -48,7 +49,7 @@ export function extractFacts(input,output,compiler){
   :{role:'UNKNOWN',basis:'Compiler exposes callable structure; ordinary source does not establish an EIP-8141 role'};
  const liveCapable=detectedRole.role==='SENDER_VALIDATOR'&&Boolean(runtimeBytecodeHash);
  return {...base,status:'READY',analysisId,contractName:selected.name,contractKind:selected.contractKind,abstract:selected.abstract,contracts:names,abi,abiDigest:abiIdentity(abi),functions:callable,sourceFacts:facts,structure:{functions,variables,events,guards,externalCalls},
-  creationBytecode,runtimeBytecode,creationBytecodeHash,runtimeBytecodeHash,
+  creationBytecode,runtimeBytecode,immutableReferences,creationBytecodeHash,runtimeBytecodeHash,
   detectedRole,
   capabilities:liveCapable
    ?['COMPILER_ABI','TYPED_ABI_ENCODING','STRUCTURAL_SOURCE_CHECK','STATIC_FEASIBILITY','SOURCE_BOUND_BYTECODE','LIVE_STORAGE_ACCESS_ADMISSION']

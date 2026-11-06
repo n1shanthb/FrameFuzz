@@ -88,3 +88,6 @@ Exact QuotaVault gate: `maxInputBytes` 24749>24000 mislabeled as run-budget exha
 
 ## Storage-access live admission prep — 2026-11-07
 Workshop ViolatingWallet+Foreign path bound into Playground as the only live paste interface. Runtime hash `0xa0b28299…c1ea`. Rejection-first ethrex→Skandha protocol + live table UI. Approval packet SHA-256 `6c55073e…a6b4`. Focused admission tests 12/12. Chain writes 0. Awaiting user approval before fund/deploy/stake/compare.
+
+## Storage-access live divergence executed — 2026-11-07
+User approved packet `6c55073e…a6b4`. Faucet funded operator; deployed Foreign `0x6d5bed56…4145` + ViolatingWallet `0x6b7206fa…8199` (runtime bound via immutable-slot mask); staked 0.012/86400; rejection-first compare on `0xf69e0f4b…e31d` → ethrex `StorageReadNonSender` / Skandha ACCEPTED admission **1647** (`POLICY_DIVERGENCE`). Inclusion not mined (later explorer `dropped`). Evidence `evidence/live/2026-11-07/storage-access-live.json`. Focused tests 12/12. No OpenRouter.

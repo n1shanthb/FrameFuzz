@@ -1,6 +1,20 @@
-# Fresh live storage-access admission — preparation packet
+# Fresh live storage-access admission
 
-Deadline priority. No historical/replay rows. No chain writes yet. Packet SHA-256: `6c55073e8f579b86eb58a515fb690fa6165e43c223c5c7388ed909fb40a0a6b4` (`evidence/prepared/2026-11-07/storage-access-approval-packet.json`).
+**Executed** after explicit approval. Live evidence: `evidence/live/2026-11-07/storage-access-live.json`. Packet SHA-256: `6c55073e8f579b86eb58a515fb690fa6165e43c223c5c7388ed909fb40a0a6b4`.
+
+| Field | Value |
+|---|---|
+| ethrex | `REJECTED_POLICY` — `StorageReadNonSender` |
+| Skandha | `ACCEPTED` — admission id 1647 |
+| Hash | `0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d` |
+| Wallet / Foreign | `0x6b7206fa…8199` / `0x6d5bed56…4145` |
+| Inclusion | Not mined (admission ≠ inclusion; later mempool dropped) |
+
+---
+
+## Preparation packet (historical)
+
+Deadline priority prep. Packet path: `evidence/prepared/2026-11-07/storage-access-approval-packet.json`.
 
 ## 1. Exact minimum setup and transaction count
 

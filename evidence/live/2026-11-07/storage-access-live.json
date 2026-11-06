@@ -1,0 +1,341 @@
+{
+  "schema": "framefuzz.storage-access-live.v1",
+  "packetSha256": "6c55073e8f579b86eb58a515fb690fa6165e43c223c5c7388ed909fb40a0a6b4",
+  "observedAt": "2026-11-06T22:31:05.703Z",
+  "operator": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+  "funding": {
+    "method": "skandha_explorer_faucet",
+    "amountWei": "1000000000000000000",
+    "txHash": "0xac29dccb9ced4c59b7f8f319c60a21fc78192bbd5fdcf4f87b632439cf2e0cfc"
+  },
+  "steps": {
+    "deployForeign": {
+      "hash": "0xb1703856dfb91ff894fae18ef6b69db41a28e809f088e98fc7322fddc6f3e81c",
+      "address": "0x6d5bed568904290fca0b8d4e99bed2a7f9d44145",
+      "nonce": 2,
+      "gasPriceWei": "2000000000"
+    },
+    "deployWallet": {
+      "hash": "0xa30017366a7cfcc86a1618a59d20118135617fa23e41a5c0c1fb21a52d77e744",
+      "address": "0x6b7206fa6fc5fe541061bdedf2c6a2bbf4cf8199",
+      "nonce": 3,
+      "valueWei": "30000000000000000",
+      "gasPriceWei": "2000000000"
+    },
+    "verifyRuntime": {
+      "wallet": "0x6b7206fa6fc5fe541061bdedf2c6a2bbf4cf8199",
+      "foreign": "0x6d5bed568904290fca0b8d4e99bed2a7f9d44145",
+      "codeHash": "0xa0a316570cc6cd421fd22ee5bcb61332b75b07a6bee9a6e0ccb8169825b51404",
+      "templateHash": "0xa0b282997f1eacc54f302d398988e4cae8124b9fc8fd0ca3c2e2f21d326ec1ea",
+      "boundMode": "IMMUTABLE_SLOTS",
+      "ok": true
+    },
+    "stake": {
+      "hash": "0xb1611eabbf4f53a60b1a98507eeb6db74186dcd5ab0b4bfdfe121a8499d03ec9",
+      "amountWei": "12000000000000000",
+      "unstakeDelaySec": 86400,
+      "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+      "walletNonce": 8,
+      "status": {
+        "amountWei": "12000000000000000",
+        "unstakeDelay": 86400,
+        "withdrawTime": 0,
+        "status": "STAKED"
+      },
+      "receiptStatus": "0x1"
+    },
+    "candidate": {
+      "hash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+      "nonce": 9,
+      "verifyData": "0x01",
+      "wallet": "0x6b7206fa6fc5fe541061bdedf2c6a2bbf4cf8199"
+    },
+    "comparison": {
+      "transactionIdentity": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+      "divergence": "POLICY_DIVERGENCE",
+      "canonical": {
+        "status": "REJECTED_POLICY",
+        "errorClass": "admission_policy",
+        "code": -32000,
+        "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+        "data": null
+      },
+      "alternative": {
+        "status": "ACCEPTED",
+        "hash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+        "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+      },
+      "alternativeReport": {
+        "hash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+        "entry": {
+          "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+          "sender": "0x6B7206fa6FC5Fe541061bdedF2C6a2bBf4CF8199",
+          "payer": "0x6B7206fa6FC5Fe541061bdedF2C6a2bBf4CF8199",
+          "nonce": "0x9",
+          "nonceKeys": [
+            "0x0"
+          ],
+          "status": "Cancelled",
+          "frames": 2,
+          "maxFeePerGas": "0x77359400",
+          "submittedTime": 1794004278812,
+          "lastUpdatedTime": 1794004341455,
+          "source": "rpc",
+          "tx": {
+            "chainId": "0x539",
+            "nonceKeys": [
+              "0x0"
+            ],
+            "nonceSeq": "0x9",
+            "sender": "0x6B7206fa6FC5Fe541061bdedF2C6a2bBf4CF8199",
+            "frames": [
+              {
+                "mode": 1,
+                "flags": 3,
+                "target": null,
+                "limits": {
+                  "execution": "0x11170",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x01"
+              },
+              {
+                "mode": 2,
+                "flags": 0,
+                "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                "limits": {
+                  "execution": "0xc350",
+                  "state": "0x30d40"
+                },
+                "value": "0x1",
+                "data": "0x"
+              }
+            ],
+            "signatures": [
+              {
+                "scheme": 1,
+                "signer": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+                "msg": "0x",
+                "signature": "0x01556dcae1b64c294f3e8603b7a258053de5c66bd1ca8aea0623e439ec45ed8fb803347f6cdc52c8ed8382510915fab3b9ed36e2c2c1bb24b2efc6708cd2d3df1e"
+              }
+            ],
+            "fees": {
+              "maxPriorityFeePerGas": "0x77359400",
+              "maxFeePerGas": "0x77359400",
+              "maxFeePerBlobGas": "0x0"
+            },
+            "blobVersionedHashes": [],
+            "recentRootReferences": []
+          },
+          "revertReason": "relayed 4 times without being included in a block"
+        },
+        "admission": {
+          "id": 1647,
+          "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+          "sender": "0x6b7206fa6fc5fe541061bdedf2c6a2bbf4cf8199",
+          "nonce": "0x9",
+          "nonceKeys": [
+            "0x0"
+          ],
+          "at": 1794004278753,
+          "source": "rpc",
+          "outcome": "dropped",
+          "checks": [
+            {
+              "rule": "gas-limit",
+              "verdict": "pass"
+            },
+            {
+              "rule": "recent-root",
+              "verdict": "pass"
+            },
+            {
+              "rule": "prefix",
+              "verdict": "pass"
+            },
+            {
+              "rule": "structure",
+              "verdict": "pass"
+            },
+            {
+              "rule": "signature",
+              "verdict": "pass"
+            },
+            {
+              "rule": "simulation",
+              "verdict": "pass"
+            },
+            {
+              "rule": "trace-alignment",
+              "verdict": "pass"
+            },
+            {
+              "rule": "OP-061",
+              "verdict": "pass"
+            },
+            {
+              "rule": "execution",
+              "verdict": "pass"
+            },
+            {
+              "rule": "trace-alignment",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "out-of-gas",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "OP-011",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "create",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "storage",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "COD-010",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "entrypoint-access",
+              "frameIndex": 0,
+              "entity": "payer",
+              "verdict": "pass"
+            },
+            {
+              "rule": "mempool",
+              "verdict": "pass"
+            }
+          ],
+          "frames": [
+            {
+              "mode": 1,
+              "flags": 3,
+              "target": null,
+              "limits": {
+                "execution": "0x11170",
+                "state": "0x0"
+              },
+              "value": "0x0",
+              "data": "0x01"
+            },
+            {
+              "mode": 2,
+              "flags": 0,
+              "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+              "limits": {
+                "execution": "0xc350",
+                "state": "0x30d40"
+              },
+              "value": "0x1",
+              "data": "0x"
+            }
+          ],
+          "frameStatuses": [
+            "success",
+            "success"
+          ]
+        },
+        "events": [
+          {
+            "seq": 5275,
+            "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "at": 1794004282022,
+            "kind": "admitted",
+            "status": "New"
+          },
+          {
+            "seq": 5278,
+            "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "at": 1794004288932,
+            "kind": "statusChanged",
+            "status": "Submitted"
+          },
+          {
+            "seq": 5283,
+            "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "at": 1794004308355,
+            "kind": "statusChanged",
+            "status": "Submitted"
+          },
+          {
+            "seq": 5286,
+            "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "at": 1794004321275,
+            "kind": "statusChanged",
+            "status": "Submitted"
+          },
+          {
+            "seq": 5290,
+            "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "at": 1794004329114,
+            "kind": "statusChanged",
+            "status": "Submitted"
+          },
+          {
+            "seq": 5294,
+            "txHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "at": 1794004341457,
+            "kind": "dropped",
+            "status": "Cancelled",
+            "reason": "relayed 4 times without being included in a block"
+          }
+        ]
+      },
+      "inclusion": null,
+      "table": [
+        {
+          "mutation": "ViolatingWallet VERIFY data triggers FOREIGN.staticcall (StorageReadNonSender vs staked alt admit)",
+          "canonicalVerdict": "REJECTED_POLICY",
+          "alternativeVerdict": "ACCEPTED",
+          "divergence": "POLICY_DIVERGENCE",
+          "inclusion": null,
+          "evidence": {
+            "hash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+            "sourceDigest": "05e4454685fa6755f0d691a382a47b8a2f941458ea075d58e823c75e2e1f6959",
+            "wallet": "0x6b7206fa6fc5fe541061bdedf2c6a2bbf4cf8199",
+            "sidecarAdmissionId": 1647,
+            "rule": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+            "timestamp": "2026-11-06T22:31:23.717Z",
+            "gasPaid": null,
+            "provenance": "LIVE",
+            "laterMempoolOutcome": "dropped"
+          }
+        }
+      ],
+      "provenance": "LIVE",
+      "inclusionFollowUp": {
+        "polledAt": "2026-11-06T22:32:53.522Z",
+        "inclusionBlock": null,
+        "laterOutcome": "dropped",
+        "note": "Admission observed as accepted (id 1647) at comparison time; subsequent explorer outcome became dropped without mined inclusion. Admission and inclusion remain distinct."
+      }
+    }
+  },
+  "completedAt": "2026-11-06T22:31:23.717Z",
+  "writes": 4,
+  "broadcasts": [
+    "deployForeign",
+    "deployWallet",
+    "stake",
+    "policyCandidate"
+  ]
+}
