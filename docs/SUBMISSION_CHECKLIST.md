@@ -1,5 +1,7 @@
 # Submission checklist
 
+Current read-only delivery observations and exact human steps: [DELIVERY_PASS2.md](DELIVERY_PASS2.md). Current capabilities: [CURRENT_CAPABILITIES.md](CURRENT_CAPABILITIES.md).
+
 ## Verified locally
 
 - [x] MIT LICENSE and README AI-use disclosure present; upstream notices retained.
