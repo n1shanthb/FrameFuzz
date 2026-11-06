@@ -7,6 +7,7 @@ import {rpc,sanitizedRpcLabel} from '../rpc.mjs';
 import {redact} from '../safety.mjs';
 import {mutationDefinition,generateMutations,regenerateMutation,GENERATOR_VERSION} from './generator.mjs';
 import {compareMutation} from './oracle.mjs';
+import {inspectUniswap} from '../adapters/uniswap-state.mjs';
 
 export const DEFAULT_CONFIG='examples/live/devnet.json';
 export const DEFAULT_RULES='rules/devnet-1337.v1.json';
@@ -58,6 +59,7 @@ export async function runMutationCampaign(options={}) {
     if(bindings&&bindings[kind]!==config.paymasterCodeHashes?.[kind])for(const o of Object.values(v.oracle))Object.assign(o,{expected:null,confidence:'UNKNOWN',reason:'Configured sponsor code hash is not bound to the rule-model evidence'});
   }
   let network=null;
+  const uniswap=submit&&definition.suite==='uniswap-storage'&&!options.rpcFn?await inspectUniswap(config,endpoints.public):null;
   if(submit&&!options.rpcFn){
     network={executionClient:await rpc(config.authorizedEndpoints[1]??endpoints.public,'web3_clientVersion'),sidecar:await rpc(endpoints.alt,'skandha_explorer_info')};
     const source=definition.ruleModel.provenance;
@@ -87,7 +89,7 @@ export async function runMutationCampaign(options={}) {
         try{p.admissionReport=await (options.rpcFn??rpc)(endpoints[p.id],'skandha_explorer_getTransaction',[p.metadata.transaction.hash]);}
         catch(error){p.admissionReport={unavailable:error.message};}
       }
-      p.comparison=compareMutation(p.oracle,p.observed);
+      p.comparison=compareMutation(p.oracle,p.observed,p.admissionReport);
     }
     result.verdict=result.paths.some(p=>p.comparison.verdict.startsWith('UNEXPECTED_'))?'UNEXPECTED':result.paths.every(p=>p.comparison.verdict.startsWith('EXPECTED_'))?'MATCH':'INCONCLUSIVE';
     result.reproduction={...cases[i].reproduction,decisions:result.paths.map(p=>({path:p.id,oracle:p.oracle,observed:p.observed,receipt:p.receipt,admissionReport:p.admissionReport,replay:p.replay})),
@@ -95,10 +97,12 @@ export async function runMutationCampaign(options={}) {
   }
   output.campaign={generatorVersion:GENERATOR_VERSION,suite:definition.suite,seed:definition.seed,count:definition.count,selectedVariant:options.variant??null,definitionDigest:variants[0].definitionDigest,ruleModelVersion:definition.ruleModel.version??null};
   output.network=network;
+  if(uniswap)output.uniswap=uniswap;
   output.coverage=mutationCoverage(output.results);
   output.totals={cases:output.results.length,matched:output.results.filter(c=>c.verdict==='MATCH').length,unexpected:output.results.filter(c=>c.verdict==='UNEXPECTED').length,
     inconclusive:output.results.filter(c=>c.verdict==='INCONCLUSIVE').length,transportFailures:output.results.flatMap(c=>c.paths).filter(p=>p.comparison.verdict==='TRANSPORT_FAILURE').length,
-    preconditionFailures:output.results.flatMap(c=>c.paths).filter(p=>p.comparison.verdict==='PRECONDITION_FAILURE').length};
+    preconditionFailures:output.results.flatMap(c=>c.paths).filter(p=>p.comparison.verdict==='PRECONDITION_FAILURE').length,
+    infrastructureFailures:output.results.flatMap(c=>c.paths).filter(p=>p.comparison.verdict==='INFRASTRUCTURE_FAILURE').length};
   return redact(output);
 }
 

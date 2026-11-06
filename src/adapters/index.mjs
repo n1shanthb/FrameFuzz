@@ -45,7 +45,8 @@ export function createAdapter(plugin) {
           metadata: { adapter: plugin.id, sender, nonce, chainId, caseId, pathId, mode: plugin.mode,
             ...(signed.evidence ? { transaction: { hash: signed.evidence.hash, payer: signed.evidence.payer,
               payerBalance: signed.evidence.payerBalance, senderBalance: signed.evidence.senderBalance,
-              verificationGas: signed.evidence.verificationGas, stateView: signed.evidence.stateView, poolId: signed.evidence.poolId } } : {}) } };
+              verificationGas: signed.evidence.verificationGas, stateView: signed.evidence.stateView, poolId: signed.evidence.poolId,
+              stake:signed.evidence.stake,uniswap:signed.evidence.uniswap } } : {}) } };
       } catch (error) { poisoned = true; throw error; }
       finally { busy = false; }
     },

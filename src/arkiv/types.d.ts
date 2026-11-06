@@ -18,5 +18,7 @@ export interface RegressionCase {
   reproduction:{schema:'framefuzz.mutation-reproduction.v1';generatorVersion:string;definition:Record<string,unknown>;definitionDigest:string;variantIndex:number;baseTemplateId:string;unsignedModel:Record<string,unknown>;setup:Record<string,unknown>};
   evidence:{classification:Classification;sha256:string;scope:'offchain-full-evidence';caseId:string};
   publisher:string;expiration:{blocks:number;expiresAtBlock:string};contentDigest:string;
+  uniswap?:{protocol:'uniswap-v4';chainId:1337;poolId:string;contracts:Record<'stateView'|'poolManager',{address:string;codeHash:string}>;slot0:{sqrtPriceX96:string;tick:number;protocolFee:number;lpFee:number;initialized:boolean};paymaster:{address:string;codeHash:string;stake:{registry:string;amountWei:string;delaySeconds:string;withdrawTime:string;staked:boolean}};policies:Record<'public'|'alt',{ruleId:string;expected:string|null}>;source:{file:string;line:number};limitation:string};
 }
 export interface RetrievedCase {key:string;owner:string;creator:string;expiresAtBlock:string;record:RegressionCase;reader:{mode:'public-read-only';walletAddress:string|null};}
+

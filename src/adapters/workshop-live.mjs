@@ -4,6 +4,7 @@ import { encodeFunctionData, keccak256 } from 'viem';
 import { rpc } from '../rpc.mjs';
 import { assertTestChain } from '../safety.mjs';
 import { buildSponsored } from './workshop-codec.mjs';
+import {inspectUniswap} from './uniswap-state.mjs';
 
 const DEPOSIT_ABI = [{ type: 'function', name: 'getDepositInfo', stateMutability: 'view', inputs: [{ type: 'address' }], outputs: [{ type: 'uint256' }, { type: 'uint32' }, { type: 'uint64' }] }];
 const SLOT_ABI = [{ type:'function', name:'getSlot0', stateMutability:'view', inputs:[{type:'bytes32'}], outputs:[{type:'uint160'},{type:'int24'},{type:'uint24'},{type:'uint24'}] }];
@@ -46,7 +47,9 @@ export function workshopPlugin(config, { rpcFn = rpc, keyFactory = generatePriva
       const amount = BigInt(`0x${stake.slice(2,66)}`), delay = BigInt(`0x${stake.slice(66,130)}`), withdraw = BigInt(`0x${stake.slice(130,194)}`);
       const staked = amount >= BigInt(config.minStakeWei ?? '10000000000000000') && delay >= 86400n && withdraw === 0n;
       if (staked !== Boolean(context.setup.staked)) throw new Error(`Paymaster stake does not match scenario ${kind}`);
+      context.account.stake={registry:config.stakingRegistry,amountWei:String(amount),delaySeconds:String(delay),withdrawTime:String(withdraw),staked};
       if (context.setup.poolRead) {
+        context.account.uniswap=await inspectUniswap(config,context.rpcUrl,{rpcFn});
         const code = await rpcFn(context.rpcUrl, 'eth_getCode', [config.stateView, 'latest']);
         if (code === '0x') throw new Error('StateView has no deployed bytecode');
         const data = encodeFunctionData({ abi: SLOT_ABI, functionName: 'getSlot0', args: [config.poolId] });
@@ -73,7 +76,7 @@ export function workshopPlugin(config, { rpcFn = rpc, keyFactory = generatePriva
       return { raw: built.raw,
         submission: { method: context.pathId === 'public' ? 'eth_sendRawTransaction' : 'eth_sendFrameTransaction', params: [context.pathId === 'public' ? built.raw : built.wire] },
         evidence: { hash: built.hash, payer: context.account.payer, payerBalance: context.account.payerBalance, senderBalance: context.account.senderBalance,
-          verificationGas, stateView: context.model.poolRead ? config.stateView : undefined, poolId: context.model.poolRead ? config.poolId : undefined } };
+          verificationGas, stake:context.account.stake,uniswap:context.account.uniswap,stateView: context.model.poolRead ? config.stateView : undefined, poolId: context.model.poolRead ? config.poolId : undefined } };
     },
   };
 }

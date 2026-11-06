@@ -28,7 +28,10 @@ export function expectation(model, setup, pathId, rules) {
   return { ...common,expected:'accepted',components,reason:`Budget ${total} <= ${gas.maxTotal}, payer gas >= evidenced sufficient ${gas.knownSufficientPayer}, and no external pool read; setup must still pass` };
 }
 
-export function compareMutation(oracle, observed) {
+export function compareMutation(oracle, observed, admissionReport) {
+  const storageFailure=admissionReport?.admission?.checks?.find(c=>c.rule==='mempool'&&c.verdict==='fail'&&/no space left on device|disk full/i.test(c.detail??''));
+  if(observed?.status==='rejected'&&storageFailure)return {verdict:'INFRASTRUCTURE_FAILURE',reason:`Sidecar admission report: ${storageFailure.detail}`};
+  if(observed?.errorClass==='gateway_infrastructure')return {verdict:'INFRASTRUCTURE_FAILURE',reason:observed.message};
   if (observed?.status === 'transport_failure') return {verdict:'TRANSPORT_FAILURE',reason:observed.message};
   const precondition = oracle?.precondition || observed?.errorClass === 'adapter_setup' ||
     ['malformed_transaction','nonce_or_duplicate','funding','rpc_method','rpc_error','validation_gas'].includes(observed?.errorClass) ||

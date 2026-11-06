@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-05T23:50:49.463Z",
+  "readOnly": true,
+  "sidecar": {
+    "protocolVersion": 1,
+    "chainId": 1337,
+    "version": "v4.1.1",
+    "commit": "",
+    "bundlingMode": "auto",
+    "p2pEnabled": true,
+    "latestSeq": 5421,
+    "oldestSeq": 1,
+    "historyCapacity": 10000,
+    "bootId": "64ff763ea9e08373",
+    "minInclusionDenominator": 10,
+    "throttlingSlack": 10,
+    "banSlack": 50
+  },
+  "receipts": [
+    {
+      "path": "public",
+      "hash": "0xe5ee5e32f028ba36cd52345c537056436b0aef0c998f15e8959b83b1fe2809fe",
+      "receipt": null
+    }
+  ]
+}

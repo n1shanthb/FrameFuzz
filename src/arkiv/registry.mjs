@@ -71,6 +71,7 @@ export function createRegistry({publicClient,walletClient=null,readerAddress=pro
       for(const result of preview.results)result.reproduction.cli=`node bin/framefuzz.mjs arkiv import --key ${retrieved.key}`;
       preview.communityOrigin={chainId:ARKIV_CHAIN_ID,entityKey:retrieved.key,publisher:retrieved.record.publisher,owner:retrieved.owner,creator:retrieved.creator,expiresAtBlock:retrieved.expiresAtBlock,contentDigest:retrieved.record.contentDigest,
         originalEvidenceClassification:retrieved.record.evidence.classification,originalOutcomes:retrieved.record.originalOutcomes,
+        protocolMetadata:retrieved.record.uniswap??null,
         notice:'Original outcomes are publisher claims. This imported run is a new unsigned preview, not a live reproduction.'};
       return {retrieved,preview};
     },

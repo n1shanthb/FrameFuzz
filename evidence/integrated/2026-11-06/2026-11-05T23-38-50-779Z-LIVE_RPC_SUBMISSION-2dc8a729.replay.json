@@ -1,0 +1,3490 @@
+{
+  "schema": "framefuzz.replay.v1",
+  "source": "LIVE_RPC_SUBMISSION",
+  "chainId": 1337,
+  "campaign": {
+    "generatorVersion": "framefuzz.semantic.v1",
+    "suite": "uniswap-storage",
+    "seed": 42,
+    "count": 3,
+    "selectedVariant": null,
+    "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+    "ruleModelVersion": "forshtat-1337-observed-2026-11-06.v1"
+  },
+  "coverage": {
+    "generatorVersion": "framefuzz.semantic.v1",
+    "generatedVariants": 3,
+    "decisions": 6,
+    "rules": [
+      {
+        "ruleId": "STORAGE_ACCESS",
+        "path": "public",
+        "variants": 3,
+        "verified": 3,
+        "inferred": 0,
+        "unknown": 0,
+        "expectedAccept": 1,
+        "expectedReject": 2,
+        "matched": 3,
+        "unexpected": 0,
+        "preconditionFailures": 0,
+        "regions": [
+          "unstaked",
+          "staked",
+          "basic"
+        ]
+      },
+      {
+        "ruleId": "STORAGE_ACCESS",
+        "path": "alt",
+        "variants": 3,
+        "verified": 3,
+        "inferred": 0,
+        "unknown": 0,
+        "expectedAccept": 2,
+        "expectedReject": 1,
+        "matched": 1,
+        "unexpected": 0,
+        "preconditionFailures": 2,
+        "regions": [
+          "unstaked",
+          "staked",
+          "basic"
+        ]
+      }
+    ]
+  },
+  "warning": "Contains potentially stale signed bytes. Rebuild with the original signer and isolated state. No automatic broadcast is performed.",
+  "cases": [
+    {
+      "id": "uniswap-storage-s42-0-unstaked",
+      "family": "uniswap-storage",
+      "mutation": {
+        "generatorVersion": "framefuzz.semantic.v1",
+        "seed": 42,
+        "index": 0,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": true,
+          "configuration": {
+            "kind": "unstaked"
+          }
+        },
+        "parameter": {
+          "operation": "storage-and-stake",
+          "kind": "unstaked",
+          "poolRead": true,
+          "staked": false,
+          "region": "unstaked"
+        }
+      },
+      "ruleProvenance": {
+        "confidence": "VERIFIED",
+        "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+        "evidence": [
+          {
+            "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+            "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+          }
+        ],
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "sidecarVersion": "v4.1.1",
+        "deployedSidecarCommit": null,
+        "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "fixtureCodeHashes": {
+          "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+          "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+          "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+        }
+      },
+      "reproduction": {
+        "schema": "framefuzz.mutation-reproduction.v1",
+        "generatorVersion": "framefuzz.semantic.v1",
+        "definition": {
+          "version": "framefuzz.semantic.v1",
+          "suite": "uniswap-storage",
+          "seed": 42,
+          "count": 3,
+          "ruleModel": {
+            "version": "forshtat-1337-observed-2026-11-06.v1",
+            "chainId": 1337,
+            "provenance": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "gas": {
+              "maxTotal": 100000,
+              "senderExecution": 30000,
+              "signatureCost": 2800,
+              "observedPayerUsed": 7093,
+              "knownSufficientPayer": 50000
+            },
+            "storage": {
+              "public": {
+                "unstaked": false,
+                "staked": false,
+                "rejection": "StorageReadNonSender"
+              },
+              "alt": {
+                "unstaked": false,
+                "staked": true,
+                "rejection": "unstaked payer accessed"
+              }
+            }
+          },
+          "baseTemplate": {
+            "id": "workshop-sponsored-v1",
+            "model": {
+              "verificationGasLimit": 50000,
+              "poolRead": false
+            },
+            "setup": {
+              "staked": false,
+              "poolRead": false,
+              "configuration": {
+                "kind": "basic"
+              }
+            }
+          },
+          "operation": {
+            "type": "storage-and-stake"
+          },
+          "paths": [
+            "public",
+            "alt"
+          ]
+        },
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "variantIndex": 0,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": true,
+          "configuration": {
+            "kind": "unstaked"
+          }
+        },
+        "oracle": {
+          "public": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "public unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "alt": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "unstaked payer accessed",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "alt unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          }
+        },
+        "accountAllocation": "Allocate a fresh isolated sender per case/path, query pending nonce after checked setup, re-encode and re-sign; never replay stale signed bytes",
+        "cli": "node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --variant 0 --submit --allow-chain 1337",
+        "network": {
+          "chainId": 1337,
+          "endpoints": {
+            "public": "https://altmempool.forshtat.com/[redacted-path]",
+            "alt": "https://altmempool.forshtat.com/[redacted-path]"
+          },
+          "configFile": "examples/live/devnet.json",
+          "paymasters": {
+            "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+          },
+          "codeHashes": {
+            "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+            "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+            "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+          }
+        },
+        "rulesFile": "rules/devnet-1337.v1.json",
+        "decisions": [
+          {
+            "path": "public",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "rejected",
+              "expectedRule": "StorageReadNonSender",
+              "prerequisite": {
+                "poolRead": true,
+                "staked": false,
+                "paymasterKind": "unstaked"
+              },
+              "reason": "public unstaked external Uniswap storage read is disallowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "rejected",
+              "errorClass": "admission_policy",
+              "code": -32000,
+              "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+              "data": null
+            },
+            "receipt": {
+              "state": "not_checked"
+            },
+            "replay": {
+              "method": "eth_sendRawTransaction",
+              "params": [
+                "0x06f8be820539c18080943406fe3cacec6b6b5ca475588e1967ea14fd7357f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841013edc9be42bdecb5405e34edde02e45daa905ec8c3963142bb2cebfc6f80f80c4385aa20d6a760d1eb3a0c82a003fd8e23af5612b46bd91aabac3837286b3576fcb8477359400847735940080c0c0"
+              ],
+              "signedRaw": "0x06f8be820539c18080943406fe3cacec6b6b5ca475588e1967ea14fd7357f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841013edc9be42bdecb5405e34edde02e45daa905ec8c3963142bb2cebfc6f80f80c4385aa20d6a760d1eb3a0c82a003fd8e23af5612b46bd91aabac3837286b3576fcb8477359400847735940080c0c0",
+              "metadata": {
+                "adapter": "workshop-hegota-0.0.1",
+                "sender": "0x3406fe3cacec6b6b5ca475588e1967ea14fd7357",
+                "nonce": "0",
+                "chainId": 1337,
+                "caseId": "uniswap-storage-s42-0-unstaked",
+                "pathId": "public",
+                "mode": "LIVE",
+                "transaction": {
+                  "hash": "0x01364b8d5f219ed6e2c43b48384d8789a9eda36519d2e5d3fee7f68b0206dd3d",
+                  "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                  "payerBalance": "150000000000000000",
+                  "senderBalance": "0",
+                  "verificationGas": 50000,
+                  "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                  "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                  "stake": {
+                    "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                    "amountWei": "0",
+                    "delaySeconds": "0",
+                    "withdrawTime": "0",
+                    "staked": false
+                  },
+                  "uniswap": {
+                    "chainId": 1337,
+                    "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                    "contracts": {
+                      "stateView": {
+                        "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                        "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                        "bytes": 3531
+                      },
+                      "poolManager": {
+                        "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                        "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                        "bytes": 24009
+                      }
+                    },
+                    "slot0": {
+                      "sqrtPriceX96": "0",
+                      "tick": 0,
+                      "protocolFee": 0,
+                      "lpFee": 0,
+                      "initialized": false
+                    },
+                    "interaction": "StateView.getSlot0(bytes32)",
+                    "source": {
+                      "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                      "line": 33
+                    },
+                    "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+                  }
+                }
+              },
+              "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+            }
+          },
+          {
+            "path": "alt",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "rejected",
+              "expectedRule": "unstaked payer accessed",
+              "prerequisite": {
+                "poolRead": true,
+                "staked": false,
+                "paymasterKind": "unstaked"
+              },
+              "reason": "alt unstaked external Uniswap storage read is disallowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "rejected",
+              "errorClass": "unclassified_rejection",
+              "code": -32502,
+              "message": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404",
+              "data": {
+                "payer": "0x3D66c53105be7930FD89571157A41137C12B003F"
+              }
+            },
+            "receipt": {
+              "state": "not_checked"
+            },
+            "admissionReport": {
+              "hash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+              "entry": null,
+              "admission": {
+                "id": 1809,
+                "txHash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+                "sender": "0xb6e8148f7f8a36377a153b118582f631eed6fb97",
+                "nonce": "0x0",
+                "nonceKeys": [
+                  "0x0"
+                ],
+                "at": 1793921904923,
+                "source": "rpc",
+                "outcome": "rejected",
+                "errorCode": -32502,
+                "checks": [
+                  {
+                    "rule": "gas-limit",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "recent-root",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "prefix",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "structure",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "signature",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "simulation",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-061",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "execution",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "out-of-gas",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-011",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "create",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "storage",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "COD-010",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "entrypoint-access",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "out-of-gas",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-011",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "create",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "storage",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "fail",
+                    "detail": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404"
+                  },
+                  {
+                    "rule": "COD-010",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "entrypoint-access",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "mempool",
+                    "verdict": "skipped"
+                  }
+                ],
+                "frames": [
+                  {
+                    "mode": 1,
+                    "flags": 2,
+                    "target": null,
+                    "limits": {
+                      "execution": "0x7530",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 1,
+                    "flags": 1,
+                    "target": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x01"
+                  },
+                  {
+                    "mode": 2,
+                    "flags": 0,
+                    "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  }
+                ],
+                "frameStatuses": [
+                  "success",
+                  "success",
+                  "success"
+                ]
+              },
+              "events": [
+                {
+                  "seq": 5419,
+                  "txHash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+                  "at": 1793921904977,
+                  "kind": "rejected",
+                  "reason": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404"
+                }
+              ]
+            },
+            "replay": {
+              "method": "eth_sendFrameTransaction",
+              "params": [
+                {
+                  "chainId": "0x539",
+                  "nonceKeys": [
+                    "0x0"
+                  ],
+                  "nonceSeq": "0x0",
+                  "sender": "0xb6e8148f7f8a36377a153b118582f631eed6fb97",
+                  "frames": [
+                    {
+                      "mode": 1,
+                      "flags": 2,
+                      "target": null,
+                      "limits": {
+                        "execution": "0x7530",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    },
+                    {
+                      "mode": 1,
+                      "flags": 1,
+                      "target": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                      "limits": {
+                        "execution": "0xc350",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x01"
+                    },
+                    {
+                      "mode": 2,
+                      "flags": 0,
+                      "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                      "limits": {
+                        "execution": "0xc350",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    }
+                  ],
+                  "signatures": [
+                    {
+                      "scheme": 1,
+                      "signer": "0x",
+                      "msg": "0x",
+                      "signature": "0x015618444d124f79e75fc6518008e4929a909d93ede16bc0df95d0c20e649948a33c9e9003cec70ceffd6b28a58907ad6b6bf09876d3340a4662b008cf5c101ea8"
+                    }
+                  ],
+                  "fees": {
+                    "maxPriorityFeePerGas": "0x77359400",
+                    "maxFeePerGas": "0x77359400",
+                    "maxFeePerBlobGas": "0x0"
+                  },
+                  "blobVersionedHashes": [],
+                  "recentRootReferences": []
+                }
+              ],
+              "signedRaw": "0x06f8be820539c1808094b6e8148f7f8a36377a153b118582f631eed6fb97f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841015618444d124f79e75fc6518008e4929a909d93ede16bc0df95d0c20e649948a33c9e9003cec70ceffd6b28a58907ad6b6bf09876d3340a4662b008cf5c101ea8cb8477359400847735940080c0c0",
+              "metadata": {
+                "adapter": "workshop-hegota-0.0.1",
+                "sender": "0xb6e8148f7f8a36377a153b118582f631eed6fb97",
+                "nonce": "0",
+                "chainId": 1337,
+                "caseId": "uniswap-storage-s42-0-unstaked",
+                "pathId": "alt",
+                "mode": "LIVE",
+                "transaction": {
+                  "hash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+                  "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                  "payerBalance": "150000000000000000",
+                  "senderBalance": "0",
+                  "verificationGas": 50000,
+                  "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                  "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                  "stake": {
+                    "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                    "amountWei": "0",
+                    "delaySeconds": "0",
+                    "withdrawTime": "0",
+                    "staked": false
+                  },
+                  "uniswap": {
+                    "chainId": 1337,
+                    "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                    "contracts": {
+                      "stateView": {
+                        "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                        "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                        "bytes": 3531
+                      },
+                      "poolManager": {
+                        "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                        "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                        "bytes": 24009
+                      }
+                    },
+                    "slot0": {
+                      "sqrtPriceX96": "0",
+                      "tick": 0,
+                      "protocolFee": 0,
+                      "lpFee": 0,
+                      "initialized": false
+                    },
+                    "interaction": "StateView.getSlot0(bytes32)",
+                    "source": {
+                      "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                      "line": 33
+                    },
+                    "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+                  }
+                }
+              },
+              "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+            }
+          }
+        ],
+        "unexpected": false,
+        "shrink": null
+      },
+      "paths": [
+        {
+          "id": "public",
+          "expected": "rejected",
+          "expectedRule": "StorageReadNonSender",
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "public unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "admission_policy",
+            "code": -32000,
+            "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+            "data": null
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "method": "eth_sendRawTransaction",
+          "params": [
+            "0x06f8be820539c18080943406fe3cacec6b6b5ca475588e1967ea14fd7357f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841013edc9be42bdecb5405e34edde02e45daa905ec8c3963142bb2cebfc6f80f80c4385aa20d6a760d1eb3a0c82a003fd8e23af5612b46bd91aabac3837286b3576fcb8477359400847735940080c0c0"
+          ],
+          "signedRaw": "0x06f8be820539c18080943406fe3cacec6b6b5ca475588e1967ea14fd7357f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841013edc9be42bdecb5405e34edde02e45daa905ec8c3963142bb2cebfc6f80f80c4385aa20d6a760d1eb3a0c82a003fd8e23af5612b46bd91aabac3837286b3576fcb8477359400847735940080c0c0",
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0x3406fe3cacec6b6b5ca475588e1967ea14fd7357",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "uniswap-storage-s42-0-unstaked",
+            "pathId": "public",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x01364b8d5f219ed6e2c43b48384d8789a9eda36519d2e5d3fee7f68b0206dd3d",
+              "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+              "payerBalance": "150000000000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+              "stake": {
+                "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                "amountWei": "0",
+                "delaySeconds": "0",
+                "withdrawTime": "0",
+                "staked": false
+              },
+              "uniswap": {
+                "chainId": 1337,
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                "contracts": {
+                  "stateView": {
+                    "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                    "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                    "bytes": 3531
+                  },
+                  "poolManager": {
+                    "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                    "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                    "bytes": 24009
+                  }
+                },
+                "slot0": {
+                  "sqrtPriceX96": "0",
+                  "tick": 0,
+                  "protocolFee": 0,
+                  "lpFee": 0,
+                  "initialized": false
+                },
+                "interaction": "StateView.getSlot0(bytes32)",
+                "source": {
+                  "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                  "line": 33
+                },
+                "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+              }
+            }
+          },
+          "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+        },
+        {
+          "id": "alt",
+          "expected": "rejected",
+          "expectedRule": "unstaked payer accessed",
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "unstaked payer accessed",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "alt unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "unclassified_rejection",
+            "code": -32502,
+            "message": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404",
+            "data": {
+              "payer": "0x3D66c53105be7930FD89571157A41137C12B003F"
+            }
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "admissionReport": {
+            "hash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+            "entry": null,
+            "admission": {
+              "id": 1809,
+              "txHash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+              "sender": "0xb6e8148f7f8a36377a153b118582f631eed6fb97",
+              "nonce": "0x0",
+              "nonceKeys": [
+                "0x0"
+              ],
+              "at": 1793921904923,
+              "source": "rpc",
+              "outcome": "rejected",
+              "errorCode": -32502,
+              "checks": [
+                {
+                  "rule": "gas-limit",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "recent-root",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "prefix",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "structure",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "signature",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "simulation",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-061",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "execution",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "out-of-gas",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-011",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "create",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "storage",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "COD-010",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "entrypoint-access",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "out-of-gas",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-011",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "create",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "storage",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "fail",
+                  "detail": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404"
+                },
+                {
+                  "rule": "COD-010",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "entrypoint-access",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "mempool",
+                  "verdict": "skipped"
+                }
+              ],
+              "frames": [
+                {
+                  "mode": 1,
+                  "flags": 2,
+                  "target": null,
+                  "limits": {
+                    "execution": "0x7530",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 1,
+                  "flags": 1,
+                  "target": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x01"
+                },
+                {
+                  "mode": 2,
+                  "flags": 0,
+                  "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                }
+              ],
+              "frameStatuses": [
+                "success",
+                "success",
+                "success"
+              ]
+            },
+            "events": [
+              {
+                "seq": 5419,
+                "txHash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+                "at": 1793921904977,
+                "kind": "rejected",
+                "reason": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404"
+              }
+            ]
+          },
+          "method": "eth_sendFrameTransaction",
+          "params": [
+            {
+              "chainId": "0x539",
+              "nonceKeys": [
+                "0x0"
+              ],
+              "nonceSeq": "0x0",
+              "sender": "0xb6e8148f7f8a36377a153b118582f631eed6fb97",
+              "frames": [
+                {
+                  "mode": 1,
+                  "flags": 2,
+                  "target": null,
+                  "limits": {
+                    "execution": "0x7530",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 1,
+                  "flags": 1,
+                  "target": "0x3d66c53105be7930fd89571157a41137c12b003f",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x01"
+                },
+                {
+                  "mode": 2,
+                  "flags": 0,
+                  "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                }
+              ],
+              "signatures": [
+                {
+                  "scheme": 1,
+                  "signer": "0x",
+                  "msg": "0x",
+                  "signature": "0x015618444d124f79e75fc6518008e4929a909d93ede16bc0df95d0c20e649948a33c9e9003cec70ceffd6b28a58907ad6b6bf09876d3340a4662b008cf5c101ea8"
+                }
+              ],
+              "fees": {
+                "maxPriorityFeePerGas": "0x77359400",
+                "maxFeePerGas": "0x77359400",
+                "maxFeePerBlobGas": "0x0"
+              },
+              "blobVersionedHashes": [],
+              "recentRootReferences": []
+            }
+          ],
+          "signedRaw": "0x06f8be820539c1808094b6e8148f7f8a36377a153b118582f631eed6fb97f849ca010280c4827530808080de0101943d66c53105be7930fd89571157a41137c12b003fc482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841015618444d124f79e75fc6518008e4929a909d93ede16bc0df95d0c20e649948a33c9e9003cec70ceffd6b28a58907ad6b6bf09876d3340a4662b008cf5c101ea8cb8477359400847735940080c0c0",
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0xb6e8148f7f8a36377a153b118582f631eed6fb97",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "uniswap-storage-s42-0-unstaked",
+            "pathId": "alt",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x20021c2ee4df1084010c594a52c35776d0a09292064fa76dc23331cd5e789cce",
+              "payer": "0x3d66c53105be7930fd89571157a41137c12b003f",
+              "payerBalance": "150000000000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+              "stake": {
+                "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                "amountWei": "0",
+                "delaySeconds": "0",
+                "withdrawTime": "0",
+                "staked": false
+              },
+              "uniswap": {
+                "chainId": 1337,
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                "contracts": {
+                  "stateView": {
+                    "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                    "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                    "bytes": 3531
+                  },
+                  "poolManager": {
+                    "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                    "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                    "bytes": 24009
+                  }
+                },
+                "slot0": {
+                  "sqrtPriceX96": "0",
+                  "tick": 0,
+                  "protocolFee": 0,
+                  "lpFee": 0,
+                  "initialized": false
+                },
+                "interaction": "StateView.getSlot0(bytes32)",
+                "source": {
+                  "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                  "line": 33
+                },
+                "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+              }
+            }
+          },
+          "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+        }
+      ]
+    },
+    {
+      "id": "uniswap-storage-s42-1-staked",
+      "family": "uniswap-storage",
+      "mutation": {
+        "generatorVersion": "framefuzz.semantic.v1",
+        "seed": 42,
+        "index": 1,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": true,
+          "poolRead": true,
+          "configuration": {
+            "kind": "staked"
+          }
+        },
+        "parameter": {
+          "operation": "storage-and-stake",
+          "kind": "staked",
+          "poolRead": true,
+          "staked": true,
+          "region": "staked"
+        }
+      },
+      "ruleProvenance": {
+        "confidence": "VERIFIED",
+        "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+        "evidence": [
+          {
+            "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+            "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+          }
+        ],
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "sidecarVersion": "v4.1.1",
+        "deployedSidecarCommit": null,
+        "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "fixtureCodeHashes": {
+          "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+          "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+          "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+        }
+      },
+      "reproduction": {
+        "schema": "framefuzz.mutation-reproduction.v1",
+        "generatorVersion": "framefuzz.semantic.v1",
+        "definition": {
+          "version": "framefuzz.semantic.v1",
+          "suite": "uniswap-storage",
+          "seed": 42,
+          "count": 3,
+          "ruleModel": {
+            "version": "forshtat-1337-observed-2026-11-06.v1",
+            "chainId": 1337,
+            "provenance": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "gas": {
+              "maxTotal": 100000,
+              "senderExecution": 30000,
+              "signatureCost": 2800,
+              "observedPayerUsed": 7093,
+              "knownSufficientPayer": 50000
+            },
+            "storage": {
+              "public": {
+                "unstaked": false,
+                "staked": false,
+                "rejection": "StorageReadNonSender"
+              },
+              "alt": {
+                "unstaked": false,
+                "staked": true,
+                "rejection": "unstaked payer accessed"
+              }
+            }
+          },
+          "baseTemplate": {
+            "id": "workshop-sponsored-v1",
+            "model": {
+              "verificationGasLimit": 50000,
+              "poolRead": false
+            },
+            "setup": {
+              "staked": false,
+              "poolRead": false,
+              "configuration": {
+                "kind": "basic"
+              }
+            }
+          },
+          "operation": {
+            "type": "storage-and-stake"
+          },
+          "paths": [
+            "public",
+            "alt"
+          ]
+        },
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "variantIndex": 1,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": true,
+          "poolRead": true,
+          "configuration": {
+            "kind": "staked"
+          }
+        },
+        "oracle": {
+          "public": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "public staked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "alt": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "accepted",
+            "expectedRule": null,
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "alt staked external Uniswap storage read is allowed by the evidenced policy"
+          }
+        },
+        "accountAllocation": "Allocate a fresh isolated sender per case/path, query pending nonce after checked setup, re-encode and re-sign; never replay stale signed bytes",
+        "cli": "node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --variant 1 --submit --allow-chain 1337",
+        "network": {
+          "chainId": 1337,
+          "endpoints": {
+            "public": "https://altmempool.forshtat.com/[redacted-path]",
+            "alt": "https://altmempool.forshtat.com/[redacted-path]"
+          },
+          "configFile": "examples/live/devnet.json",
+          "paymasters": {
+            "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+          },
+          "codeHashes": {
+            "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+            "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+            "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+          }
+        },
+        "rulesFile": "rules/devnet-1337.v1.json",
+        "decisions": [
+          {
+            "path": "public",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "rejected",
+              "expectedRule": "StorageReadNonSender",
+              "prerequisite": {
+                "poolRead": true,
+                "staked": true,
+                "paymasterKind": "staked"
+              },
+              "reason": "public staked external Uniswap storage read is disallowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "rejected",
+              "errorClass": "admission_policy",
+              "code": -32000,
+              "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+              "data": null
+            },
+            "receipt": {
+              "state": "not_checked"
+            },
+            "replay": {
+              "method": "eth_sendRawTransaction",
+              "params": [
+                "0x06f8be820539c1808094bc9eb97e196712fb1f6cc09f07a2d1d952415860f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b8410023b8a037947f9549e99d15139378e8525d57bdd8f1d50f5f9a7d340acd46f20829c2236db34a4b33cf43035dcbd6afb9a6b56785690c4363866148e2776c3cf0cb8477359400847735940080c0c0"
+              ],
+              "signedRaw": "0x06f8be820539c1808094bc9eb97e196712fb1f6cc09f07a2d1d952415860f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b8410023b8a037947f9549e99d15139378e8525d57bdd8f1d50f5f9a7d340acd46f20829c2236db34a4b33cf43035dcbd6afb9a6b56785690c4363866148e2776c3cf0cb8477359400847735940080c0c0",
+              "metadata": {
+                "adapter": "workshop-hegota-0.0.1",
+                "sender": "0xbc9eb97e196712fb1f6cc09f07a2d1d952415860",
+                "nonce": "0",
+                "chainId": 1337,
+                "caseId": "uniswap-storage-s42-1-staked",
+                "pathId": "public",
+                "mode": "LIVE",
+                "transaction": {
+                  "hash": "0x7e7e173ac7e898cbaad7857eaa29c00eb04be3ca78f21555ea8600e22e69a586",
+                  "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                  "payerBalance": "137337576000000000",
+                  "senderBalance": "0",
+                  "verificationGas": 50000,
+                  "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                  "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                  "stake": {
+                    "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                    "amountWei": "12000000000000000",
+                    "delaySeconds": "86400",
+                    "withdrawTime": "0",
+                    "staked": true
+                  },
+                  "uniswap": {
+                    "chainId": 1337,
+                    "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                    "contracts": {
+                      "stateView": {
+                        "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                        "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                        "bytes": 3531
+                      },
+                      "poolManager": {
+                        "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                        "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                        "bytes": 24009
+                      }
+                    },
+                    "slot0": {
+                      "sqrtPriceX96": "0",
+                      "tick": 0,
+                      "protocolFee": 0,
+                      "lpFee": 0,
+                      "initialized": false
+                    },
+                    "interaction": "StateView.getSlot0(bytes32)",
+                    "source": {
+                      "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                      "line": 33
+                    },
+                    "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+                  }
+                }
+              },
+              "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+            }
+          },
+          {
+            "path": "alt",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "accepted",
+              "expectedRule": null,
+              "prerequisite": {
+                "poolRead": true,
+                "staked": true,
+                "paymasterKind": "staked"
+              },
+              "reason": "alt staked external Uniswap storage read is allowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "rejected",
+              "errorClass": "rpc_error",
+              "code": -32603,
+              "message": "Internal error",
+              "data": null
+            },
+            "receipt": {
+              "state": "not_checked"
+            },
+            "admissionReport": {
+              "hash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+              "entry": null,
+              "admission": {
+                "id": 1810,
+                "txHash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+                "sender": "0xfbc9d48472ab11561b7d61d64b5095c336fe9b33",
+                "nonce": "0x0",
+                "nonceKeys": [
+                  "0x0"
+                ],
+                "at": 1793921916409,
+                "source": "rpc",
+                "outcome": "rejected",
+                "checks": [
+                  {
+                    "rule": "gas-limit",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "recent-root",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "prefix",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "structure",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "signature",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "simulation",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-061",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "execution",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "out-of-gas",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-011",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "create",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "storage",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "COD-010",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "entrypoint-access",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "out-of-gas",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-011",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "create",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "storage",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "COD-010",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "entrypoint-access",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "mempool",
+                    "verdict": "fail",
+                    "detail": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+                  }
+                ],
+                "frames": [
+                  {
+                    "mode": 1,
+                    "flags": 2,
+                    "target": null,
+                    "limits": {
+                      "execution": "0x7530",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 1,
+                    "flags": 1,
+                    "target": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x01"
+                  },
+                  {
+                    "mode": 2,
+                    "flags": 0,
+                    "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  }
+                ],
+                "frameStatuses": [
+                  "success",
+                  "success",
+                  "success"
+                ]
+              },
+              "events": [
+                {
+                  "seq": 5420,
+                  "txHash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+                  "at": 1793921917115,
+                  "kind": "rejected",
+                  "reason": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+                }
+              ]
+            },
+            "replay": {
+              "method": "eth_sendFrameTransaction",
+              "params": [
+                {
+                  "chainId": "0x539",
+                  "nonceKeys": [
+                    "0x0"
+                  ],
+                  "nonceSeq": "0x0",
+                  "sender": "0xfbc9d48472ab11561b7d61d64b5095c336fe9b33",
+                  "frames": [
+                    {
+                      "mode": 1,
+                      "flags": 2,
+                      "target": null,
+                      "limits": {
+                        "execution": "0x7530",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    },
+                    {
+                      "mode": 1,
+                      "flags": 1,
+                      "target": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                      "limits": {
+                        "execution": "0xc350",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x01"
+                    },
+                    {
+                      "mode": 2,
+                      "flags": 0,
+                      "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                      "limits": {
+                        "execution": "0xc350",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    }
+                  ],
+                  "signatures": [
+                    {
+                      "scheme": 1,
+                      "signer": "0x",
+                      "msg": "0x",
+                      "signature": "0x012972ef353e6cac5568403e09af72a8c28ae96c5d349a21a721da15b3d6afa4d5560cfc15d55e83f593d60c2881364a3b49fc947ae0b959a05fa6ff7dd069fd6a"
+                    }
+                  ],
+                  "fees": {
+                    "maxPriorityFeePerGas": "0x77359400",
+                    "maxFeePerGas": "0x77359400",
+                    "maxFeePerBlobGas": "0x0"
+                  },
+                  "blobVersionedHashes": [],
+                  "recentRootReferences": []
+                }
+              ],
+              "signedRaw": "0x06f8be820539c1808094fbc9d48472ab11561b7d61d64b5095c336fe9b33f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841012972ef353e6cac5568403e09af72a8c28ae96c5d349a21a721da15b3d6afa4d5560cfc15d55e83f593d60c2881364a3b49fc947ae0b959a05fa6ff7dd069fd6acb8477359400847735940080c0c0",
+              "metadata": {
+                "adapter": "workshop-hegota-0.0.1",
+                "sender": "0xfbc9d48472ab11561b7d61d64b5095c336fe9b33",
+                "nonce": "0",
+                "chainId": 1337,
+                "caseId": "uniswap-storage-s42-1-staked",
+                "pathId": "alt",
+                "mode": "LIVE",
+                "transaction": {
+                  "hash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+                  "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                  "payerBalance": "137337576000000000",
+                  "senderBalance": "0",
+                  "verificationGas": 50000,
+                  "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                  "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                  "stake": {
+                    "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                    "amountWei": "12000000000000000",
+                    "delaySeconds": "86400",
+                    "withdrawTime": "0",
+                    "staked": true
+                  },
+                  "uniswap": {
+                    "chainId": 1337,
+                    "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                    "contracts": {
+                      "stateView": {
+                        "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                        "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                        "bytes": 3531
+                      },
+                      "poolManager": {
+                        "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                        "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                        "bytes": 24009
+                      }
+                    },
+                    "slot0": {
+                      "sqrtPriceX96": "0",
+                      "tick": 0,
+                      "protocolFee": 0,
+                      "lpFee": 0,
+                      "initialized": false
+                    },
+                    "interaction": "StateView.getSlot0(bytes32)",
+                    "source": {
+                      "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                      "line": 33
+                    },
+                    "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+                  }
+                }
+              },
+              "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+            }
+          }
+        ],
+        "unexpected": false,
+        "shrink": null
+      },
+      "paths": [
+        {
+          "id": "public",
+          "expected": "rejected",
+          "expectedRule": "StorageReadNonSender",
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "public staked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "admission_policy",
+            "code": -32000,
+            "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+            "data": null
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "method": "eth_sendRawTransaction",
+          "params": [
+            "0x06f8be820539c1808094bc9eb97e196712fb1f6cc09f07a2d1d952415860f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b8410023b8a037947f9549e99d15139378e8525d57bdd8f1d50f5f9a7d340acd46f20829c2236db34a4b33cf43035dcbd6afb9a6b56785690c4363866148e2776c3cf0cb8477359400847735940080c0c0"
+          ],
+          "signedRaw": "0x06f8be820539c1808094bc9eb97e196712fb1f6cc09f07a2d1d952415860f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b8410023b8a037947f9549e99d15139378e8525d57bdd8f1d50f5f9a7d340acd46f20829c2236db34a4b33cf43035dcbd6afb9a6b56785690c4363866148e2776c3cf0cb8477359400847735940080c0c0",
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0xbc9eb97e196712fb1f6cc09f07a2d1d952415860",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "uniswap-storage-s42-1-staked",
+            "pathId": "public",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x7e7e173ac7e898cbaad7857eaa29c00eb04be3ca78f21555ea8600e22e69a586",
+              "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+              "payerBalance": "137337576000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+              "stake": {
+                "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                "amountWei": "12000000000000000",
+                "delaySeconds": "86400",
+                "withdrawTime": "0",
+                "staked": true
+              },
+              "uniswap": {
+                "chainId": 1337,
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                "contracts": {
+                  "stateView": {
+                    "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                    "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                    "bytes": 3531
+                  },
+                  "poolManager": {
+                    "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                    "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                    "bytes": 24009
+                  }
+                },
+                "slot0": {
+                  "sqrtPriceX96": "0",
+                  "tick": 0,
+                  "protocolFee": 0,
+                  "lpFee": 0,
+                  "initialized": false
+                },
+                "interaction": "StateView.getSlot0(bytes32)",
+                "source": {
+                  "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                  "line": 33
+                },
+                "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+              }
+            }
+          },
+          "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+        },
+        {
+          "id": "alt",
+          "expected": "accepted",
+          "expectedRule": null,
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "accepted",
+            "expectedRule": null,
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "alt staked external Uniswap storage read is allowed by the evidenced policy"
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "rpc_error",
+            "code": -32603,
+            "message": "Internal error",
+            "data": null
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "admissionReport": {
+            "hash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+            "entry": null,
+            "admission": {
+              "id": 1810,
+              "txHash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+              "sender": "0xfbc9d48472ab11561b7d61d64b5095c336fe9b33",
+              "nonce": "0x0",
+              "nonceKeys": [
+                "0x0"
+              ],
+              "at": 1793921916409,
+              "source": "rpc",
+              "outcome": "rejected",
+              "checks": [
+                {
+                  "rule": "gas-limit",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "recent-root",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "prefix",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "structure",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "signature",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "simulation",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-061",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "execution",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "out-of-gas",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-011",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "create",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "storage",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "COD-010",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "entrypoint-access",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "out-of-gas",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-011",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "create",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "storage",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "COD-010",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "entrypoint-access",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "mempool",
+                  "verdict": "fail",
+                  "detail": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+                }
+              ],
+              "frames": [
+                {
+                  "mode": 1,
+                  "flags": 2,
+                  "target": null,
+                  "limits": {
+                    "execution": "0x7530",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 1,
+                  "flags": 1,
+                  "target": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x01"
+                },
+                {
+                  "mode": 2,
+                  "flags": 0,
+                  "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                }
+              ],
+              "frameStatuses": [
+                "success",
+                "success",
+                "success"
+              ]
+            },
+            "events": [
+              {
+                "seq": 5420,
+                "txHash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+                "at": 1793921917115,
+                "kind": "rejected",
+                "reason": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+              }
+            ]
+          },
+          "method": "eth_sendFrameTransaction",
+          "params": [
+            {
+              "chainId": "0x539",
+              "nonceKeys": [
+                "0x0"
+              ],
+              "nonceSeq": "0x0",
+              "sender": "0xfbc9d48472ab11561b7d61d64b5095c336fe9b33",
+              "frames": [
+                {
+                  "mode": 1,
+                  "flags": 2,
+                  "target": null,
+                  "limits": {
+                    "execution": "0x7530",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 1,
+                  "flags": 1,
+                  "target": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x01"
+                },
+                {
+                  "mode": 2,
+                  "flags": 0,
+                  "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                }
+              ],
+              "signatures": [
+                {
+                  "scheme": 1,
+                  "signer": "0x",
+                  "msg": "0x",
+                  "signature": "0x012972ef353e6cac5568403e09af72a8c28ae96c5d349a21a721da15b3d6afa4d5560cfc15d55e83f593d60c2881364a3b49fc947ae0b959a05fa6ff7dd069fd6a"
+                }
+              ],
+              "fees": {
+                "maxPriorityFeePerGas": "0x77359400",
+                "maxFeePerGas": "0x77359400",
+                "maxFeePerBlobGas": "0x0"
+              },
+              "blobVersionedHashes": [],
+              "recentRootReferences": []
+            }
+          ],
+          "signedRaw": "0x06f8be820539c1808094fbc9d48472ab11561b7d61d64b5095c336fe9b33f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841012972ef353e6cac5568403e09af72a8c28ae96c5d349a21a721da15b3d6afa4d5560cfc15d55e83f593d60c2881364a3b49fc947ae0b959a05fa6ff7dd069fd6acb8477359400847735940080c0c0",
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0xfbc9d48472ab11561b7d61d64b5095c336fe9b33",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "uniswap-storage-s42-1-staked",
+            "pathId": "alt",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x72cdfcddf89518d02b368aaf05b3e6a10cc2cb05cf33ae3146b2f58742090ff2",
+              "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+              "payerBalance": "137337576000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+              "stake": {
+                "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                "amountWei": "12000000000000000",
+                "delaySeconds": "86400",
+                "withdrawTime": "0",
+                "staked": true
+              },
+              "uniswap": {
+                "chainId": 1337,
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+                "contracts": {
+                  "stateView": {
+                    "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                    "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+                    "bytes": 3531
+                  },
+                  "poolManager": {
+                    "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+                    "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8",
+                    "bytes": 24009
+                  }
+                },
+                "slot0": {
+                  "sqrtPriceX96": "0",
+                  "tick": 0,
+                  "protocolFee": 0,
+                  "lpFee": 0,
+                  "initialized": false
+                },
+                "interaction": "StateView.getSlot0(bytes32)",
+                "source": {
+                  "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+                  "line": 33
+                },
+                "trust": "Devnet deployments verified by pinned runtime hashes and StateView.poolManager binding; not a mainnet deployment attestation"
+              }
+            }
+          },
+          "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+        }
+      ]
+    },
+    {
+      "id": "uniswap-storage-s42-2-basic",
+      "family": "uniswap-storage",
+      "mutation": {
+        "generatorVersion": "framefuzz.semantic.v1",
+        "seed": 42,
+        "index": 2,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": false
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": false,
+          "configuration": {
+            "kind": "basic"
+          }
+        },
+        "parameter": {
+          "operation": "storage-and-stake",
+          "kind": "basic",
+          "poolRead": false,
+          "staked": false,
+          "region": "basic"
+        }
+      },
+      "ruleProvenance": {
+        "confidence": "VERIFIED",
+        "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+        "evidence": [
+          {
+            "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+            "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+          }
+        ],
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "sidecarVersion": "v4.1.1",
+        "deployedSidecarCommit": null,
+        "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "fixtureCodeHashes": {
+          "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+          "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+          "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+        }
+      },
+      "reproduction": {
+        "schema": "framefuzz.mutation-reproduction.v1",
+        "generatorVersion": "framefuzz.semantic.v1",
+        "definition": {
+          "version": "framefuzz.semantic.v1",
+          "suite": "uniswap-storage",
+          "seed": 42,
+          "count": 3,
+          "ruleModel": {
+            "version": "forshtat-1337-observed-2026-11-06.v1",
+            "chainId": 1337,
+            "provenance": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "gas": {
+              "maxTotal": 100000,
+              "senderExecution": 30000,
+              "signatureCost": 2800,
+              "observedPayerUsed": 7093,
+              "knownSufficientPayer": 50000
+            },
+            "storage": {
+              "public": {
+                "unstaked": false,
+                "staked": false,
+                "rejection": "StorageReadNonSender"
+              },
+              "alt": {
+                "unstaked": false,
+                "staked": true,
+                "rejection": "unstaked payer accessed"
+              }
+            }
+          },
+          "baseTemplate": {
+            "id": "workshop-sponsored-v1",
+            "model": {
+              "verificationGasLimit": 50000,
+              "poolRead": false
+            },
+            "setup": {
+              "staked": false,
+              "poolRead": false,
+              "configuration": {
+                "kind": "basic"
+              }
+            }
+          },
+          "operation": {
+            "type": "storage-and-stake"
+          },
+          "paths": [
+            "public",
+            "alt"
+          ]
+        },
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "variantIndex": 2,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": false
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": false,
+          "configuration": {
+            "kind": "basic"
+          }
+        },
+        "oracle": {
+          "public": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          },
+          "alt": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          }
+        },
+        "accountAllocation": "Allocate a fresh isolated sender per case/path, query pending nonce after checked setup, re-encode and re-sign; never replay stale signed bytes",
+        "cli": "node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --variant 2 --submit --allow-chain 1337",
+        "network": {
+          "chainId": 1337,
+          "endpoints": {
+            "public": "https://altmempool.forshtat.com/[redacted-path]",
+            "alt": "https://altmempool.forshtat.com/[redacted-path]"
+          },
+          "configFile": "examples/live/devnet.json",
+          "paymasters": {
+            "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+          },
+          "codeHashes": {
+            "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+            "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+            "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+          }
+        },
+        "rulesFile": "rules/devnet-1337.v1.json",
+        "decisions": [
+          {
+            "path": "public",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "expected": "accepted",
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+            },
+            "observed": {
+              "status": "accepted",
+              "hash": "0xe5ee5e32f028ba36cd52345c537056436b0aef0c998f15e8959b83b1fe2809fe",
+              "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+            },
+            "receipt": {
+              "state": "not_included_before_timeout"
+            },
+            "replay": {
+              "method": "eth_sendRawTransaction",
+              "params": [
+                "0x06f8be820539c18080948917053f53a926255588da7f5876a2fcae9473fff849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841010423e62a8f7c3b67c1ab3219e7101cd65e97450c61b4614afd768685468599954a012abe87ec4eade5e63e6a001d3a8a63c57c96147b211a64e2cc0febcbb415cb8477359400847735940080c0c0"
+              ],
+              "signedRaw": "0x06f8be820539c18080948917053f53a926255588da7f5876a2fcae9473fff849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841010423e62a8f7c3b67c1ab3219e7101cd65e97450c61b4614afd768685468599954a012abe87ec4eade5e63e6a001d3a8a63c57c96147b211a64e2cc0febcbb415cb8477359400847735940080c0c0",
+              "metadata": {
+                "adapter": "workshop-hegota-0.0.1",
+                "sender": "0x8917053f53a926255588da7f5876a2fcae9473ff",
+                "nonce": "0",
+                "chainId": 1337,
+                "caseId": "uniswap-storage-s42-2-basic",
+                "pathId": "public",
+                "mode": "LIVE",
+                "transaction": {
+                  "hash": "0xe5ee5e32f028ba36cd52345c537056436b0aef0c998f15e8959b83b1fe2809fe",
+                  "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                  "payerBalance": "149175156000000000",
+                  "senderBalance": "0",
+                  "verificationGas": 50000,
+                  "stake": {
+                    "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                    "amountWei": "0",
+                    "delaySeconds": "0",
+                    "withdrawTime": "0",
+                    "staked": false
+                  }
+                }
+              },
+              "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+            }
+          },
+          {
+            "path": "alt",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "expected": "accepted",
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+            },
+            "observed": {
+              "status": "rejected",
+              "errorClass": "rpc_error",
+              "code": -32603,
+              "message": "Internal error",
+              "data": null
+            },
+            "receipt": {
+              "state": "not_checked"
+            },
+            "admissionReport": {
+              "hash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+              "entry": null,
+              "admission": {
+                "id": 1811,
+                "txHash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+                "sender": "0xda07089ecdf7db11304ecf8c7e3856ac0c780e0d",
+                "nonce": "0x0",
+                "nonceKeys": [
+                  "0x0"
+                ],
+                "at": 1793921929004,
+                "source": "rpc",
+                "outcome": "rejected",
+                "checks": [
+                  {
+                    "rule": "gas-limit",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "recent-root",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "prefix",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "structure",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "signature",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "simulation",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-061",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "execution",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "out-of-gas",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-011",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "create",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "storage",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "COD-010",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "entrypoint-access",
+                    "frameIndex": 0,
+                    "entity": "sender",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "trace-alignment",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "out-of-gas",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "OP-011",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "create",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "storage",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "COD-010",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "entrypoint-access",
+                    "frameIndex": 1,
+                    "entity": "payer",
+                    "verdict": "pass"
+                  },
+                  {
+                    "rule": "mempool",
+                    "verdict": "fail",
+                    "detail": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+                  }
+                ],
+                "frames": [
+                  {
+                    "mode": 1,
+                    "flags": 2,
+                    "target": null,
+                    "limits": {
+                      "execution": "0x7530",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 1,
+                    "flags": 1,
+                    "target": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 2,
+                    "flags": 0,
+                    "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  }
+                ],
+                "frameStatuses": [
+                  "success",
+                  "success",
+                  "success"
+                ]
+              },
+              "events": [
+                {
+                  "seq": 5421,
+                  "txHash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+                  "at": 1793921929550,
+                  "kind": "rejected",
+                  "reason": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+                }
+              ]
+            },
+            "replay": {
+              "method": "eth_sendFrameTransaction",
+              "params": [
+                {
+                  "chainId": "0x539",
+                  "nonceKeys": [
+                    "0x0"
+                  ],
+                  "nonceSeq": "0x0",
+                  "sender": "0xda07089ecdf7db11304ecf8c7e3856ac0c780e0d",
+                  "frames": [
+                    {
+                      "mode": 1,
+                      "flags": 2,
+                      "target": null,
+                      "limits": {
+                        "execution": "0x7530",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    },
+                    {
+                      "mode": 1,
+                      "flags": 1,
+                      "target": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                      "limits": {
+                        "execution": "0xc350",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    },
+                    {
+                      "mode": 2,
+                      "flags": 0,
+                      "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                      "limits": {
+                        "execution": "0xc350",
+                        "state": "0x0"
+                      },
+                      "value": "0x0",
+                      "data": "0x"
+                    }
+                  ],
+                  "signatures": [
+                    {
+                      "scheme": 1,
+                      "signer": "0x",
+                      "msg": "0x",
+                      "signature": "0x00e72bddcd265ea5769581fb8261a9f68dccfc84579af13530cf47df821253e53227cb33a2a2e806e6592e413588916e1dc1d6a8cea6ff12d174c7d281929c7e86"
+                    }
+                  ],
+                  "fees": {
+                    "maxPriorityFeePerGas": "0x77359400",
+                    "maxFeePerGas": "0x77359400",
+                    "maxFeePerBlobGas": "0x0"
+                  },
+                  "blobVersionedHashes": [],
+                  "recentRootReferences": []
+                }
+              ],
+              "signedRaw": "0x06f8be820539c1808094da07089ecdf7db11304ecf8c7e3856ac0c780e0df849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84100e72bddcd265ea5769581fb8261a9f68dccfc84579af13530cf47df821253e53227cb33a2a2e806e6592e413588916e1dc1d6a8cea6ff12d174c7d281929c7e86cb8477359400847735940080c0c0",
+              "metadata": {
+                "adapter": "workshop-hegota-0.0.1",
+                "sender": "0xda07089ecdf7db11304ecf8c7e3856ac0c780e0d",
+                "nonce": "0",
+                "chainId": 1337,
+                "caseId": "uniswap-storage-s42-2-basic",
+                "pathId": "alt",
+                "mode": "LIVE",
+                "transaction": {
+                  "hash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+                  "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                  "payerBalance": "149175156000000000",
+                  "senderBalance": "0",
+                  "verificationGas": 50000,
+                  "stake": {
+                    "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                    "amountWei": "0",
+                    "delaySeconds": "0",
+                    "withdrawTime": "0",
+                    "staked": false
+                  }
+                }
+              },
+              "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+            }
+          }
+        ],
+        "unexpected": false,
+        "shrink": null
+      },
+      "paths": [
+        {
+          "id": "public",
+          "expected": "accepted",
+          "expectedRule": null,
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          },
+          "observed": {
+            "status": "accepted",
+            "hash": "0xe5ee5e32f028ba36cd52345c537056436b0aef0c998f15e8959b83b1fe2809fe",
+            "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+          },
+          "receipt": {
+            "state": "not_included_before_timeout"
+          },
+          "method": "eth_sendRawTransaction",
+          "params": [
+            "0x06f8be820539c18080948917053f53a926255588da7f5876a2fcae9473fff849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841010423e62a8f7c3b67c1ab3219e7101cd65e97450c61b4614afd768685468599954a012abe87ec4eade5e63e6a001d3a8a63c57c96147b211a64e2cc0febcbb415cb8477359400847735940080c0c0"
+          ],
+          "signedRaw": "0x06f8be820539c18080948917053f53a926255588da7f5876a2fcae9473fff849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b841010423e62a8f7c3b67c1ab3219e7101cd65e97450c61b4614afd768685468599954a012abe87ec4eade5e63e6a001d3a8a63c57c96147b211a64e2cc0febcbb415cb8477359400847735940080c0c0",
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0x8917053f53a926255588da7f5876a2fcae9473ff",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "uniswap-storage-s42-2-basic",
+            "pathId": "public",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0xe5ee5e32f028ba36cd52345c537056436b0aef0c998f15e8959b83b1fe2809fe",
+              "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+              "payerBalance": "149175156000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stake": {
+                "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                "amountWei": "0",
+                "delaySeconds": "0",
+                "withdrawTime": "0",
+                "staked": false
+              }
+            }
+          },
+          "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+        },
+        {
+          "id": "alt",
+          "expected": "accepted",
+          "expectedRule": null,
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "rpc_error",
+            "code": -32603,
+            "message": "Internal error",
+            "data": null
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "admissionReport": {
+            "hash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+            "entry": null,
+            "admission": {
+              "id": 1811,
+              "txHash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+              "sender": "0xda07089ecdf7db11304ecf8c7e3856ac0c780e0d",
+              "nonce": "0x0",
+              "nonceKeys": [
+                "0x0"
+              ],
+              "at": 1793921929004,
+              "source": "rpc",
+              "outcome": "rejected",
+              "checks": [
+                {
+                  "rule": "gas-limit",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "recent-root",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "prefix",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "structure",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "signature",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "simulation",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-061",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "execution",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "out-of-gas",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-011",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "create",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "storage",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "COD-010",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "entrypoint-access",
+                  "frameIndex": 0,
+                  "entity": "sender",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "trace-alignment",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "out-of-gas",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "OP-011",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "create",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "storage",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "COD-010",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "entrypoint-access",
+                  "frameIndex": 1,
+                  "entity": "payer",
+                  "verdict": "pass"
+                },
+                {
+                  "rule": "mempool",
+                  "verdict": "fail",
+                  "detail": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+                }
+              ],
+              "frames": [
+                {
+                  "mode": 1,
+                  "flags": 2,
+                  "target": null,
+                  "limits": {
+                    "execution": "0x7530",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 1,
+                  "flags": 1,
+                  "target": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 2,
+                  "flags": 0,
+                  "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                }
+              ],
+              "frameStatuses": [
+                "success",
+                "success",
+                "success"
+              ]
+            },
+            "events": [
+              {
+                "seq": 5421,
+                "txHash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+                "at": 1793921929550,
+                "kind": "rejected",
+                "reason": "IO error: No space left on deviceWhile appending to file: /usr/app/data/userOps/000085.log: No space left on device"
+              }
+            ]
+          },
+          "method": "eth_sendFrameTransaction",
+          "params": [
+            {
+              "chainId": "0x539",
+              "nonceKeys": [
+                "0x0"
+              ],
+              "nonceSeq": "0x0",
+              "sender": "0xda07089ecdf7db11304ecf8c7e3856ac0c780e0d",
+              "frames": [
+                {
+                  "mode": 1,
+                  "flags": 2,
+                  "target": null,
+                  "limits": {
+                    "execution": "0x7530",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 1,
+                  "flags": 1,
+                  "target": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                },
+                {
+                  "mode": 2,
+                  "flags": 0,
+                  "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                  "limits": {
+                    "execution": "0xc350",
+                    "state": "0x0"
+                  },
+                  "value": "0x0",
+                  "data": "0x"
+                }
+              ],
+              "signatures": [
+                {
+                  "scheme": 1,
+                  "signer": "0x",
+                  "msg": "0x",
+                  "signature": "0x00e72bddcd265ea5769581fb8261a9f68dccfc84579af13530cf47df821253e53227cb33a2a2e806e6592e413588916e1dc1d6a8cea6ff12d174c7d281929c7e86"
+                }
+              ],
+              "fees": {
+                "maxPriorityFeePerGas": "0x77359400",
+                "maxFeePerGas": "0x77359400",
+                "maxFeePerBlobGas": "0x0"
+              },
+              "blobVersionedHashes": [],
+              "recentRootReferences": []
+            }
+          ],
+          "signedRaw": "0x06f8be820539c1808094da07089ecdf7db11304ecf8c7e3856ac0c780e0df849ca010280c4827530808080de010194346408e66ff4446c5d5f1ab0155ce7e3d319ea30c482c350808080de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84100e72bddcd265ea5769581fb8261a9f68dccfc84579af13530cf47df821253e53227cb33a2a2e806e6592e413588916e1dc1d6a8cea6ff12d174c7d281929c7e86cb8477359400847735940080c0c0",
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0xda07089ecdf7db11304ecf8c7e3856ac0c780e0d",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "uniswap-storage-s42-2-basic",
+            "pathId": "alt",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0xd5a0fb35e530dc7b945bdc947c0a302c4eb11ce91e05090467f2aa07ba4d7cfc",
+              "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+              "payerBalance": "149175156000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stake": {
+                "registry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+                "amountWei": "0",
+                "delaySeconds": "0",
+                "withdrawTime": "0",
+                "staked": false
+              }
+            }
+          },
+          "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+        }
+      ]
+    }
+  ]
+}

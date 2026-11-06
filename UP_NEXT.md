@@ -1,5 +1,10 @@
 # Up next
 
+## Active — final submission polish
+Finish README/product copy, `docs/LIVE_EVIDENCE.md` generated from committed captures, four-minute `docs/DEMO_SCRIPT.md`, checklist, project description and recording guidance. Test `saved-demo` offline mode and current Community Cases UI; run all tests and leave clean coherent commits. Preserve successful historical LIVE evidence unchanged.
+
+External blocker: chain1337 sidecar disk full. Do not retry broadcasts until the operator confirms recovery. The generated Uniswap campaign has4/6 matching decisions,2 infrastructure failures and0 new inclusions. Do not generalize historical successful receipts into a new campaign success. Sponsor feedback form is human-required and not submitted. Push/public submission is not authorized by local commit instructions.
+
 ## Registry completed — current handoff
 The real Arkiv publish → fresh-process query → retrieve → dashboard import → unsigned replay preview cycle succeeded. Read `arkiv/how-you-use-arkiv.md` and `evidence/arkiv/2026-11-06/` for exact identity/receipt and commands. All66 tests pass. No remaining implementation blocker for the requested registry MVP.
 

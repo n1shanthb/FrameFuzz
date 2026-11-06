@@ -7,6 +7,11 @@
   "recipient": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
   "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
   "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+  "poolManager": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+  "uniswapCodeHashes": {
+    "stateView": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+    "poolManager": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8"
+  },
   "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
   "paymasters": {
     "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",

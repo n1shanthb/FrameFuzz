@@ -50,6 +50,21 @@ function outcome(path){
     receipt:{state,status:quantity(path.receipt?.status),blockNumber:quantity(path.receipt?.blockNumber)}};
 }
 
+// Optional v1 protocol metadata. It is descriptive data, never runner configuration.
+function uniswapDetails(report,original){
+  const u=report.uniswap,transaction=original.paths.find(p=>p.id==='alt')?.metadata?.transaction;
+  assert(u&&transaction?.stake,'Uniswap live contract and stake evidence required');
+  const contracts={};for(const id of ['stateView','poolManager']){const c=u.contracts?.[id];assert(ADDRESS.test(c?.address)&&HASH.test(c?.codeHash),'Uniswap contract identity');contracts[id]={address:c.address,codeHash:c.codeHash};}
+  assert(HASH.test(u.poolId)&&ADDRESS.test(transaction.payer),'Uniswap pool/payer identity');
+  const payerCodeHash=transaction.payerCodeHash??original.reproduction?.network?.codeHashes?.[original.reproduction?.setup?.configuration?.kind];assert(HASH.test(payerCodeHash),'paymaster code reference');
+  const s=transaction.stake;assert(ADDRESS.test(s.registry)&&[s.amountWei,s.delaySeconds,s.withdrawTime].every(x=>typeof x==='string'&&/^\d{1,40}$/.test(x))&&typeof s.staked==='boolean','stake summary');
+  const slot=u.slot0;assert(slot&&/^\d{1,60}$/.test(slot.sqrtPriceX96)&&[slot.tick,slot.protocolFee,slot.lpFee].every(Number.isSafeInteger)&&typeof slot.initialized==='boolean','pool state');
+  return {protocol:'uniswap-v4',chainId:1337,poolId:u.poolId,contracts,slot0:{sqrtPriceX96:slot.sqrtPriceX96,tick:slot.tick,protocolFee:slot.protocolFee,lpFee:slot.lpFee,initialized:slot.initialized},
+    paymaster:{address:transaction.payer,codeHash:payerCodeHash,stake:{registry:s.registry,amountWei:s.amountWei,delaySeconds:s.delaySeconds,withdrawTime:s.withdrawTime,staked:s.staked}},
+    policies:{public:{ruleId:'StorageReadNonSender',expected:original.paths.find(p=>p.id==='public').oracle.expected},alt:{ruleId:'STORAGE_ACCESS_STAKE_REQUIRED',expected:original.paths.find(p=>p.id==='alt').oracle.expected}},
+    source:{file:'vendor/paymaster/ReserveReadingPaymaster.sol',line:33},limitation:'Devnet runtime hash/binding checks and publisher claims; zero pool state is not swap execution; deployed sidecar commit is not attested'};
+}
+
 /** @returns {import('./types.js').RegressionCase} */
 export function buildRegressionCase({report,caseIndex=0,publisher,expiresAtBlock,expirationBlocks,evidenceDigest}){
   assert(ADDRESS.test(publisher),'publisher wallet');assert(/^[1-9]\d*$/.test(String(expiresAtBlock)),'expiry block');
@@ -67,12 +82,13 @@ export function buildRegressionCase({report,caseIndex=0,publisher,expiresAtBlock
     reproduction:{schema:'framefuzz.mutation-reproduction.v1',generatorVersion:GENERATOR_VERSION,definition,definitionDigest:digest(definition),variantIndex:variant.index,baseTemplateId:variant.baseTemplateId,unsignedModel:variant.unsignedModel,setup:variant.setup},
     evidence:{classification,sha256:evidenceDigest??sha256(report),scope:'offchain-full-evidence',caseId:variant.id},publisher,
     expiration:{blocks:expirationBlocks,expiresAtBlock:String(expiresAtBlock)}};
+  if(definition.suite==='uniswap-storage'&&report.uniswap)record.uniswap=uniswapDetails(report,original);
   record.contentDigest=contentDigest(record);validateRegressionCase(record);return record;
 }
 
 export function validateRegressionCase(record){
   assert(Buffer.byteLength(JSON.stringify(record))<=32768,'payload exceeds 32 KiB');
-  keys(record,['schemaVersion','caseVersion','suite','mutationFamily','ruleId','implementationVersion','targetNetwork','seed','semanticParameters','originalOutcomes','reproduction','evidence','publisher','expiration','contentDigest']);
+  keys(record,['schemaVersion','caseVersion','suite','mutationFamily','ruleId','implementationVersion','targetNetwork','seed','semanticParameters','originalOutcomes','reproduction','evidence','publisher','expiration','contentDigest','uniswap']);
   assert(record.schemaVersion===REGISTRY_SCHEMA&&record.caseVersion===1,'unsupported schema/case version');
   assert(ADDRESS.test(record.publisher)&&SHA.test(record.contentDigest)&&contentDigest(record)===record.contentDigest,'publisher/content digest');
   keys(record.targetNetwork,['chainId','executionCommit','sidecarVersion','sidecarCommit']);assert(record.targetNetwork.chainId===1337,'target network must be EIP-8141 devnet, never Arkiv');
@@ -93,6 +109,12 @@ export function validateRegressionCase(record){
     assert((o.returnedHash===null||HASH.test(o.returnedHash))&&(o.computedHash===null||HASH.test(o.computedHash)),'transaction hash');
     keys(o.receipt,['state','status','blockNumber']);assert(tag(o.receipt.state),'receipt state');
     for(const field of ['status','blockNumber'])assert(o.receipt[field]===null||/^0x[\da-f]{1,32}$/i.test(o.receipt[field]),'receipt quantity');
+  }
+  if(record.uniswap){
+    assert(record.suite==='uniswap-storage','protocol suite');const u=record.uniswap;
+    const normalized=uniswapDetails({uniswap:u},{paths:['public','alt'].map(id=>({id,oracle:{expected:record.originalOutcomes[id].expected},metadata:{transaction:{payer:u.paymaster?.address,payerCodeHash:u.paymaster?.codeHash,stake:u.paymaster?.stake}}}))});
+    assert(stableJSON(u)===stableJSON(normalized),'untrusted Uniswap metadata/claims');
+    assert(u.paymaster.stake.staked===reproduction.setup.staked&&BigInt(u.slot0.sqrtPriceX96)!==0n===u.slot0.initialized,'Uniswap setup/state mismatch');
   }
   return record;
 }

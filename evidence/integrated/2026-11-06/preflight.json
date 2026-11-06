@@ -1,0 +1,49 @@
+{
+  "chainId": "0x539",
+  "executionClient": "ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383/x86_64-unknown-linux-gnu/rustc-v1.93.1",
+  "sidecar": {
+    "protocolVersion": 1,
+    "chainId": 1337,
+    "version": "v4.1.1",
+    "commit": "",
+    "bundlingMode": "auto",
+    "p2pEnabled": true,
+    "latestSeq": 5418,
+    "oldestSeq": 1,
+    "historyCapacity": 10000,
+    "bootId": "64ff763ea9e08373",
+    "minInclusionDenominator": 10,
+    "throttlingSlack": 10,
+    "banSlack": 50
+  },
+  "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+  "poolManager": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+  "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+  "contracts": {
+    "stateView": {
+      "address": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+      "bytes": 3531,
+      "codeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe"
+    },
+    "poolManager": {
+      "address": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+      "bytes": 24009,
+      "codeHash": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8"
+    },
+    "basic": {
+      "address": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+      "bytes": 844,
+      "codeHash": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69"
+    },
+    "staked": {
+      "address": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+      "bytes": 1760,
+      "codeHash": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac"
+    },
+    "unstaked": {
+      "address": "0x3d66c53105be7930fd89571157a41137c12b003f",
+      "bytes": 1760,
+      "codeHash": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+    }
+  }
+}

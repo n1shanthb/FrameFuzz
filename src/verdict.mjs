@@ -20,7 +20,7 @@ export function describeRpcError(error) {
     // Both real gateways wrap policy failures in "Invalid params" / -32602.
     // Recognize only concrete, source-reviewed policy diagnostics before that wrapper.
     const policy = /validation-prefix simulation failed:\s*StorageReadNonSender\b|prefix gas budget \(frames \+ sig cost\) exceeds MAX_VERIFY_GAS|validation prefix execution gas sum \d+ \+ signature-verification cost \d+ = \d+ exceeds MAX_VERIFY_GAS/i.test(text);
-    const errorClass = policy ? 'admission_policy' : error.code === -32601 ? 'rpc_method' : error.code === -32602 || /invalid params|malformed|rlp|invalid signature|invalid sender|decode|encoding/i.test(text) ? 'malformed_transaction'
+    const errorClass = /no space left on device|disk full|rocksdb.*IO error/i.test(text)?'gateway_infrastructure':policy ? 'admission_policy' : error.code === -32601 ? 'rpc_method' : error.code === -32602 || /invalid params|malformed|rlp|invalid signature|invalid sender|decode|encoding/i.test(text) ? 'malformed_transaction'
       : /nonce|already known|replacement transaction|underpriced/i.test(text) ? 'nonce_or_duplicate'
       : /insufficient funds|insufficient balance|balance too low/i.test(text) ? 'funding'
       : error.code === -32603 || error.code === -32700 ? 'rpc_error' : 'unclassified_rejection';
