@@ -1,6 +1,20 @@
 # Step 2D — canonical versus alternative endpoint correction
 
-Read-only/offline checkpoint, November 7, 2026 IST. No broadcast, transfer, deployment, Arkiv write, paid model call or Git push occurred. Official method reference: [Alt Mempool RPC methods](https://docs.altmempool.wtf/reference/rpc-methods/).
+Prepared read-only/offline and subsequently executed once after explicit approval on November 7, 2026 IST. No retry, transfer, deployment, Arkiv write, paid model call or Git push occurred. Official method reference: [Alt Mempool RPC methods](https://docs.altmempool.wtf/reference/rpc-methods/).
+
+## Executed result
+
+Candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` was submitted once per approved path. Both calls were initiated at `2026-11-06T21:57:55.513Z`, with the alternative invocation created first in code and canonical immediately afterward without awaiting.
+
+- Canonical ethrex returned the exact hash at `21:57:55.765Z`. It was included successfully in block `0x243f`; the outer receipt and both frame receipts have status `0x1`.
+- Skandha completed at `21:57:56.510Z` with `-32500 Invalid Transaction: Nonce mismatch: expected 2, got 1`.
+- `skandha_explorer_getTransaction` independently recovered admission ID 1593, source `rpc`, outcome `rejected`. Gas-limit, recent-root, prefix, structure and signature checks passed. Simulation failed on the same nonce mismatch; subsequent policy checks and both frames were not run.
+
+Canonical completed/included quickly enough that the shared execution state advanced to nonce 2 before Skandha simulation. The alternative observation is therefore `REJECTED_NONCE_RACE`, and the comparison is `INCONCLUSIVE_SHARED_STATE_RACE`—not a policy discrepancy and not a malformed/signature failure. No retry was attempted.
+
+Actual canonical gas was 20,102 at 2 gwei: `40204000000000` wei (0.000040204 test ETH), below the approved maximum. Post-state balance is `419592000000000` wei (0.000419592), pending nonce 2, code `0x`.
+
+Raw requests, responses, timestamps, canonical receipt and sidecar report: `evidence/admission/2026-11-07/self-relay-corrected-comparison.json`.
 
 ## Verified topology and capabilities
 
@@ -40,7 +54,7 @@ The candidate fits the current balance and proposed ceiling. It was signed offli
 
 ## One-shot approval packet
 
-Awaiting approval for exactly one request per path using the unchanged hash above:
+Historical packet, approved and executed exactly once:
 
 1. Initiate alternative first at `https://altmempool.forshtat.com/rpc/` with `eth_sendFrameTransaction` and the candidate's structured signed object.
 2. Immediately initiate canonical at `https://altmempool.forshtat.com` with `eth_sendRawTransaction` and the candidate's signed type-`0x06` bytes, without waiting for the alternative response.

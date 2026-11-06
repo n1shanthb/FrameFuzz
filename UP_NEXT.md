@@ -1,4 +1,11 @@
-# Up next — after admission Step 2D
+# Up next — after executed admission Step 2D
+
+1. Preserve the nonce-1 evidence and never resubmit candidate `0xc05703…ba510`.
+2. Do not interpret Skandha's nonce-race rejection as a policy difference; signature/structure passed and policy checks were skipped.
+3. Before another comparison, design truly isolated state (separate funded senders with semantically equivalent independently signed transactions) or an operator-supported admission-only mechanism that cannot race canonical inclusion.
+4. Any nonce-2 candidate, funding decision or broadcast requires a fresh exact packet and approval.
+
+# Previous up next — after admission Step 2D
 
 1. STOP before submission. Candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` awaits the exact approval in `docs/ADMISSION_STEP2D.md`.
 2. On approval, rerun the read-only/offline Step 2D preparation. Stop if nonce is not 1, balance is insufficient, either client role changes, sidecar health fails, or the hash changes.

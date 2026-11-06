@@ -1,4 +1,8 @@
-# Current status — admission Step 2D corrected routing
+# Current status — admission Step 2D executed corrected comparison
+
+Corrected nonce-1 candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` was submitted once per path after explicit approval. Canonical ethrex accepted and included it in block `0x243f`; outer and both frame receipts succeeded. Skandha recorded admission ID 1593 but rejected during simulation with `Nonce mismatch: expected 2, got 1` after canonical advanced shared state. Classification: `REJECTED_NONCE_RACE` / `INCONCLUSIVE_SHARED_STATE_RACE`, not a policy discrepancy. Actual spend 0.000040204 test ETH; post-state balance 0.000419592, nonce 2. No retries. Evidence: `evidence/admission/2026-11-07/self-relay-corrected-comparison.json`.
+
+# Previous status — admission Step 2D corrected routing
 
 Read-only probes confirmed canonical ethrex at `https://altmempool.forshtat.com` and alternative Skandha at `https://altmempool.forshtat.com/rpc/`, both chain 1337. Skandha config/info are healthy; explorer lookup for nonce-0 hash `0xd4d612…ba226` returned `Frame transaction not found`, so no alternative verdict is claimed. Identity-based routing and reversed-endpoint tests are implemented. Fresh offline nonce-1 candidate: `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510`; balance 0.000459796 test ETH, signed maximum spend 0.000206508, proposed ceiling 0.00021. Broadcasts 0. See `docs/ADMISSION_STEP2D.md`.
 

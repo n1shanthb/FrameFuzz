@@ -1,4 +1,8 @@
-# Build status — admission Step 2D
+# Build status — executed admission Step 2D
+
+Corrected routing was exercised live. Canonical accepted and successfully included nonce-1 hash `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510`. Skandha produced a genuine explorer admission record but rejected simulation because canonical had advanced shared nonce to 2. Honest result: `INCONCLUSIVE_SHARED_STATE_RACE`, not a policy discrepancy. Both execution frames succeeded; actual spend was 0.000040204 test ETH. No retry.
+
+# Previous build status — admission Step 2D
 
 Canonical/alternative routing is corrected and identity-based. Root ethrex receives raw type-0x06 transactions; `/rpc/` Skandha receives structured frames. Read-only Skandha config/info succeeded; the old hash was absent from its explorer. Fresh funded nonce-1 candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` is prepared offline under a proposed 0.00021 test-ETH ceiling. Routing/signing/Playground focused tests pass 8/8; full suite passes 224/224. No broadcasts or other writes.
 
