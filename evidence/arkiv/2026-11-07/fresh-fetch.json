@@ -1,0 +1,14 @@
+{
+  "key": "0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1",
+  "owner": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+  "creator": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+  "expiresAtBlock": "345303",
+  "contentDigest": "0f7f014559fbfb6ea828820cc954401f1562937b66c2fe24360959dcb5196b25",
+  "verification": {
+    "schema": "VALID",
+    "digest": "VALID",
+    "creatorBinding": "VALID",
+    "expiry": "ACTIVE_AT_BLOCK_302521",
+    "replayAllowed": true
+  }
+}
