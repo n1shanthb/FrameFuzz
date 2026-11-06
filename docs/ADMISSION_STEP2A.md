@@ -22,21 +22,21 @@ Public request: `POST https://altmempool.forshtat.com/rpc`, `eth_sendRawTransact
 
 ## D–E. Wallet, transactions and maximum spend
 
-Read-only chain 1337 checks: public `skandha/v4.1.1-`, alternative `ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383`, both at block `0x226a` when prepared. Sender code `0x`, balance **0 wei**, pending nonce **0**. `eth_gasPrice` reported 8 wei; the signed candidate caps at **2 gwei**. `FRAMEFUZZ_DEPLOYER_KEY` is absent in this process, but no deployer is needed on the EOA route. A separate funding wallet with chain-1337 test ETH is not yet configured or identified; its balance and nonce remain unknown. Do not use the separate Arkiv chain-7794095 wallet.
+Read-only chain 1337 checks: public `skandha/v4.1.1-`, alternative `ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383`. Sender code `0x`, balance **0 wei**, pending nonce **0**. `eth_gasPrice` reported 8 wei; the signed candidate caps at **2 gwei**. `FRAMEFUZZ_DEPLOYER_KEY` is absent, but no deployer is needed. Step 2B resolved the official shared genesis account as the exact funding source; see `docs/ADMISSION_STEP2B.md`. The separate Arkiv chain-7794095 balance cannot fund this chain.
 
 | Planned write | From → to | Value | Maximum fee exposure |
 | --- | --- | ---: | ---: |
-| EOA funding transfer, nonce unresolved | operator testnet funding wallet → `0x366E6203603C39Eec1e75b3be6f078911447f235` | 0.0005 test ETH | 21,000 gas × 2 gwei = 0.000042 test ETH, only if recipient remains code-empty |
+| EOA funding transfer | official shared genesis account → `0x366E6203603C39Eec1e75b3be6f078911447f235` | 0.0005 test ETH | 250,000 gas × 0.002 gwei = 0.0000005 test ETH; live estimate was 207,391 gas |
 | Public admission | signed sender → itself; zero-value SENDER frame | 0 | Pinned conservative 103,254 gas × 2 gwei = 0.000206508 test ETH; hard allocation 0.0005 test ETH |
 | Alternative admission of the **same bytes** | same sender, nonce, hash | 0 | No second execution fee if the same transaction is included once; separate RPC response still required |
 
-**Operator funding wallet balance needed: at least 0.000542 test ETH.** This is 0.0005 transferred to the sender plus a 0.000042 transfer-gas ceiling. The 0.0005 is prefunding, not immediately spent gas; any remainder remains at the sender. Total economic exposure is capped at 0.000542 test ETH for this packet. There are **zero deployments**, zero constructor values, and no paymaster stake/funding. The prior 0.152012 test ETH proposal is superseded for this EOA experiment. The theoretical frame fee estimate from the current envelope is lower than the sender funding allocation; runtime fee calculation still needs confirmation after funding. Do not increase the signed fee cap automatically.
+**Funding-source debit cap: 0.0005005 test ETH.** This is 0.0005 transferred principal plus a 0.0000005 gas ceiling. The 0.0005 is prefunding, not immediately spent gas; any remainder remains at the sender. There are **zero deployments**, zero constructor values, and no paymaster stake/funding. The prior 0.152012 and provisional 0.000542 proposals are superseded. The theoretical frame fee estimate is lower than the sender allocation; runtime fee calculation still needs confirmation after funding.
 
 ## F–G. Blockers and final one-shot authorization packet
 
-Current blockers: sender has zero balance; operator funding wallet address/key/balance/nonce are unresolved; execution and sidecar runtime admission of this exact candidate are unverified. Funding changes the network state, so recheck chain ID, sender code/balance/pending nonce, funding source balance/nonce, client versions and head immediately before writing. If the EOA nonce or code changed, discard and re-sign a new candidate. If the signed fee cap is incompatible with current rules, stop and prepare a new packet. Public judges must never access the funding key.
+Current blockers: sender has zero balance; `FRAMEFUZZ_EF_FUNDING_KEY` is not configured locally; execution and sidecar runtime admission of this exact candidate are unverified. The official shared source address, balance and nonce are resolved, but its nonce is race-prone. Funding changes network state, so recheck chain ID, sender code/balance/pending nonce, funding source balance/nonce, client versions and head immediately before writing. If sender nonce or code changed, discard and re-sign the frame candidate.
 
-The smallest eventual approval request is: **on EF chain 1337 only, one funding transfer of 0.0005 test ETH to the sender above, gas ≤21,000 at ≤2 gwei; then submit the exact locally saved signed hash once through public raw RPC and once through alternative structured RPC; query receipts; no deployment, no extra variant, no retry, no Arkiv write; maximum 0.000542 test ETH moved from the funding wallet.** This is a proposal, not authorization. Exact source wallet, its nonce and balance, and fresh pre-write state must be filled before any approval can execute it safely.
+The funding transfer is now a separate Step 2B approval packet. It must complete and be verified before the two admission submissions are proposed for execution.
 
 ## Verification
 

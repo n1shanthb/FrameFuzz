@@ -1,4 +1,8 @@
-# Current status — admission Step 2A self-funded EOA preparation
+# Current status — admission Step 2B EF funding preparation
+
+The existing sender was verified separately on EF chain 1337 (0 wei, nonce 0, code empty) and Arkiv Rabdi 7794095 (10 tGLM). Rabdi funds do not fund EF. Official workshop faucet is enabled but fixed at 1 test ETH, so the exact 0.0005 plan uses the official published shared genesis address. Read-only packet: source balance `899851656336000578878583` wei, latest/pending nonce 145, transfer estimate 207,391 gas, cap 250,000 gas at 0.002 gwei, maximum source debit 0.0005005 test ETH. Approval digest `60b68b599ba011ad2c6b4f15e21e9b5776a466b8c0709d6cb8d2e49bbf311efa`. `FRAMEFUZZ_EF_FUNDING_KEY` is not configured; no transaction was signed or sent. See `docs/ADMISSION_STEP2B.md`.
+
+# Previous status — admission Step 2A self-funded EOA preparation
 
 Pinned ethrex source and sidecar documentation support a no-paymaster EOA `self_verify` prefix. A fresh type-0x06 transaction was signed locally using the pinned workshop codec and an ignored devnet-only `FRAMEFUZZ_SENDER_KEY`; signed bytes and request payloads are in ignored `runs/step2a-self-relay-candidate.json`. Transaction hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226`; sender/payer `0x366E6203603C39Eec1e75b3be6f078911447f235`, code empty, balance 0, nonce 0. This is an **infrastructure milestone**, with no pasted-source participation or fresh admission verdict. No deployment, funding, broadcast, paid call, Arkiv write or push. Full prerequisites and the smaller 0.000542 test ETH proposed packet: `docs/ADMISSION_STEP2A.md`.
 
