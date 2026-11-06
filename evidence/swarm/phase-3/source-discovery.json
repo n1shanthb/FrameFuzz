@@ -1,0 +1,296 @@
+[
+  {
+    "url": "https://raw.githubusercontent.com/lambdaclass/ethrex/9aa3645d795945c64400f41a70aace0edfa7f383/crates/common/types/transaction.rs",
+    "status": 200,
+    "sha256": "8c657bde609a6bec61986e774dd2fd90526045eaaa35b8c5afc58f5b43f8d669",
+    "matches": [
+      {
+        "line": 77,
+        "text": "    FrameTransaction(FrameTransaction),"
+      },
+      {
+        "line": 91,
+        "text": "    FrameTransaction(FrameTransaction),"
+      },
+      {
+        "line": 92,
+        "text": "    FrameTransactionWithBlobs(WrappedFrameTransaction),"
+      },
+      {
+        "line": 104,
+        "text": "            P2PTransaction::FrameTransaction(itx) => Ok(Transaction::FrameTransaction(itx)),"
+      },
+      {
+        "line": 142,
+        "text": "                        P2PTransaction::FrameTransactionWithBlobs(wrapped)"
+      },
+      {
+        "line": 144,
+        "text": "                    FramePayload::Plain(tx) => P2PTransaction::FrameTransaction(tx),"
+      },
+      {
+        "line": 231,
+        "text": "pub struct WrappedFrameTransaction {"
+      },
+      {
+        "line": 232,
+        "text": "    pub tx: FrameTransaction,"
+      },
+      {
+        "line": 240,
+        "text": "    Plain(FrameTransaction),"
+      },
+      {
+        "line": 241,
+        "text": "    WithBlobs(WrappedFrameTransaction),"
+      },
+      {
+        "line": 255,
+        "text": "        match WrappedFrameTransaction::decode(payload) {"
+      },
+      {
+        "line": 265,
+        "text": "                let tx = FrameTransaction::decode(payload)?;"
+      },
+      {
+        "line": 278,
+        "text": "impl RLPEncode for WrappedFrameTransaction {"
+      },
+      {
+        "line": 290,
+        "text": "impl RLPDecode for WrappedFrameTransaction {"
+      },
+      {
+        "line": 292,
+        "text": "    /// decoded as a plain `FrameTransaction` by `P2PTransaction`, which is what"
+      },
+      {
+        "line": 294,
+        "text": "    fn decode_unfinished(rlp: &[u8]) -> Result<(WrappedFrameTransaction, &[u8]), RLPDecodeError> {"
+      },
+      {
+        "line": 301,
+        "text": "        let wrapped = WrappedFrameTransaction {"
+      },
+      {
+        "line": 564,
+        "text": "            Transaction::FrameTransaction(_) => TxType::Frame,"
+      },
+      {
+        "line": 642,
+        "text": "            Transaction::FrameTransaction(t) => Some(&t.cached_canonical),"
+      },
+      {
+        "line": 690,
+        "text": "                    Transaction::FrameTransaction(FrameTransaction::decode(tx_encoding)?)"
+      },
+      {
+        "line": 876,
+        "text": "            Transaction::FrameTransaction(tx) => tx.encode_payload(buf),"
+      },
+      {
+        "line": 1313,
+        "text": "        if let Transaction::FrameTransaction(tx) = self {"
+      },
+      {
+        "line": 1324,
+        "text": "            Transaction::FrameTransaction(_) => unreachable!(),"
+      },
+      {
+        "line": 1476,
+        "text": "            Transaction::FrameTransaction(tx) => return Ok(tx.sender),"
+      },
+      {
+        "line": 1511,
+        "text": "            Transaction::FrameTransaction(tx) => tx.total_gas_limit(),"
+      },
+      {
+        "line": 1525,
+        "text": "            Transaction::FrameTransaction(tx) => U256::from(tx.max_fee_per_gas),"
+      },
+      {
+        "line": 1538,
+        "text": "            Transaction::FrameTransaction(tx) => TxKind::Call(tx.sender),"
+      },
+      {
+        "line": 1551,
+        "text": "            Transaction::FrameTransaction(_) => U256::zero(),"
+      },
+      {
+        "line": 1564,
+        "text": "            Transaction::FrameTransaction(tx) => Some(tx.max_priority_fee_per_gas),"
+      },
+      {
+        "line": 1577,
+        "text": "            Transaction::FrameTransaction(tx) => Some(tx.chain_id),"
+      },
+      {
+        "line": 1591,
+        "text": "            Transaction::FrameTransaction(_) => &EMPTY_ACCESS_LIST,"
+      },
+      {
+        "line": 1603,
+        "text": "            Transaction::FrameTransaction(_) => None,"
+      },
+      {
+        "line": 1616,
+        "text": "            // EIP-8250: keyed-nonce frame txs expose nonce_seq as their scalar"
+      },
+      {
+        "line": 1618,
+        "text": "            // to the public pool today) use nonce_seq as the account's linear nonce."
+      },
+      {
+        "line": 1619,
+        "text": "            Transaction::FrameTransaction(tx) => tx.nonce_seq,"
+      }
+    ]
+  },
+  {
+    "url": "https://raw.githubusercontent.com/forshtat/ethrex/9aa3645d795945c64400f41a70aace0edfa7f383/crates/common/types/transaction.rs",
+    "status": 200,
+    "sha256": "8c657bde609a6bec61986e774dd2fd90526045eaaa35b8c5afc58f5b43f8d669",
+    "matches": [
+      {
+        "line": 77,
+        "text": "    FrameTransaction(FrameTransaction),"
+      },
+      {
+        "line": 91,
+        "text": "    FrameTransaction(FrameTransaction),"
+      },
+      {
+        "line": 92,
+        "text": "    FrameTransactionWithBlobs(WrappedFrameTransaction),"
+      },
+      {
+        "line": 104,
+        "text": "            P2PTransaction::FrameTransaction(itx) => Ok(Transaction::FrameTransaction(itx)),"
+      },
+      {
+        "line": 142,
+        "text": "                        P2PTransaction::FrameTransactionWithBlobs(wrapped)"
+      },
+      {
+        "line": 144,
+        "text": "                    FramePayload::Plain(tx) => P2PTransaction::FrameTransaction(tx),"
+      },
+      {
+        "line": 231,
+        "text": "pub struct WrappedFrameTransaction {"
+      },
+      {
+        "line": 232,
+        "text": "    pub tx: FrameTransaction,"
+      },
+      {
+        "line": 240,
+        "text": "    Plain(FrameTransaction),"
+      },
+      {
+        "line": 241,
+        "text": "    WithBlobs(WrappedFrameTransaction),"
+      },
+      {
+        "line": 255,
+        "text": "        match WrappedFrameTransaction::decode(payload) {"
+      },
+      {
+        "line": 265,
+        "text": "                let tx = FrameTransaction::decode(payload)?;"
+      },
+      {
+        "line": 278,
+        "text": "impl RLPEncode for WrappedFrameTransaction {"
+      },
+      {
+        "line": 290,
+        "text": "impl RLPDecode for WrappedFrameTransaction {"
+      },
+      {
+        "line": 292,
+        "text": "    /// decoded as a plain `FrameTransaction` by `P2PTransaction`, which is what"
+      },
+      {
+        "line": 294,
+        "text": "    fn decode_unfinished(rlp: &[u8]) -> Result<(WrappedFrameTransaction, &[u8]), RLPDecodeError> {"
+      },
+      {
+        "line": 301,
+        "text": "        let wrapped = WrappedFrameTransaction {"
+      },
+      {
+        "line": 564,
+        "text": "            Transaction::FrameTransaction(_) => TxType::Frame,"
+      },
+      {
+        "line": 642,
+        "text": "            Transaction::FrameTransaction(t) => Some(&t.cached_canonical),"
+      },
+      {
+        "line": 690,
+        "text": "                    Transaction::FrameTransaction(FrameTransaction::decode(tx_encoding)?)"
+      },
+      {
+        "line": 876,
+        "text": "            Transaction::FrameTransaction(tx) => tx.encode_payload(buf),"
+      },
+      {
+        "line": 1313,
+        "text": "        if let Transaction::FrameTransaction(tx) = self {"
+      },
+      {
+        "line": 1324,
+        "text": "            Transaction::FrameTransaction(_) => unreachable!(),"
+      },
+      {
+        "line": 1476,
+        "text": "            Transaction::FrameTransaction(tx) => return Ok(tx.sender),"
+      },
+      {
+        "line": 1511,
+        "text": "            Transaction::FrameTransaction(tx) => tx.total_gas_limit(),"
+      },
+      {
+        "line": 1525,
+        "text": "            Transaction::FrameTransaction(tx) => U256::from(tx.max_fee_per_gas),"
+      },
+      {
+        "line": 1538,
+        "text": "            Transaction::FrameTransaction(tx) => TxKind::Call(tx.sender),"
+      },
+      {
+        "line": 1551,
+        "text": "            Transaction::FrameTransaction(_) => U256::zero(),"
+      },
+      {
+        "line": 1564,
+        "text": "            Transaction::FrameTransaction(tx) => Some(tx.max_priority_fee_per_gas),"
+      },
+      {
+        "line": 1577,
+        "text": "            Transaction::FrameTransaction(tx) => Some(tx.chain_id),"
+      },
+      {
+        "line": 1591,
+        "text": "            Transaction::FrameTransaction(_) => &EMPTY_ACCESS_LIST,"
+      },
+      {
+        "line": 1603,
+        "text": "            Transaction::FrameTransaction(_) => None,"
+      },
+      {
+        "line": 1616,
+        "text": "            // EIP-8250: keyed-nonce frame txs expose nonce_seq as their scalar"
+      },
+      {
+        "line": 1618,
+        "text": "            // to the public pool today) use nonce_seq as the account's linear nonce."
+      },
+      {
+        "line": 1619,
+        "text": "            Transaction::FrameTransaction(tx) => tx.nonce_seq,"
+      }
+    ]
+  }
+]

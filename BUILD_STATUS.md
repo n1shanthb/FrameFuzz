@@ -1,5 +1,15 @@
 # Build status — Arkiv regression registry and mutation engine
 
+## Phase 3 readiness - stopped before live approval
+
+Implemented gated swarm readiness preparation consuming actual Sonnet experiment variant1 record(2,10), with strict descriptor/source checks, conditional5-deployment/4-submission plan, full bytecode digests, cap0.064 test ETH excluding unresolved sponsor funding, and no signing/write capability. Exact manifest docs/PHASE3_MANIFEST.md; compatibility report docs/PHASE3_COMPATIBILITY.md; evidence evidence/swarm/phase-3/.
+
+Fresh bounded preflight8reads plus one independent head read: chain1337, ethrex advertised9aa3645d795945c64400f41a70aace0edfa7f383, sidecarv4.1.1 commit empty, head0x3f8 to0x407 (advancing YES). Pinned sponsor still code empty/balance0. Funded deployer NO; owner/CREATE addresses unresolved. Source/golden vector codec agreement VERIFIED_VECTOR, but overall running-client/TXPARAM compatibility UNVERIFIED. Account nonce key0 requires account nonce checks, not storage alone.
+
+99 tests pass/0fail; live evidence guide check passes. New source/vector tests are offline, not live execution. Live transactions sent0, deployments0, Arkiv writes0, additional model requests0, pushes0. Historical Sonnet, LIVE campaigns, contracts and UI assets unchanged.
+
+Next: STOP live work under Phase3 P5. Obtain a compatible viable sponsor plan, securely configured funded owned deployer/owner, operator write-health confirmation and runtime baseline strategy. Only then resolve exact CREATE/init-code/nonce state and request separate human approval for a bounded manifest. Current experiment technically ready for approval NO; do not solicit approval of unresolved transactions. Submission fallback remains genuine offline Sonnet flow plus clearly historical LIVE admission evidence.
+
 ## Real Sonnet investigator verified - November 6, 2026
 
 OpenRouter authentication reachability returned HTTP200 in737ms without displaying account data/key. The authorized retry reached three valid model proposals, executed record(1,999) and independently replayed it, but rejected the revision at strict schema validation (sonnet-retry-1.json). Four provider responses cost $0.04813776 according to reported usage; three were locally valid. The original rejected response was not retained, so its exact invalid value/length is not asserted.
@@ -332,3 +342,17 @@ With FRAMEFUZZ_SWARM=on and OPENROUTER_MODEL=anthropic/claude-sonnet-4.6:
 - node bin/framefuzz.mjs swarm replay evidence/investigator/2026-11-06/sonnet-regressions.json --variant 1 --output evidence/investigator/2026-11-06/sonnet-replay-1.json (passed)
 
 Transaction hashes and chain receipts: none; no blockchain transactions were sent. OpenRouter generation IDs and request usage are in each sanitized report.
+
+## Phase3 executed commands
+
+With FRAMEFUZZ_SWARM=on:
+
+- node --env-file=.env bin/framefuzz.mjs swarm preflight --output evidence/swarm/phase-3/preflight.json (8 read-only requests, STOP_BEFORE_LIVE_APPROVAL).
+- One readOnlySwarmRpc eth_getBlockByNumber(latest,false) to execution endpoint, captured head-second.json; no repeated polling.
+- Exact-commit raw source retrievals and current EIP fetch, SHA256 and line excerpts in source-discovery/opcode-source-discovery/source-excerpts.json. No fetched client code executed.
+- node --env-file=.env bin/framefuzz.mjs swarm readiness --investigation evidence/investigator/2026-11-06/sonnet-retry-2.json --preflight evidence/swarm/phase-3/preflight.json --head evidence/swarm/phase-3/head-second.json --variant 1 --output evidence/swarm/phase-3/readiness.json (printed exact conditional approval manifest; no signing or writes).
+- node --test test/swarm-readiness.test.mjs:6passed.
+- npm test with loopback permitted:99passed/0failed,19.626s. Final CLI-summary additive change smoke checked with readiness command.
+- node scripts/live-evidence.mjs --check:Committed evidence guide matches. Protected-path diff vs27ab379 empty.
+
+No transaction hashes or receipts exist for this task:0 transactions sent.

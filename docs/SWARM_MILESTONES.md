@@ -68,3 +68,6 @@ After this milestone, stop for a separate human decision. The later live experim
 
 ## Investigator implementation update
 The later user request explicitly authorizes the bounded OpenRouter offline investigator and additive Swarm Lab controls. Implemented code supersedes the earlier deferred-LLM plan; it does not complete the live milestones. See docs/INVESTIGATOR.md and docs/LIVE_COMPATIBILITY_AUDIT.md. Historical milestone evidence remains unchanged.
+
+## Phase3 focused readiness
+Read-only preparation and source/vector comparison complete; overall runtime compatibility UNVERIFIED, sponsor/wallet unavailable, no live execution. See docs/PHASE3_MANIFEST.md.99tests pass. The prior real Sonnet and dashboard evidence is preserved.

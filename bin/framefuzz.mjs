@@ -22,6 +22,7 @@ Usage:
   node bin/framefuzz.mjs help
   node bin/framefuzz.mjs swarm offline --output runs/swarm-offline.json  # requires FRAMEFUZZ_SWARM=on
   node bin/framefuzz.mjs swarm preflight --output runs/swarm-preflight.json  # read-only
+  node bin/framefuzz.mjs swarm readiness --investigation REPORT.json --preflight PREFLIGHT.json --head HEAD.json  # prepare only; no signing or writes
   node bin/framefuzz.mjs swarm investigate --mode openrouter --output runs/investigation.json  # explicit model calls; no blockchain writes
   node bin/framefuzz.mjs swarm investigate --mode simulated --output runs/simulated.json
   node bin/framefuzz.mjs swarm replay regression.json --output runs/independent-replay.json

@@ -1,0 +1,433 @@
+{
+  "schema": "framefuzz.live-proof-readiness.v1",
+  "generatedAt": "2026-11-06T08:17:39.966Z",
+  "classification": "READINESS_ONLY",
+  "chainId": 1337,
+  "endpoints": {
+    "admission": "https://altmempool.forshtat.com/rpc",
+    "execution": "https://altmempool.forshtat.com"
+  },
+  "investigationDigest": "a7d9c9448878596042a19bc5d954b5c62bacc37a945a481cafc113fe8e658f6b",
+  "selectedVariant": 1,
+  "model": {
+    "provider": "OpenRouter",
+    "name": "anthropic/claude-sonnet-4.6",
+    "proposal": {
+      "suite": "frame-authorization",
+      "assumption": "SenderValidatorUnsafe omits calldata (operation and parameter) from the hash, so a record(1,10) signature should also recover OWNER for a different operation value like record(2,10), since neither field is committed.",
+      "change": "operation",
+      "operation": 2,
+      "parameter": 10,
+      "unsafePrediction": "OWNER_RECOVERED",
+      "safePrediction": "OWNER_NOT_RECOVERED",
+      "falsifier": "If unsafe recovers OWNER for record(2,10) with the record(1,10) signature, operation exclusion is independently confirmed; if not, some other per-call field may still bind implicitly.",
+      "revision": "Prior test confirmed parameter exclusion; this tests operation exclusion orthogonally. Remaining untested: whether nonce-per-call differences affect the unsafe hash across replays of the same record."
+    },
+    "mutationValues": {
+      "operation": 2,
+      "parameter": 10
+    },
+    "descriptorDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76"
+  },
+  "compiler": {
+    "version": "0.8.28+commit.7893614a.Emscripten.clang",
+    "inputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+    "sourceDigests": {
+      "contracts/SenderValidatorUnsafe.sol": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+      "contracts/SenderValidatorSafe.sol": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9",
+      "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+      "contracts/OwnedValidatorBase.sol": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d",
+      "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+      "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+      "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+      "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+      "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+      "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+    }
+  },
+  "compatibility": {
+    "source": "https://raw.githubusercontent.com/lambdaclass/ethrex/9aa3645d795945c64400f41a70aace0edfa7f383/crates/common/types/transaction.rs",
+    "sourceSha256": "8c657bde609a6bec61986e774dd2fd90526045eaaa35b8c5afc58f5b43f8d669",
+    "test": "golden_frame_tx_rlp_and_sig_hash",
+    "expectedHash": "0xd4df51143828c0338882dbd10c3308f3569972fe1928a7b5040ee18057920510",
+    "actualHash": "0xd4df51143828c0338882dbd10c3308f3569972fe1928a7b5040ee18057920510",
+    "byteRoundtrip": true,
+    "sourceVectorMatches": true,
+    "workshopCommitsToWitnessLength": false,
+    "currentEipCommitsToWitnessLength": true,
+    "sourceAgreement": "VERIFIED_VECTOR",
+    "runtimeCompatibility": "UNVERIFIED",
+    "reason": "Advertised commit source/vector agrees; no runtime canonical hash response or owned baseline execution obtained"
+  },
+  "headAdvancing": "YES",
+  "sponsorReady": false,
+  "wallet": {
+    "deployer": null,
+    "owner": null,
+    "secureKeyConfigured": false,
+    "balanceWei": null
+  },
+  "fundedDeployerConfigured": false,
+  "manifestReady": false,
+  "technicallyReadyForApproval": false,
+  "approvalRequired": true,
+  "liveTransactionsSent": 0,
+  "deploymentsSent": 0,
+  "broadcastCapability": false,
+  "plan": {
+    "status": "UNRESOLVED_WALLET_CONTEXT",
+    "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+    "deployments": [
+      {
+        "role": "action",
+        "contract": "ActionRecorder",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": [],
+        "constructorTemplate": [],
+        "creationBytecodeHash": "0x607ee6be8b39717320d707606f5848c39c76da9aa599af2c32f8275eb411eeab",
+        "initCode": "0x6080604052348015600e575f5ffd5b506101e08061001c5f395ff3fe608060405234801561000f575f5ffd5b5060043610610034575f3560e01c8063377144a614610038578063b776f5691461004d575b5f5ffd5b61004b610046366004610138565b61009a565b005b61007b61005b366004610158565b5f6020819052908152604090208054600182015460029092015490919083565b6040805193845260208401929092529082015260600160405180910390f35b335f908152602081905260408120600201546100b7906001610185565b60408051606080820183528682526020808301878152838501868152335f8181528085528790209551865591516001860155516002909401939093558351888152908101879052928301849052929350917fb003503c697b65f2f6759cb58a503490ec5958d71bb7dd635d01b007a41a6224910160405180910390a2505050565b5f5f60408385031215610149575f5ffd5b50508035926020909101359150565b5f60208284031215610168575f5ffd5b81356001600160a01b038116811461017e575f5ffd5b9392505050565b808201808211156101a457634e487b7160e01b5f52601160045260245ffd5b9291505056fea2646970667358221220cd86420e0c6359136223d0369a0f49cdabd2477cda5600ede9460e411155076364736f6c634300081c0033",
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null,
+        "initCodeHash": "0x607ee6be8b39717320d707606f5848c39c76da9aa599af2c32f8275eb411eeab"
+      },
+      {
+        "role": "unsafe_authorized",
+        "contract": "SenderValidatorUnsafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0xf10499a79a8c3654a7dd3f5e3f4a59461bad2be5f07edd6f2ccd934d82d3f275",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null,
+        "initCodeHash": null
+      },
+      {
+        "role": "unsafe_tampered",
+        "contract": "SenderValidatorUnsafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0xf10499a79a8c3654a7dd3f5e3f4a59461bad2be5f07edd6f2ccd934d82d3f275",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null,
+        "initCodeHash": null
+      },
+      {
+        "role": "safe_authorized",
+        "contract": "SenderValidatorSafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0x24bc3802c9cec84d58b1334cccdc00c41243d2b125c757b8140b7770c2d190d3",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null,
+        "initCodeHash": null
+      },
+      {
+        "role": "safe_tampered",
+        "contract": "SenderValidatorSafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0x24bc3802c9cec84d58b1334cccdc00c41243d2b125c757b8140b7770c2d190d3",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null,
+        "initCodeHash": null
+      }
+    ],
+    "totalDeploymentFeeBoundWei": "60000000000000000",
+    "feeBoundMeaning": "Five deployments capped at6m gas each and2gwei, excluding later frame fees; not a gas estimate",
+    "submissions": [
+      {
+        "role": "unsafe_authorized",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "ACTION_EXECUTED_HYPOTHESIS",
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a",
+        "authorization": {
+          "intent": {
+            "operation": 1,
+            "parameter": 10,
+            "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+          },
+          "policy": "Sign A independently for this fresh sender/context; retain exactly that witness for B; never sign B"
+        },
+        "nonceRequirement": "Key0 uses the account nonce in advertised client source. Verify eth_getTransactionCount(sender, latest/pending); NONCE_MANAGER storage alone is insufficient.",
+        "maxTotalGasBudget": "500000",
+        "maxFeePerGas": "2000000000",
+        "maximumFeeWei": "1000000000000000",
+        "gasSufficiency": "UNVERIFIED - require authorized baselines and per-frame receipts"
+      },
+      {
+        "role": "unsafe_tampered",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 2,
+          "parameter": 10
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "ACTION_EXECUTED_HYPOTHESIS",
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a",
+        "authorization": {
+          "intent": {
+            "operation": 1,
+            "parameter": 10,
+            "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+          },
+          "policy": "Sign A independently for this fresh sender/context; retain exactly that witness for B; never sign B"
+        },
+        "nonceRequirement": "Key0 uses the account nonce in advertised client source. Verify eth_getTransactionCount(sender, latest/pending); NONCE_MANAGER storage alone is insufficient.",
+        "maxTotalGasBudget": "500000",
+        "maxFeePerGas": "2000000000",
+        "maximumFeeWei": "1000000000000000",
+        "gasSufficiency": "UNVERIFIED - require authorized baselines and per-frame receipts"
+      },
+      {
+        "role": "safe_authorized",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "ACTION_EXECUTED_HYPOTHESIS",
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a",
+        "authorization": {
+          "intent": {
+            "operation": 1,
+            "parameter": 10,
+            "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+          },
+          "policy": "Sign A independently for this fresh sender/context; retain exactly that witness for B; never sign B"
+        },
+        "nonceRequirement": "Key0 uses the account nonce in advertised client source. Verify eth_getTransactionCount(sender, latest/pending); NONCE_MANAGER storage alone is insufficient.",
+        "maxTotalGasBudget": "500000",
+        "maxFeePerGas": "2000000000",
+        "maximumFeeWei": "1000000000000000",
+        "gasSufficiency": "UNVERIFIED - require authorized baselines and per-frame receipts"
+      },
+      {
+        "role": "safe_tampered",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 2,
+          "parameter": 10
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "AUTHORIZATION_REJECTED_NO_ACTION_HYPOTHESIS",
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a",
+        "authorization": {
+          "intent": {
+            "operation": 1,
+            "parameter": 10,
+            "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+          },
+          "policy": "Sign A independently for this fresh sender/context; retain exactly that witness for B; never sign B"
+        },
+        "nonceRequirement": "Key0 uses the account nonce in advertised client source. Verify eth_getTransactionCount(sender, latest/pending); NONCE_MANAGER storage alone is insufficient.",
+        "maxTotalGasBudget": "500000",
+        "maxFeePerGas": "2000000000",
+        "maximumFeeWei": "1000000000000000",
+        "gasSufficiency": "UNVERIFIED - require authorized baselines and per-frame receipts"
+      }
+    ],
+    "independentReproduction": "Requires a separately approved fresh deployment set and four fresh isolated submissions; not included in the first batch",
+    "verification": "Require authorized baseline, correct retained witness and sender/nonce isolation, ActionRecorded event/state for B with actual caller and successful action-frame receipt, plus absence of B on safe rejection",
+    "deploymentCount": 5,
+    "submissionCount": 4,
+    "frameFeeUpperBoundWei": "4000000000000000",
+    "totalFeeUpperBoundWei": "64000000000000000",
+    "feeScope": "0.06 test ETH deployment cap plus0.004 test ETH frame cap; excludes sponsor restoration/funding, which has no approved plan. Not an estimate; enforce encoded gas/max-cost before signing.",
+    "sponsorRestoration": "NOT_PLANNED - do not silently deploy/fund a replacement sponsor",
+    "executionOrder": [
+      "Deploy ActionRecorder and four isolated sender validators only after approval",
+      "Capture clean action state and nonce/funding/code checks for each sender",
+      "unsafe_authorized and safe_authorized must execute record(1,10) successfully",
+      "unsafe_tampered and safe_tampered each retain their own original A authorization; signers/targets/nonces are runtime-owned",
+      "Stop on baseline failure, nonce/funding/gas error, client drift or transport failure; no retries"
+    ],
+    "evidenceRequired": [
+      "Actual signed intent and retained original witness per isolated account",
+      "Raw RPC response and transaction hash; admission alone insufficient",
+      "Canonical receipt block/hash and successful individual action frame2",
+      "Decode ActionRecorded at owned recorder, match caller/operation/parameter/count and actions(sender) state",
+      "Safe exact AuthorizationRejected selector from owned sender plus unchanged state and no action log at a bounded canonical observation",
+      "Source/compiler/client/code hashes and nonce/funding checks",
+      "Independent repetition uses a fresh five-contract context and four new submissions; not included in this plan"
+    ]
+  },
+  "blockers": [
+    "Pinned basic PAYMENT sponsor code mismatch",
+    "Basic PAYMENT sponsor balance below pinned minimum",
+    "No securely configured FRAMEFUZZ_DEPLOYER_KEY; no deployment can be signed",
+    "Owned deployer/owner addresses unresolved; exact constructor data and CREATE addresses remain conditional",
+    "Live canonical TXPARAM(SIG_HASH) compatibility is unverified; workshop and current EIP signing profiles differ",
+    "Write health is unverified by read-only checks; prior sidecar disk-full failure requires operator confirmation",
+    "Separate explicit human deployment/submission approval has not been given",
+    "Read-only preparation cannot establish successful individual action execution",
+    "All live writes require separate approval of resolved addresses, fresh state and exact fee exposure"
+  ]
+}

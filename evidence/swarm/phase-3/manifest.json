@@ -1,0 +1,23 @@
+{
+  "schema": "framefuzz.phase3-readiness-evidence.v1",
+  "tests": {
+    "passed": 99,
+    "failed": 0
+  },
+  "requestCount": 9,
+  "liveTransactionsSent": 0,
+  "headAdvancing": "YES",
+  "clientCompatibility": "UNVERIFIED",
+  "sourceVectorAgreement": "VERIFIED_VECTOR",
+  "sponsorReady": false,
+  "fundedDeployerConfigured": false,
+  "manifestReady": false,
+  "sha256": {
+    "head-second.json": "a498f3537eb882334022cbdcb31b69a99377a006816ba39789bea7d6eec11aaa",
+    "opcode-source-discovery.json": "9b825ed068226515a3305343fffe16877b450ec9908cf2e6e7fbb65725a20bac",
+    "preflight.json": "46d6a6e2dac684638581ff5c1d65d4f3daf0bdd06f9fcda67eb6966af942c167",
+    "readiness.json": "243170bd4bfd1b91e8960df3ccc2a25bb08bc850784808dc3281a6b436033895",
+    "source-discovery.json": "0903190487316a59087dedafda293a1d6366f191fc2330245870a0e94a472f71",
+    "source-excerpts.json": "6cf29e6de892d0de463b7f3de356046f659e48f8fc1e0af0ee654768bcd991a4"
+  }
+}

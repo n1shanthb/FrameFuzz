@@ -39,3 +39,6 @@ The user requests frequent coherent commits, including single-file commits when 
 
 ## Offline investigator authorization update
 The user explicitly requested a real bounded investigator using OpenRouter and selected Sonnet. This authorizes bounded provider requests for owned-fixture offline investigation, including three perspective proposals and an observation-conditioned follow-up, plus additive Swarm Lab controls. It does not authorize blockchain deployment/submission, registry writes or push. Existing live gates remain in force. See docs/INVESTIGATOR.md; real provider demonstration is independently recorded in evidence/investigator/2026-11-06/sonnet-retry-2.json; it establishes offline signature binding only.
+
+## Phase3 authority
+User explicitly authorizes a short read-only readiness pass and conditional owned proof harness only. STOP before deployment, broadcast, test-ETH spending or Arkiv publication. Phase3 P5 stops live work when sponsor/wallet/runtime compatibility cannot be established. Exact manifest and source report are in docs/PHASE3_MANIFEST.md and docs/PHASE3_COMPATIBILITY.md. No separate live approval has been given.
