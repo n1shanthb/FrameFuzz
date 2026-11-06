@@ -1,0 +1,38 @@
+{
+  "schema": "framefuzz.sonnet-demonstration.v1",
+  "provider": "OpenRouter",
+  "model": "anthropic/claude-sonnet-4.6",
+  "completedRun": "sonnet-retry-2.json",
+  "successfulRunCalls": 4,
+  "successfulRunCostUSD": 0.038232810000000006,
+  "allThisTaskRequests": 8,
+  "allThisTaskValidatedResponses": 7,
+  "allThisTaskReportedCostUSD": 0.08637057000000001,
+  "earlierTimeoutActualCost": "UNKNOWN",
+  "mutations": [
+    {
+      "operation": 1,
+      "parameter": 20
+    },
+    {
+      "operation": 2,
+      "parameter": 10
+    }
+  ],
+  "classification": "OFFLINE_SIGNATURE_BINDING",
+  "liveVerified": false,
+  "broadcasts": 0,
+  "tests": {
+    "passed": 93,
+    "failed": 0
+  },
+  "dashboardId": "2a910262-9dcd-4261-b661-d245a7d20122",
+  "sha256": {
+    "sonnet-retry-1.json": "3f6a6b7ff40a6df06a9c5134fe83bcfc610916db57b7c463e96eeebb019e1662",
+    "sonnet-retry-2.json": "5e01019328a86a93428d4b7714b138ba2140e2de43b3c89a2e83ba94bc34cd52",
+    "sonnet-regressions.json": "95a4a01d246690a1b08bdc50efe22acab5f27734fcfddb78d9c2c11d986823fc",
+    "sonnet-replay-0.json": "4db8d40fc6cea7e4a2fadb50f9f408a5e60c28ae324edfbf1d6aa836489c3dde",
+    "sonnet-replay-1.json": "1dec6aaa002402740057d4a6cc1d6e2f33232e545a5ab9aad013108f678af7dc",
+    "sonnet-dashboard.png": "661f8c5f43e62a9115c7b8e8f80703564435cb378b83f8b809bac43f482afb34"
+  }
+}

@@ -27,6 +27,14 @@ test('provider enforces call, token and cost reservations before sending and tim
  await assert.rejects(provider(()=>new Promise(()=>{}),{timeoutMs:10}).propose([]),/timeout/);
  const err=provider(async()=>{throw new Error('network '+key);});await assert.rejects(err.propose([]));assert(!JSON.stringify(err.summary()).includes(key));
 });
+
+test('overlong model revision is rejected intact with content-free length diagnostics',async()=>{
+ const p=provider(async()=>response({...h(),revision:'x'.repeat(601)}));
+ await assert.rejects(p.propose([]),/Invalid hypothesis revision/);
+ assert.equal(p.summary().requests[0].textLengths.revision,601);
+ assert.equal(p.summary().requests[0].state,'FAILED');
+ assert(!JSON.stringify(p.summary()).includes('x'.repeat(601)));
+});
 test('different model values change actual ABI calldata and deterministic observations ignore predictions',async()=>{
  const a=await executeHypothesis(h(41,10)),b=await executeHypothesis({...h(1,4321),unsafePrediction:'OWNER_NOT_RECOVERED',safePrediction:'OWNER_RECOVERED'});
  assert.deepEqual(decodeFunctionData({abi:ACTION_ABI,data:a.calldata}).args,[41n,10n]);assert.deepEqual(decodeFunctionData({abi:ACTION_ABI,data:b.calldata}).args,[1n,4321n]);assert.notEqual(a.calldata,b.calldata);

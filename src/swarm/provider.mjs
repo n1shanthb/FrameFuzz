@@ -39,7 +39,9 @@ export class OpenRouterProvider {
    log.reportedModel=typeof result.model==='string'?this.protect(result.model).slice(0,160):null;
    if(this.costUSD>this.limits.maxCostUSD||this.tokens>this.limits.maxTotalTokens)throw new Error('Provider reported usage exceeding run budget; stopping');
    const choice=result.choices?.[0];if(choice?.finish_reason!=='stop'||typeof choice.message?.content!=='string')throw new Error('Incomplete structured model response');
-   const hypothesis=validateHypothesis(JSON.parse(this.protect(choice.message.content)));log.state='VALIDATED';return hypothesis;
+   const parsed=JSON.parse(this.protect(choice.message.content));
+   log.textLengths=Object.fromEntries(['assumption','falsifier','revision'].filter(k=>typeof parsed?.[k]==='string').map(k=>[k,parsed[k].length]));
+   const hypothesis=validateHypothesis(parsed);log.state='VALIDATED';return hypothesis;
   }catch(error){log.state='FAILED';const message=/^OpenRouter HTTP \d+$|^OpenRouter request timeout$|budget|hypothesis|mutation|structured|response too large/i.test(error.message)?this.protect(error.message):'OpenRouter request or schema validation failed';log.error=message;throw new Error(message);}
   finally{clearTimeout(timer);}
  }

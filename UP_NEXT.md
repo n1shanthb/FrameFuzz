@@ -1,5 +1,21 @@
 # Up next
 
+## Real Sonnet investigator verified - November 6, 2026
+
+OpenRouter authentication reachability returned HTTP200 in737ms without displaying account data/key. The authorized retry reached three valid model proposals, executed record(1,999) and independently replayed it, but rejected the revision at strict schema validation (sonnet-retry-1.json). Four provider responses cost $0.04813776 according to reported usage; three were locally valid. The original rejected response was not retained, so its exact invalid value/length is not asserted.
+
+Added concise one-sentence output instructions, preserving the existing600-character hard limit, and content-free response-length diagnostics. A new test proves a601-character revision is rejected without truncation or logging its content. No automatic retry path was introduced.
+
+The corrected bounded run (sonnet-retry-2.json) completed **four real validated Sonnet4.6 calls**, three perspective proposals plus an observation-conditioned revision. Three unique hypotheses; two executed semantic variants: **record(1,20)** then **record(2,10)**. Actual unsafe owner recovery true, safe false, same witness/target and changed canonical hash for both. Both independently reproduced with source/compiler hashes verified in fresh processes17904 and18564; separate descriptor-only CLI replays also passed. Classification OFFLINE_SIGNATURE_BINDING only: no EVM execution, admission, successful action or vulnerability finding. Model prose is untrusted, including poorly phrased falsifiers; local observations control verdicts.
+
+Successful-run usage10085 tokens, reported cost $0.03823281, within six-call/$0.25 client limits. This task's two runs total eight provider responses, seven validated, reported cost $0.08637057; the earlier timeout's actual billing remains unknown. No additional model calls were made for the dashboard.
+
+Normal dashboard restarted using node --env-file=.env bin/framefuzz.mjs serve --results runs --port 4180 with FRAMEFUZZ_SWARM=on and OPENROUTER_MODEL=anthropic/claude-sonnet-4.6. Browser loaded saved report2a910262-9dcd-4261-b661-d245a7d20122 after process restart, displaying real proposals, revision, actual observations, four calls and two independent replays. Screenshot sonnet-dashboard.png. Existing port4177 saved demo and historical evidence preserved. No blockchain/Arkiv writes or pushes.
+
+Verification: npm test **93 passed/0 failed**,19.199s, loopback permitted; node scripts/live-evidence.mjs --check passed. Root.env remains ignored and is never committed.
+
+Next phase: offline model investigation acceptance is met. Live phase remains gated on funded owned deployer/owner and viable sponsor, current canonical hash compatibility and confirmed gateway write health; then resolve the exact owned deployment/submission manifest before requesting live approval. Last read-only capture found old sponsor code empty and balance0. Do not broadcast or infer live findings from offline proof. Earlier notes below are historical checkpoints.
+
 ## Latest OpenRouter attempt - November 6, 2026
 
 The root .env now exists, is Git-ignored, and exposes OPENROUTER_API_KEY when loaded with Node --env-file=.env. Key presence verified without displaying its value; credentials/authentication are not proven by presence alone. Model: anthropic/claude-sonnet-4.6.
