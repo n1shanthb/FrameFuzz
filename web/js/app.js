@@ -1,5 +1,6 @@
 import { api } from './api.js';
 import { BRIEFING, SLIDES, FAQ } from './briefing.js';
+import {renderPlayground,bindPlayground,leavePlayground} from './playground.js';
 import {
   esc, tag, sourceKind, sourcePill, fmtTime, shortHash, pathOf, countInfra, copyText, icon,
 } from './utils.js';
@@ -55,6 +56,7 @@ function setStatus(msg) {
 }
 
 function navigate(page) {
+  if(state.page==='playground'&&page!=='playground')leavePlayground();
   if(state.page==='arkiv'&&page!=='arkiv'&&state.communityBusy)cancelCommunity('Cancelled on navigation.');
   if (state.presenting) exitPresent();
   state.page = page;
@@ -829,6 +831,7 @@ function pageHtml() {
     case 'evidence': return renderEvidence();
     case 'arkiv': return renderArkiv();
     case 'swarm': return renderSwarm();
+    case 'playground': return renderPlayground();
     case 'briefing': return renderBriefing();
     default: return renderOverview();
   }
@@ -844,6 +847,7 @@ function render() {
 }
 
 function bindPage() {
+  if(state.page==='playground')bindPlayground();
   for(const id of ['scenarioSelect','mutationSelect','mutationSuite','mutationSeed','mutationCount','communitySuite','communityRule','communityVersion','communityOwner']) {
     const el=$(id); if(el) { const save=()=>{state.formValues[id]=el.value;if(id.startsWith('community')){cancelCommunity('Filters changed; query again.');state.community=null;state.selectedCommunity=null;const status=$('communityStatus');if(status)status.textContent=state.communityStatus;const button=$('queryCommunity');if(button)button.disabled=Boolean(state.config?.offlineDemo);const savedButton=$('savedCommunity');if(savedButton)savedButton.disabled=false;const cancelButton=$('cancelCommunity');if(cancelButton)cancelButton.disabled=true;const importer=$('importCommunity');if(importer)importer.disabled=true;const list=$('communityList');if(list)list.textContent='Filters changed; query again.';const detail=$('communityDetail');if(detail)detail.textContent='No current selection.';}}; el.addEventListener('input',save); el.addEventListener('change',save); }
   }

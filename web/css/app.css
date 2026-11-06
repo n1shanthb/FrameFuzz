@@ -691,3 +691,10 @@ tr[aria-pressed="true"] { background: var(--accent-soft); }
 
 .row > * { min-width: 0; }
 h1, h2, h3, h4, .summary { overflow-wrap: anywhere; }
+.byoc-editor, .byoc-abi { width:100%; resize:vertical; padding:14px; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--text); font:13px/1.65 Consolas,monospace; tab-size:4; }
+.byoc-editor { min-height:320px; }
+.byoc-abi { min-height:140px; }
+.byoc-agents { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+#byocPanels { overflow-wrap:anywhere; }
+#byocPanels .details, #byocAnalysis .details { max-height:420px; overflow:auto; white-space:pre-wrap; }
+@media(max-width:700px) { .byoc-agents { grid-template-columns:1fr; } .byoc-editor { min-height:260px; } }
