@@ -35,3 +35,6 @@ Implementation commits and final handoff checkpoint: inspect Git history. Stop b
 
 ## Agentic feasibility pipeline — 2026-11-06
 Implemented genuine Scout/Mutation/Validator/Executor/Critic calls, deterministic gates, deferred/rejected logs, bounded repair, outcome taxonomy and existing Swarm Lab filters/exports. 164/164 tests,0 fail/skip;75 modules verified. Successful Sonnet run4 calls,$0.087021; all preserved attempts11 requests,$0.19351332 actual reported total. Real local record(1,99): unsafe XPASS candidate, safe INCONCLUSIVE due UNKNOWN expectation; gas67201 PREDICTED with no observed admission. Matching fresh-process replay, no finding. Both final proposals feasible; rejection/repair proven in tests and earlier deterministic vetoes, no manufactured rejection. Exact evidence, commands/exit codes and limitations: docs/AGENTIC_FEASIBILITY.md. Original evidence unchanged; no chain writes/Arkiv publication/push.
+
+## BYOC compiler checkpoint — 2026-11-06
+Baseline164/164 tests verified; isolated compiler3 tests pass. Fixed source filename, disabled import resolution, supervised process/worker with heap/RSS/time/output limits; actual ABI/AST/source ranges and selection diagnostics for unseen contracts. Active work continues on stateful agents, HTTP/UI, tool negotiation and full regression checks. No paid/chain/Arkiv calls or push.
