@@ -1,8 +1,8 @@
 # Up next — after admission Step 2B
 
-1. STOP before the EF funding transfer. The exact packet digest is `60b68b599ba011ad2c6b4f15e21e9b5776a466b8c0709d6cb8d2e49bbf311efa`; no write approval was granted.
+1. STOP before the EF funding transfer. The refreshed exact packet digest is `854693298e68e6c1241895127a2921eb6bdd25c5bfd7d8bf374e9a7964750806`; no write approval was granted.
 2. Configure the official throwaway chain-1337 shared key locally as `FRAMEFUZZ_EF_FUNDING_KEY` without placing it in chat, source or artifacts. Derive and require source `0x5544596212F91984C986A919C8026DF0576816f9`.
-3. Before any signing, rerun `node scripts/step2b-prepare-funding.mjs`. If shared pending nonce differs from 145, produce a new packet/digest and stop for review. Preserve the 0.0005 value and 0.0005005 total-debit ceiling.
+3. Before any signing, rerun `node scripts/step2b-prepare-funding.mjs`. If shared pending nonce differs from 146 or gas exceeds 0.003 gwei, produce a new packet/digest and stop for review. Preserve the 0.0005 value and 0.00050075 total-debit ceiling.
 4. After separately approved funding and a status-1 receipt, revalidate the unchanged candidate hash and sender state. Then prepare a separate public-versus-alternative submission authorization; do not combine it with funding implicitly.
 
 # Previous up next — after admission Step 2A

@@ -7,7 +7,8 @@ export const EF_SHARED_GENESIS='0x5544596212F91984C986A919C8026DF0576816f9';
 export const FRAMEFUZZ_SENDER='0x366E6203603C39Eec1e75b3be6f078911447f235';
 export const FUNDING_VALUE_WEI=500000000000000n;
 export const FUNDING_GAS_LIMIT=250000n;
-export const FUNDING_GAS_PRICE_WEI=2000000n;
+// Rounded ceiling above the refreshed 2,400,008 wei quote; still only 0.003 gwei.
+export const FUNDING_GAS_PRICE_WEI=3000000n;
 const stable=value=>Array.isArray(value)?`[${value.map(stable).join(',')}]`:value&&typeof value==='object'?`{${Object.keys(value).sort().map(k=>`${JSON.stringify(k)}:${stable(value[k])}`).join(',')}}`:JSON.stringify(value);
 const digest=value=>createHash('sha256').update(stable(value)).digest('hex');
 

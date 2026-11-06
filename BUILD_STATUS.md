@@ -1,6 +1,6 @@
 # Build status — admission Step 2B
 
-Added a read-only exact EF funding resolver, script and mocked safety tests. It separates Arkiv's 10 tGLM from EF's zero sender balance, rejects the 1-ETH fixed faucet for the requested exact amount, and resolves the official shared genesis source, nonce, balance, 207,391 gas estimate and workshop fee caps. Packet source debit ceiling: 0.0005005 test ETH; no key accepted, signing or send method exists in the resolver. Focused tests: 5/5 pass. Full suite: 222/222 pass. Details: `docs/ADMISSION_STEP2B.md`.
+Added a read-only exact EF funding resolver, script and mocked safety tests. It separates Arkiv's 10 tGLM from EF's zero sender balance, rejects the 1-ETH fixed faucet for the requested exact amount, and resolves the official shared genesis source, nonce, balance, 207,391 gas estimate and bounded fee cap. Refreshed source debit ceiling: 0.00050075 test ETH; no key accepted, signing or send method exists in the resolver. Focused tests: 2/2 pass. Full suite: 222/222 pass. Details: `docs/ADMISSION_STEP2B.md`.
 
 # Previous build status — admission Step 2A
 

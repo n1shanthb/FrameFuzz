@@ -13,8 +13,8 @@ const mock=overrides=>async(url,method,params=[])=>{
 test('resolves one exact shared-devnet transfer without signing or broadcasting',async()=>{
  const p=await prepareEfFundingPacket({rpcFn:mock({})});
  assert.equal(p.intent.from,EF_SHARED_GENESIS);assert.equal(p.intent.to,FRAMEFUZZ_SENDER);assert.equal(p.intent.nonce,'145');
- assert.equal(p.intent.valueWei,'500000000000000');assert.equal(p.intent.gasLimit,'250000');assert.equal(p.intent.gasPriceWei,'2000000');
- assert.equal(p.intent.maximumGasFeeWei,'500000000000');assert.equal(p.intent.maximumSourceDebitWei,'500500000000000');
+ assert.equal(p.intent.valueWei,'500000000000000');assert.equal(p.intent.gasLimit,'250000');assert.equal(p.intent.gasPriceWei,'3000000');
+ assert.equal(p.intent.maximumGasFeeWei,'750000000000');assert.equal(p.intent.maximumSourceDebitWei,'500750000000000');
  assert.equal(p.faucetAlternative.suitableForExactAmount,false);assert.equal(p.writes,0);assert.equal(p.broadcasts,0);assert.match(p.approvalDigest,/^[0-9a-f]{64}$/);
 });
 test('fails closed on wrong chain, contract accounts, excessive gas, or insufficient source funds',async()=>{

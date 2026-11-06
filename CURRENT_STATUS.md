@@ -1,6 +1,6 @@
 # Current status — admission Step 2B EF funding preparation
 
-The existing sender was verified separately on EF chain 1337 (0 wei, nonce 0, code empty) and Arkiv Rabdi 7794095 (10 tGLM). Rabdi funds do not fund EF. Official workshop faucet is enabled but fixed at 1 test ETH, so the exact 0.0005 plan uses the official published shared genesis address. Read-only packet: source balance `899851656336000578878583` wei, latest/pending nonce 145, transfer estimate 207,391 gas, cap 250,000 gas at 0.002 gwei, maximum source debit 0.0005005 test ETH. Approval digest `60b68b599ba011ad2c6b4f15e21e9b5776a466b8c0709d6cb8d2e49bbf311efa`. `FRAMEFUZZ_EF_FUNDING_KEY` is not configured; no transaction was signed or sent. See `docs/ADMISSION_STEP2B.md`.
+The existing sender was verified separately on EF chain 1337 (0 wei, nonce 0, code empty) and Arkiv Rabdi 7794095 (10 tGLM). Rabdi funds do not fund EF. Official workshop faucet is enabled but fixed at 1 test ETH, so the exact 0.0005 plan uses the official published shared genesis address. Refreshed packet: source balance `899850661361025185745676` wei, latest/pending nonce 146, estimate 207,391 gas, cap 250,000 gas at 0.003 gwei, maximum source debit 0.00050075 test ETH. Approval digest `854693298e68e6c1241895127a2921eb6bdd25c5bfd7d8bf374e9a7964750806`. `FRAMEFUZZ_EF_FUNDING_KEY` is not configured; no transaction was signed or sent. See `docs/ADMISSION_STEP2B.md`.
 
 # Previous status — admission Step 2A self-funded EOA preparation
 
