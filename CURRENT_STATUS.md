@@ -2,11 +2,11 @@
 
 Implementation committed as `9e5e4c4`; evidence checkpoint includes sanitized CLI/dashboard reports, standalone regression descriptors, two CLI replays, read-only preflight, screenshot and SHA-256 manifest. No real provider demonstration or push.
 
-## OpenRouter investigator checkpoint — November 6, 2026
+## OpenRouter investigator checkpoint â€” November 6, 2026
 
 Implemented opt-in bounded offline investigator, OpenRouter Sonnet (`anthropic/claude-sonnet-4.6`, alias `sonnet`), three perspective proposals, deterministic selection, actual ECDSA experiment, observation-conditioned follow-up, fresh-process regression replay, exports and additive Swarm Lab controls. Existing premium shell/Technical Briefing and historical LIVE evidence preserved. **92 tests pass / 0 fail** (83 baseline +9 investigator tests). Evidence guide digest check passes.
 
-Real OpenRouter calls: **0 / NOT DEMONSTRATED**. Process/user/machine key-presence checks remain false despite user reporting setup; pending question asks only where configured, never its value. Default mode and missing-key CLI fallback are explicitly `SWARM_SIMULATED — NO REAL LLM`. Mock transport tests are not real model calls. No onchain finding or new live execution is claimed.
+Real OpenRouter calls: **0 / NOT DEMONSTRATED**. Process/user/machine key-presence checks remain false despite user reporting setup; pending question asks only where configured, never its value. Default mode and missing-key CLI fallback are explicitly `SWARM_SIMULATED â€” NO REAL LLM`. Mock transport tests are not real model calls. No onchain finding or new live execution is claimed.
 
 Executed scripted record(1,73) and record(19,10): unsafe owner recovered true, safe false; both independent-process replays match. Dashboard port4180 completed a fallback investigation, then server restarted and browser loaded its saved report from disk with exports/timeline. Screenshot and CLI evidence: `evidence/investigator/2026-11-06/`. Saved-demo port4177 preserved. Current server command: `$env:FRAMEFUZZ_SWARM='on'; node bin/framefuzz.mjs serve --results runs --port 4180`.
 

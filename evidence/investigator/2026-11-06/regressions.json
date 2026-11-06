@@ -1,6 +1,6 @@
 {
   "schema": "framefuzz.investigation-regressions.v1",
-  "source": "SWARM_SIMULATED \u00e2\u20ac\u201d NO REAL LLM",
+  "source": "SWARM_SIMULATED \u2014 NO REAL LLM",
   "executionClass": "OFFLINE_SIGNATURE_BINDING",
   "descriptors": [
     {

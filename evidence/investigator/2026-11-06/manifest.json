@@ -27,7 +27,7 @@
   "sha256": {
     "compatibility-preflight.json": "bb34aa0abcc8e8c94024a13ee4890479f16bf8bf4c0697777497f6b22f8d1337",
     "dashboard-simulated-investigation.json": "7483fa17b2e21b80ae2f49311d37195f55b0af9e62b24ee2e9cc9c9989218cab",
-    "regressions.json": "5ad3ababf5164515ba215a3b683afc561057af53f5086dc0b2b0347dd5ca6966",
+    "regressions.json": "2e885aca271e0728a364549964438a374c9db22a0aa0a53fd3aae201fa46546a",
     "replay-0.json": "72394da0fbb46d85295d833fce0cf566d7eb210c7d4ea402d23088c0a0112d86",
     "replay-1.json": "eadd87ecc85e3f914062b3935dd3d385c8e331d16c28714fec37f0c7935822fb",
     "simulated-investigation.json": "5e743b2b73eaa7c26f5599d3114ebfa7e2a73d80e715c8b6c8af48b84d232c85",

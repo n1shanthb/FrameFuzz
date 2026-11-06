@@ -2,7 +2,7 @@
 
 Implementation committed as `9e5e4c4`; evidence checkpoint includes sanitized CLI/dashboard reports, standalone regression descriptors, two CLI replays, read-only preflight, screenshot and SHA-256 manifest. No real provider demonstration or push.
 
-## First unfinished task — real Sonnet demonstration
+## First unfinished task â€” real Sonnet demonstration
 
 Expose OPENROUTER_API_KEY to the terminal/process launching FrameFuzz (key location clarification pending; never put its value in chat/files/commits). Model already selects anthropic/claude-sonnet-4.6. Then run `$env:FRAMEFUZZ_SWARM='on'; node bin/framefuzz.mjs swarm investigate --mode openrouter --output runs/sonnet-investigation.json`. Inspect sanitized provider usage/generation IDs, three proposals, actual observations, revision, two distinct executed model-selected values and fresh-process replays. Save a new evidence capture without overwriting scripted or historical results. No real model calls demonstrated yet; do not label this task finished.
 
