@@ -22,8 +22,14 @@ test('complete mock demo exports honest evidence and dashboard serves selection 
     server = createDashboardServer({ resultDir: directory, adapterFile: 'examples/mock-adapter.mjs', rulesFile: 'examples/mock-rules.json' });
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const base = `http://127.0.0.1:${server.address().port}`;
-    const html = await (await fetch(base)).text(); assert.match(html, /scenarioSelect/); assert.match(html, /Public expected/);
+    const html = await (await fetch(base)).text();
+    assert.match(html, /scenarioSelect/); assert.match(html, /Public expected/);
+    assert.match(html, /css\/app\.css/); assert.match(html, /js\/app\.js/); assert.match(html, /Technical Briefing/);
+    assert.match(html, /Present to EF/); assert.match(html, /Evidence Explorer/);
     const inline = html.match(/<script>([\s\S]*?)<\/script>/)[1]; new Function(inline); // Syntax check, not a browser substitute.
+    const css = await fetch(`${base}/css/app.css`); assert.equal(css.status, 200); assert.match(await css.text(), /--accent/);
+    const js = await fetch(`${base}/js/utils.js`); assert.equal(js.status, 200); assert.match(await js.text(), /export/);
+    assert.equal((await fetch(`${base}/js/not-a-real-file.js`)).status, 404);
     const config = await (await fetch(`${base}/api/config`)).json(); assert.equal(config.submitEnabled, false); assert.equal(config.scenarios.length, 3);
     const cases = await (await fetch(`${base}/api/cases?scenario=verification-gas`)).json(); assert.equal(cases.cases.length, 3);
     assert.equal((await fetch(`${base}/api/run`, { method: 'POST' })).status, 409);

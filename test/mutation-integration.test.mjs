@@ -37,7 +37,7 @@ test('dashboard previews generated cases and exports reproduction while rejectin
     const replay=await (await fetch(`${base}/api/export?id=${encodeURIComponent(output.file)}&format=replay`)).json();assert.equal(replay.cases.length,3);assert.ok(replay.cases.every(c=>c.reproduction.definition));
     const denied=await fetch(`${base}/api/mutate`,{method:'POST',body:JSON.stringify({submit:true})});assert.equal(denied.status,409);
     const xsite=await fetch(`${base}/api/mutate`,{method:'POST',headers:{origin:'https://evil.test'},body:'{}'});assert.equal(xsite.status,403);
-    const html=await (await fetch(base)).text();assert.match(html,/mutationSeed/);assert.match(html,/coverageSummary/);new Function(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
+    const html=await (await fetch(base)).text();assert.match(html,/mutationSeed/);assert.match(html,/coverageSummary/);assert.match(html,/js\/app\.js/);new Function(html.match(/<script>([\s\S]*?)<\/script>/)[1]);
   }finally{await new Promise(r=>server.close(r));await rm(directory,{recursive:true,force:true});}
 });
 

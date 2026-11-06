@@ -1,9 +1,12 @@
 # Up next
 
+## Dashboard UI complete — use for EF / judge demos
+Premium light SPA is live on the existing saved-demo server. Prefer `node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177` then open Technical Briefing → Present to EF. Do not treat Swarm Lab as a live investigator. Historical evidence and APIs unchanged.
+
 ## STOP — offline milestone1 and read-only milestone2 implemented
 83 tests pass (all71 baseline +12 swarm). Read `docs/SWARM_MILESTONES.md` and `evidence/swarm/milestone-2/preflight.json`. Do not deploy or broadcast. The executed preflight found a stale execution head, no secure funded deployer key/owner addresses, unverified canonical-hash compatibility and unconfirmed write health. Conditional plan:5 owned deployments,4 isolated alternative submissions; no live execution or action proof exists.
 
-Next only after new instructions: resolve funded devnet-only deployment environment and owner address without pasting keys, obtain operator confirmation of health, verify client canonical hash, present the resolved manifest and obtain separate explicit live approval. Then implement/execute milestone3 safely. Milestone4 real LLM investigator and milestone5 UI/Arkiv integration are deferred. Arkiv writes require separate approval. Keep the existing saved demo, historical evidence and v1 fixtures unchanged; no current feature should imply a live finding.
+Next only after new instructions: resolve funded devnet-only deployment environment and owner address without pasting keys, obtain operator confirmation of health, verify client canonical hash, present the resolved manifest and obtain separate explicit live approval. Then implement/execute milestone3 safely. Milestone4 real LLM investigator remains deferred; UI/Arkiv presentation surfaces now exist without claiming live swarm results. Arkiv writes require separate approval. Keep the existing saved demo, historical evidence and v1 fixtures unchanged; no current feature should imply a live finding.
 
 ## Ready — final submission materials
 README/product copy, generated `docs/LIVE_EVIDENCE.md`, four-minute `docs/DEMO_SCRIPT.md`, checklist, project description, recording guidance, FEEDBACK and sponsor docs are complete.71 tests pass. The offline saved demo and live Arkiv query/import were verified in browser. Exact proof: `evidence/submission/2026-11-06/`. Preserve successful historical LIVE evidence unchanged.

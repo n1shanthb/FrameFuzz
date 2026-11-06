@@ -8,5 +8,7 @@ test('saved demonstration copies immutable real reports and blocks all external 
  assert.equal((await fetch(base+'/api/community')).status,503);assert.equal((await fetch(base+'/api/community/case?key=bad')).status,503);assert.equal((await fetch(base+'/api/community/import',{method:'POST',body:'{}'})).status,503);assert.deepEqual((await(await fetch(base+'/api/network')).json()).endpoints,[]);
  assert.equal((await fetch(base+'/api/run',{method:'POST',body:'{}'})).status,409);const p=await(await fetch(base+'/api/mutate',{method:'POST',body:JSON.stringify({suite:'uniswap-storage',count:3,seed:42,preview:true})})).json();assert.match(p.source,/PREVIEW/);assert.equal(p.totals.cases,3);
  assert.match(await(await fetch(base+'/')).text(),/Generate → Compare → Inspect/);
+ assert.match(await(await fetch(base+'/')).text(),/Technical Briefing/);
+ assert.equal((await fetch(base+'/css/app.css')).status,200);
  }finally{await new Promise(r=>server.close(r));await rm(dir,{recursive:true,force:true});}
 });

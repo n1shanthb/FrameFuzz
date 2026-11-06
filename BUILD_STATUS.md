@@ -1,5 +1,10 @@
 # Build status — Arkiv regression registry and mutation engine
 
+## Premium dashboard UI rebuild — November 6, 2026 IST
+Replaced the dark single-file console with a modular light-theme SPA under `web/` (`css/app.css`, `js/{api,utils,briefing,app}.js`) while keeping every existing API route, safety gate, CLI command and evidence path. `src/server.mjs` now serves allowlisted static assets (`css/`, `js/`, `assets/`, `favicon.svg`) with path-traversal rejection. Pages: Overview, Test Campaigns, Evidence Explorer, Arkiv Registry, Swarm Lab (honest offline status), Technical Briefing (12 EF slides) with Present-to-EF focus mode (arrows + Escape).
+
+Verified: `npm test` **83/83**; `node scripts/live-evidence.mjs --check` matched committed captures; `node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177` serves the new UI offline with live submit disabled. Browser checked Overview KPIs (14/14 gas matches, 8 inclusions), public/alt matrix with historical alt hash `0xbb9143eb…`, Campaigns loading the 7-variant LIVE gas run with submit disabled, Briefing slides 01–12, and Present mode `01/12` → ArrowRight → `02/12` → Escape. No historical evidence rewritten; no chain-1337 submissions, Arkiv publishes, deployments or LLM calls.
+
 ## Swarm milestone2 — read-only stop gate reached
 Implemented guarded read-only RPC preflight and conditional deployment/submission manifest. Executed8 reads on the authorized chain1337 endpoints: matching execution commit9aa3645d795945c64400f41a70aace0edfa7f383, sidecar v4.1.1 with no commit, sponsor code hash matched and balance149175156000000000 wei, readable nonce-manager storage. Head0x63ac6 was19114 seconds old at capture; mining/write health is not established. No deployer key, deployer address or owner address was configured. No contract deployment, live EIP-8141 submission, LLM call, unauthorized action proof, independent live reproduction or Arkiv write occurred.
 

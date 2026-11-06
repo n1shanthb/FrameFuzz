@@ -13,9 +13,26 @@ import {MUTATION_SUITES} from './mutations/generator.mjs';
 import {createRegistry} from './arkiv/registry.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
+const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
 function json(res, status, value) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
   res.end(JSON.stringify(value));
+}
+async function serveStatic(res, pathname) {
+  const rel = pathname.replace(/^\/+/, '');
+  if (!rel || rel.includes('..') || path.isAbsolute(rel)) return false;
+  const allowed = /^(css|js|assets)\/[A-Za-z0-9._/-]+$/.test(rel) || rel === 'favicon.svg';
+  if (!allowed) return false;
+  const file = path.resolve(WEB_ROOT, rel);
+  if (!file.startsWith(WEB_ROOT + path.sep) && file !== WEB_ROOT) return false;
+  const ext = path.extname(file).toLowerCase();
+  if (!STATIC_TYPES[ext]) return false;
+  try {
+    const body = await readFile(file);
+    res.writeHead(200, { 'content-type': STATIC_TYPES[ext], 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+    res.end(body);
+    return true;
+  } catch { return false; }
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
@@ -32,6 +49,8 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         const html = await readFile(path.join(WEB_ROOT, 'index.html'));
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
         res.end(html);
+      } else if (req.method === 'GET' && await serveStatic(res, route.pathname)) {
+        return;
       } else if (req.method === 'GET' && route.pathname === '/api/config') {
         json(res, 200, { offlineDemo,defaultRun,rpcConfigured: configured, submitEnabled: enabled, allowChainId: allowChainId ?? null, casesLocation, running,
           scenario: scenario ?? 'fixtures', scenarios: [{ id: 'fixtures', label: 'Signed case fixtures' }, ...(adapterFile && rulesFile ? SCENARIOS : [])],

@@ -1,5 +1,8 @@
 # Current status
 
+## Premium UI rebuild — November 6, 2026 IST
+Dashboard rebuilt as a production-style light SPA. Local URL: `http://127.0.0.1:4177` via `node bin/framefuzz.mjs saved-demo --results runs/saved-demo --port 4177`. All 83 tests pass; evidence digest check passes. Technical Briefing + Present mode ready for EF walkthrough. Swarm remains offline/unproven; no live submissions performed during the UI task. Next human actions still follow `docs/SUBMISSION_CHECKLIST.md` (video, push, Uniswap feedback, ETHGlobal entry).
+
 ## Swarm milestone2 — stopped before live approval
 Read-only preparation implemented/executed:8 allowlisted chain1337 RPC reads; latest block0x63ac6 was19114 seconds old at capture. Sponsor code/balance verified, nonce-manager storage readable. No secure deployer key or owned deployer/owner address configured. Exact conditional manifest contains5 deployments and4 isolated alternative submissions; unresolved addresses/initcode remain null. Future fee cap0.06 test ETH for deployments is an upper bound, not an estimate or spend.
 
