@@ -85,7 +85,9 @@ async function main() {
     let evidence;
     if(options.replay){
       const file=JSON.parse(await readFile(options.replay,'utf8'));
-      const descriptor=file.schema==='framefuzz.mutation-reproduction.v1'?file:mutationOptions.variant===undefined?file.cases?.[0]?.reproduction:file.cases?.find(c=>c.reproduction?.variantIndex===mutationOptions.variant)?.reproduction;
+      const descriptorFor=c=>c?.semanticDescriptor?.reproduction?.schema==='framefuzz.mutation-reproduction.v1'?c.semanticDescriptor.reproduction:c?.reproduction;
+      const selected=mutationOptions.variant===undefined?file.cases?.[0]:file.cases?.find(c=>descriptorFor(c)?.variantIndex===mutationOptions.variant);
+      const descriptor=file.schema==='framefuzz.mutation-reproduction.v1'?file:descriptorFor(selected);
       if(!descriptor)throw new Error('Replay file has no selected mutation reproduction descriptor');
       evidence=await replayMutationDescriptor(descriptor,mutationOptions);
     }else evidence=await runMutationCampaign(mutationOptions);

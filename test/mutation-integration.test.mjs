@@ -19,6 +19,11 @@ test('CLI generates and replays offline mutations with deterministic semantics a
     assert.deepEqual(replay.generated[0].parameters,first.generated[2].parameters);assert.equal(replay.campaign.definitionDigest,first.campaign.definitionDigest);
     const markdown=await readFile(first.evidence.mdFile,'utf8');assert.match(markdown,/rule coverage/);assert.match(markdown,/VERIFIED/);
     const descriptor=JSON.parse(await readFile(first.evidence.replayFile,'utf8')).cases[2].reproduction;
+    const semanticOnly=JSON.parse(await readFile(first.evidence.replayFile,'utf8'));
+    for(const c of semanticOnly.cases){delete c.reproduction;delete c.paths;delete c.historicalOutcomes;}
+    const semanticFile=path.join(directory,'semantic-only.json');await writeFile(semanticFile,JSON.stringify(semanticOnly));
+    const fresh=JSON.parse((await exec(process.execPath,['bin/framefuzz.mjs','mutate','--replay',semanticFile,'--variant','2','--preview','--results',directory])).stdout);
+    assert.equal(fresh.submissions,0);assert.deepEqual(fresh.generated[0].parameters,first.generated[2].parameters);
     assert.equal(descriptor.definition.seed,42);assert.equal(descriptor.variantIndex,2);assert.ok(!JSON.stringify(descriptor).includes('privateKey'));
     await assert.rejects(exec(process.execPath,['bin/framefuzz.mjs','mutate','--submit','--allow-chain','1','--results',directory]),e=>e.code===1);
   }finally{await rm(directory,{recursive:true,force:true});}
