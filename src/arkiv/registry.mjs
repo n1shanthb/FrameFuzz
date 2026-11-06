@@ -28,7 +28,8 @@ export function createRegistry({publicClient,walletClient=null,readerAddress=pro
     if(record.publisher.toLowerCase()!==row.$creator.toLowerCase())throw new Error('Publisher wallet does not match immutable Arkiv creator');
     for(const [field,value]of Object.entries({suite:record.suite,family:record.mutationFamily,ruleId:record.ruleId,implementation:record.implementationVersion,classification:record.evidence.classification,contentDigest:record.contentDigest}))if(row[field]?.value!==value)throw new Error(`Arkiv indexed ${field} differs from content`);
     if(Number(row.caseVersion?.value)!==1||row.publisher?.value?.toLowerCase()!==record.publisher.toLowerCase()||String(row.expiresAtBlock?.value)!==record.expiration.expiresAtBlock||String(row.$expiresAt)!==record.expiration.expiresAtBlock)throw new Error('Arkiv version/publisher/expiration mismatch');
-    return {key:row.$key,owner:row.$owner,creator:row.$creator,expiresAtBlock:String(row.$expiresAt),record,reader};
+    return {key:row.$key,owner:row.$owner,creator:row.$creator,expiresAtBlock:String(row.$expiresAt),record,reader,
+      provenance:'FRESH_ARKIV_READ',verification:{schema:'VALID',digest:'VALID',creatorBinding:'VALID',expiry:'ACTIVE_AT_BLOCK_'+String(block),replayAllowed:true}};
   }
   return {
     reader,

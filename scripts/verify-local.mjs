@@ -4,3 +4,5 @@ async function walk(dir){const files=[];for(const entry of await readdir(dir,{wi
 const files=(await Promise.all(['src','bin','scripts','web/js'].map(walk))).flat();
 for(const file of files){const result=spawnSync(process.execPath,['--check',file],{stdio:'inherit',windowsHide:true});if(result.status!==0)process.exit(result.status??1);}
 console.log(`Syntax verified: ${files.length} JavaScript modules. No network or writes.`);
+const facts=spawnSync(process.execPath,['scripts/briefing-facts.mjs','--check'],{stdio:'inherit',windowsHide:true});
+if(facts.status!==0)process.exit(facts.status??1);

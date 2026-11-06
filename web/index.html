@@ -18,7 +18,7 @@
           <div class="brand-sub">Break the tx before the mempool does</div>
         </div>
       </div>
-      <nav class="nav-list">
+      <nav class="nav-list" aria-label="Page navigation">
         <button class="nav-item active" data-page="overview" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
           Overview
@@ -46,7 +46,7 @@
       </nav>
       <div class="sidebar-foot">
         <div style="font-weight:600;color:var(--text);margin-bottom:4px">Engine status</div>
-        <div id="engineStatus">Reading local configuration…</div>
+        <div id="engineStatus" role="status" aria-live="polite" aria-atomic="true">Reading local configuration…</div>
         <div style="margin-top:8px">Only signed, explicit testnet transactions are sent when authorized.</div>
       </div>
     </aside>
@@ -63,7 +63,7 @@
         </div>
       </header>
 
-      <main class="content">
+      <main class="content" aria-label="FrameFuzz workspace">
         <p class="alert" id="demoMode">Reading saved evidence; no fresh execution is implied.</p>
         <!-- Compatibility markers for HTML smoke tests (unique IDs live in dynamic pages) -->
         <div class="sr-only" aria-hidden="true" id="compatMarkers">

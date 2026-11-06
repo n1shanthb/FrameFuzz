@@ -4,7 +4,9 @@ async function parse(res) {
   return data;
 }
 
+const readSignal=signal=>signal?AbortSignal.any([signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000);
 export const api = {
+  savedCommunity: (params,signal) => fetch(`/api/community/saved?${params}`,{signal:readSignal(signal)}).then(parse),
   config: () => fetch('/api/config').then(parse),
   runs: () => fetch('/api/runs').then(parse),
   run: (id) => fetch(`/api/run?id=${encodeURIComponent(id)}`).then(parse),
@@ -20,10 +22,11 @@ export const api = {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   }).then(parse),
-  community: (params) => fetch(`/api/community?${params}`,{signal:AbortSignal.timeout(15000)}).then(parse),
-  communityCase: (key) => fetch(`/api/community/case?key=${encodeURIComponent(key)}`,{signal:AbortSignal.timeout(15000)}).then(parse),
-  communityImport: (key) => fetch('/api/community/import', {
+  community: (params,signal) => fetch(`/api/community?${params}`,{signal:readSignal(signal)}).then(parse),
+  communityCase: (key,signal) => fetch(`/api/community/case?key=${encodeURIComponent(key)}`,{signal:readSignal(signal)}).then(parse),
+  communityImport: (key,signal) => fetch('/api/community/import', {
     method: 'POST',
+    signal: readSignal(signal),
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ key }),
   }).then(parse),

@@ -21,6 +21,9 @@ const state = {
   formValues: {},
   checklist: {},
   communityStatus: 'Not queried.',
+  communityPhase: 'idle',
+  communityBusy: false,
+  communityMode: 'live',
   swarmConfig: null,
   swarmReport: null,
   swarmTimeline: [],
@@ -29,6 +32,9 @@ const state = {
   swarmRecent: [],
 };
 
+let presentationReturnFocus=null;
+const scrollBehavior=()=>window.matchMedia?.('(prefers-reduced-motion: reduce)').matches?'auto':'smooth';
+const communityFlight={sequence:0,controller:null};
 const $ = (id) => document.getElementById(id);
 
 function modePill() {
@@ -48,6 +54,7 @@ function setStatus(msg) {
 }
 
 function navigate(page) {
+  if(state.page==='arkiv'&&page!=='arkiv')cancelCommunity('Cancelled on navigation.');
   if (state.presenting) exitPresent();
   state.page = page;
   document.querySelectorAll('.nav-item').forEach((el) => {
@@ -55,7 +62,7 @@ function navigate(page) {
   });
   render();
   if(page==='swarm')refreshSwarm();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: scrollBehavior() });
 }
 
 function findRunByHint(hint) {
@@ -90,6 +97,7 @@ function kpiFromRuns() {
 }
 
 function renderShellChrome() {
+  document.querySelectorAll('.nav-item[data-page]').forEach(el=>el.setAttribute('aria-current',el.dataset.page===state.page?'page':'false'));
   $('modePill').innerHTML = modePill();
   const c = state.config;
   $('networkPill').textContent = c?.offlineDemo
@@ -473,7 +481,7 @@ function renderArkiv() {
       <strong>${esc(c.record.suite)} / ${esc(c.record.ruleId)}</strong>
       <div class="tiny mono">${esc(c.key)}</div>
       <div class="tiny">publisher ${esc(c.record.publisher)} · owner ${esc(c.owner)} · expires ${esc(c.expiresAtBlock)} · original ${esc(c.record.evidence.classification)}</div>
-    </button>`).join('') || '<div class="empty">No active cases queried yet</div>';
+    </button>`).join('') || `<div class="empty">${state.communityPhase==='empty'?'No cases match these filters. Refine filters or inspect saved snapshots.':'No results loaded. Query Arkiv or inspect explicitly saved snapshots.'}</div>`;
 
   return `
     <div class="card">
@@ -491,20 +499,22 @@ function renderArkiv() {
         <label class="field">Rule ID<input id="communityRule" placeholder="MAX_VERIFY_GAS"></label>
         <label class="field">Implementation<input id="communityVersion" placeholder="Optional version"></label>
         <label class="field">Owner<input id="communityOwner" placeholder="Optional 0x wallet"></label>
-        <button class="btn btn-secondary" id="queryCommunity" ${offline ? 'disabled' : ''}>Query Arkiv</button>
+        <button class="btn btn-secondary" id="queryCommunity" ${offline || state.communityBusy ? 'disabled' : ''}>Query Arkiv</button>
       </div>
-      <p class="muted" id="communityStatus" style="margin-top:10px">${offline ? 'Live Arkiv disabled in offline mode.' : esc(state.communityStatus)}</p>
+      <div class="row" style="margin-top:10px"><button class="btn btn-secondary" id="savedCommunity" ${state.communityBusy?'disabled':''}>Inspect saved registry snapshots</button><button class="btn btn-secondary" id="cancelCommunity" ${state.communityBusy?'':'disabled'}>Cancel request</button><button class="btn btn-secondary" id="openSavedCommunityPreview">Open saved imported PREVIEW</button></div>
+      <p class="muted" role="status" aria-live="polite" aria-atomic="true" id="communityStatus" style="margin-top:10px">${esc(state.communityStatus)} · ${esc(state.communityPhase)} · ${state.communityMode==='saved'?'SAVED HISTORICAL SNAPSHOTS':'LIVE READ MODE'}</p>
       <div class="pipeline" style="margin:16px 0">
         <div class="node">Discover</div><div class="arrow">→</div>
         <div class="node">Verify integrity</div><div class="arrow">→</div>
         <div class="node">Import</div><div class="arrow">→</div>
         <div class="node">Replay PREVIEW</div>
       </div>
-      <div class="grid-2">
+      <p class="muted">${esc(state.community?.discovery?.notice??'Discovery is bounded to at most20 live results. Refine filters; no completeness guarantee.')}${state.community?.discovery?.possiblyTruncated?' Limit reached; additional records may exist.':''}</p>
+      <div class="grid-2" aria-busy="${state.communityBusy}">
         <div>
-          <h3>Active fixtures</h3>
+          <h3>${state.communityMode==='saved'?'Saved publications (current validity unknown)':'Active fixtures from latest query'}</h3>
           <div id="communityList">${list}</div>
-          <button class="btn btn-primary" id="importCommunity" ${state.selectedCommunity && !offline ? '' : 'disabled'} style="margin-top:10px">Open selected case as replay PREVIEW</button>
+          <button class="btn btn-primary" id="importCommunity" ${state.selectedCommunity?.verification?.replayAllowed && !offline && !state.communityBusy && state.communityMode==='live' ? '' : 'disabled'} style="margin-top:10px">Open selected case as replay PREVIEW</button>
         </div>
         <div>
           <h3>Selected fixture</h3>
@@ -584,6 +594,7 @@ function renderBriefing() {
       <div class="eyebrow">Slide 01</div>
       <h2>FrameFuzz — Break the transaction before the mempool does.</h2>
       <p class="lede">FrameFuzz tests the compatibility and security assumptions of programmable Ethereum transactions against observable admission behavior.</p>
+      <p class="summary" id="briefingEvidenceCheckpoint">Evidence checkpoint: ${g.variants} generated gas variants · ${g.admissionChecks} historical admission decisions · ${g.includedSuccess} historical included receipts · ${BRIEFING.arkiv.published} published Arkiv regression entities · ${BRIEFING.sonnet.calls} actual Sonnet responses · ${BRIEFING.sonnet.experiments} offline experiments (${BRIEFING.sonnet.replayed} independently replayed) · ${BRIEFING.testsAtCheckpoint} passing Node tests. Offline cryptography is separate from historical chain execution; owned-validator live execution remains unverified.</p>
       <div class="claim-grid">
         <div class="claim"><strong>1. Generate</strong>Semantic EIP-8141 transaction mutations with fresh signatures.</div>
         <div class="claim"><strong>2. Compare</strong>Public and alternative admission behavior with rule-aware oracles.</div>
@@ -669,7 +680,7 @@ function renderBriefing() {
         <code id="altHash">${u.rows[2].alt.hash}</code>
         <button class="btn btn-ghost btn-sm" data-copy="${u.rows[2].alt.hash}">${icon('copy')} Copy</button>
       </div>
-      <p style="margin-top:14px">The paymaster validation performs a real Uniswap v4 storage read. The alternative policy's staking exception permits the observed validation path, while the public admission path rejects the external state dependency.</p>
+      <p style="margin-top:14px">The paymaster validation calls real Uniswap v4 StateView.getSlot0(poolId). The alternative policy's staking exception permits the observed validation path, while the public admission path rejects the external state dependency.</p>
       <div class="alert" style="margin-top:12px">Never claim a swap or active liquidity trade occurred. Distinguish admission from inclusion.</div>
       <button class="btn btn-secondary" data-open-hint="3a838bca" style="margin-top:8px">Inspect Evidence</button>
     </section>
@@ -732,7 +743,7 @@ function renderBriefing() {
     'Phase 3 read-only capture observed advancing blocks; current write health and owned-validator execution remain unverified.',
     'Deployer and owner context not configured at last preflight.',
     'New validator attack not executed live.',
-    'Four real Sonnet calls and two offline experiments are saved; no owned-validator EVM execution.',
+    `${BRIEFING.sonnet.calls} real Sonnet responses and ${BRIEFING.sonnet.experiments} offline experiments are saved; no owned-validator EVM execution.`,
     'Sidecar binary commit unavailable despite version response.',
   ].map((t, i) => `<div class="check-item"><span class="tag idle">${i + 1}</span><div>${esc(t)}</div></div>`).join('')}
       </div>
@@ -825,11 +836,11 @@ function render() {
 
 function bindPage() {
   for(const id of ['scenarioSelect','mutationSelect','mutationSuite','mutationSeed','mutationCount','communitySuite','communityRule','communityVersion','communityOwner']) {
-    const el=$(id); if(el) { const save=()=>{state.formValues[id]=el.value;}; el.addEventListener('input',save); el.addEventListener('change',save); }
+    const el=$(id); if(el) { const save=()=>{state.formValues[id]=el.value;if(id.startsWith('community')){cancelCommunity('Filters changed; query again.');state.community=null;state.selectedCommunity=null;const status=$('communityStatus');if(status)status.textContent=state.communityStatus;const button=$('queryCommunity');if(button)button.disabled=Boolean(state.config?.offlineDemo);const savedButton=$('savedCommunity');if(savedButton)savedButton.disabled=false;const cancelButton=$('cancelCommunity');if(cancelButton)cancelButton.disabled=true;const importer=$('importCommunity');if(importer)importer.disabled=true;const list=$('communityList');if(list)list.textContent='Filters changed; query again.';const detail=$('communityDetail');if(detail)detail.textContent='No current selection.';}}; el.addEventListener('input',save); el.addEventListener('change',save); }
   }
   document.querySelectorAll('[data-ef-q]').forEach(el=>el.addEventListener('change',()=>{state.checklist[el.dataset.efQ]=el.checked;}));
   document.querySelectorAll('tr[data-case]').forEach(el=>{
-    el.tabIndex=0; el.setAttribute('role','button'); el.setAttribute('aria-label','Inspect case '+el.dataset.case);
+    el.tabIndex=0; el.setAttribute('role','button'); el.setAttribute('aria-label','Inspect case '+el.dataset.case);el.setAttribute('aria-pressed',String(Number(el.dataset.case)===state.selectedCase));
     el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
   });
   document.querySelectorAll('[data-nav]').forEach((el) => {
@@ -861,6 +872,7 @@ function bindPage() {
     el.addEventListener('click', () => {
       state.selectedCase = Number(el.dataset.case);
       render();
+      document.querySelector(`tr[data-case="${state.selectedCase}"]`)?.focus?.();
     });
   });
   document.querySelectorAll('[data-filter]').forEach((el) => {
@@ -891,7 +903,10 @@ function bindPage() {
   $('submitMutation')?.addEventListener('click', () => runMutations(true));
   $('checkNetwork')?.addEventListener('click', checkNetwork);
   $('runButton')?.addEventListener('click', runLiveSuite);
-  $('queryCommunity')?.addEventListener('click', queryCommunity);
+  $('queryCommunity')?.addEventListener('click', () => queryCommunity(false));
+  $('savedCommunity')?.addEventListener('click', () => queryCommunity(true));
+  $('cancelCommunity')?.addEventListener('click',()=>{cancelCommunity('Request cancelled.');render();});
+  $('openSavedCommunityPreview')?.addEventListener('click',async()=>{const run=findRunByHint('saved-arkiv-import-preview');if(!run){setStatus('Use saved-demo to restore the already imported PREVIEW. No current expiry check is implied.');return;}await loadRun(run.id);navigate('campaigns');});
   $('importCommunity')?.addEventListener('click', importCommunity);
   $('swarmRefresh')?.addEventListener('click',refreshSwarm);
   $('swarmAI')?.addEventListener('click',()=>startSwarm('openrouter'));
@@ -983,55 +998,46 @@ async function runLiveSuite() {
   }
 }
 
-async function queryCommunity() {
-  state.communityStatus='Querying Arkiv (15 second deadline)…';
-  if($('communityStatus'))$('communityStatus').textContent=state.communityStatus;
-  try {
-    const q = new URLSearchParams();
-    for (const [key, id] of [['suite', 'communitySuite'], ['rule', 'communityRule'], ['implementation', 'communityVersion'], ['owner', 'communityOwner']]) {
-      const v = $(id)?.value?.trim();
-      if (v) q.set(key, v);
-    }
-    const d = await api.community(q);
-    state.community = d;
-    state.selectedCommunity = null;
-    state.communityStatus=`${d.source} · ${d.cases.length} active · ${d.rejected.length} quarantined · ${d.discovery?.notice??'Bounded results'}${d.discovery?.possiblyTruncated?' Limit reached; refine filters.':''}`;
-    render();
-    const el = $('communityStatus');
-    if (el) {
-      el.textContent = state.communityStatus + ` · chain ${d.chainId} · block ${d.currentBlock} · reader ${d.reader.walletAddress ?? 'public anonymous'}`;
-    }
-  } catch (e) {
-    setStatus(`Arkiv query failed: ${e.message}`);
-    const el = $('communityStatus');
-    state.communityStatus=`Arkiv query failed: ${e.message}`; if (el) el.textContent=state.communityStatus;
-  }
+function cancelCommunity(message='Request cancelled.') {
+ communityFlight.sequence++;communityFlight.controller?.abort();communityFlight.controller=null;
+ state.communityBusy=false;state.communityPhase='cancelled';state.communityStatus=message;
 }
-
-async function selectCommunity(key) {
-  try {
-    const retrieved = await api.communityCase(key);
-    state.selectedCommunity = retrieved;
-    render();
-  } catch (e) {
-    setStatus(e.message);
-  }
+function beginCommunity(phase){
+ cancelCommunity();const token=communityFlight.sequence;
+ communityFlight.controller=new AbortController();state.communityBusy=true;state.communityPhase=phase;state.communityStatus=phase+' (15 second read deadline)…';render();
+ return {token,signal:communityFlight.controller.signal};
 }
-
-async function importCommunity() {
-  if (!state.selectedCommunity?.key) return;
-  try {
-    const d = await api.communityImport(state.selectedCommunity.key);
-    await refresh(false);
-    await loadRun(d.file);
-    navigate('campaigns');
-    setStatus(`${d.source} · ${d.submissions} broadcasts · imported preview`);
-  } catch (e) {
-    setStatus(`Import failed: ${e.message}`);
-  }
+const currentCommunity=token=>communityFlight.sequence===token&&state.page==='arkiv';
+function communityFailure(error,token){if(!currentCommunity(token))return;state.communityPhase=error.name==='TimeoutError'?'timeout':'error';state.communityStatus=`Arkiv ${state.communityPhase}: ${error.message}. Saved snapshots remain available.`;}
+function communityFilters(){const q=new URLSearchParams();for(const [key,id]of [['suite','communitySuite'],['rule','communityRule'],['implementation','communityVersion'],['owner','communityOwner']]){const value=$(id)?.value?.trim();if(value)q.set(key,value);}return q;}
+async function queryCommunity(saved=false){
+ const q=communityFilters();state.communityMode=saved?'saved':'live';state.community=null;state.selectedCommunity=null;
+ const {token,signal}=beginCommunity(saved?'loading saved snapshots':'querying live Arkiv');
+ try{
+  const data=await (saved?api.savedCommunity(q,signal):api.community(q,signal));if(!currentCommunity(token))return;
+  state.community=data;state.communityPhase=data.cases.length?'success':'empty';
+  state.communityStatus=`${data.source} · ${data.cases.length} results · ${data.rejected.length} quarantined · reader ${data.reader.walletAddress??'public anonymous'} · ${data.discovery?.notice??'Bounded results'}`;
+ }catch(error){communityFailure(error,token);}finally{if(currentCommunity(token)){state.communityBusy=false;communityFlight.controller=null;render();}}
+}
+async function selectCommunity(key){
+ if(state.communityMode==='saved'){state.selectedCommunity=state.community?.cases.find(c=>c.key===key)??null;state.communityStatus='Saved schema/digest checked locally. Current chain validity unknown; new replay disabled.';render();return;}
+ const {token,signal}=beginCommunity('retrieving and verifying entity');
+ try{const retrieved=await api.communityCase(key,signal);if(!currentCommunity(token))return;state.selectedCommunity=retrieved;state.communityPhase='verified';state.communityStatus='Fresh schema, digest, creator and current expiry checks passed. Import is unsigned PREVIEW only.';}
+ catch(error){communityFailure(error,token);}finally{if(currentCommunity(token)){state.communityBusy=false;communityFlight.controller=null;render();}}
+}
+async function importCommunity(){
+ const selected=state.selectedCommunity;
+ if(state.communityMode!=='live'||!selected?.verification?.replayAllowed||state.config?.offlineDemo)return;
+ const {token,signal}=beginCommunity('importing unsigned preview');
+ try{
+  const data=await api.communityImport(selected.key,signal);if(!currentCommunity(token))return;
+  if(data.submissions!==0||!/PREVIEW/.test(data.source))throw new Error('Import must return zero-submission PREVIEW');
+  state.communityBusy=false;await refresh(false);if(!currentCommunity(token))return;await loadRun(data.file);navigate('campaigns');setStatus(`${data.source} · zero broadcasts · newly generated unsigned variants`);
+ }catch(error){communityFailure(error,token);}finally{if(currentCommunity(token)){state.communityBusy=false;communityFlight.controller=null;render();}}
 }
 
 function enterPresent() {
+  presentationReturnFocus=document.activeElement;
   state.slideIndex = 0;
   state.page = 'briefing';
   state.presenting = true;
@@ -1040,12 +1046,14 @@ function enterPresent() {
     el.classList.toggle('active', el.dataset.page === 'briefing');
   });
   render();
+  $('nextSlide')?.focus?.();
 }
 
 function exitPresent() {
   state.presenting = false;
   document.body.classList.remove('presenting');
   render();
+  if(presentationReturnFocus?.isConnected)presentationReturnFocus.focus();else $('presentTop')?.focus?.();
 }
 
 function stepSlide(delta) {
@@ -1059,7 +1067,7 @@ function applyPresentSlide() {
   });
   const prog = $('slideProgress');
   if (prog) prog.textContent = `${String(state.slideIndex + 1).padStart(2, '0')} / ${SLIDES.length}`;
-  document.querySelector('.briefing-slide.active-slide')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelector('.briefing-slide.active-slide')?.scrollIntoView({ behavior: scrollBehavior(), block: 'start' });
 }
 
 async function refresh(loadDefault = true) {
@@ -1085,6 +1093,7 @@ async function refresh(loadDefault = true) {
 
 function onKey(e) {
   if (!state.presenting) return;
+  if(e.key==='Tab'){const elements=[...document.querySelectorAll('.present-bar button, .active-slide button, .active-slide a, .active-slide input, .active-slide textarea, .active-slide select, .active-slide summary')].filter(el=>!el.disabled&&el.offsetParent!==null);if(elements.length){e.preventDefault();const index=elements.indexOf(document.activeElement);elements[(index+(e.shiftKey?-1:1)+elements.length)%elements.length].focus();}return;}
   if (e.key !== 'Escape' && (e.target?.closest?.('input,textarea,select,[contenteditable]') || e.ctrlKey || e.altKey || e.metaKey)) return;
   if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); stepSlide(1); }
   if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); stepSlide(-1); }

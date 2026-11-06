@@ -12,6 +12,7 @@ import {runMutationCampaign,MAX_LIVE_MUTATIONS,DEFAULT_CONFIG,DEFAULT_RULES} fro
 import {MUTATION_SUITES} from './mutations/generator.mjs';
 import {createRegistry} from './arkiv/registry.mjs';
 import {createSwarmRoutes} from './swarm/http.mjs';
+import {savedCommunity} from './arkiv/saved.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
 const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
@@ -59,6 +60,8 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
           scenario: scenario ?? 'fixtures', scenarios: [{ id: 'fixtures', label: 'Signed case fixtures' }, ...(adapterFile && rulesFile ? SCENARIOS : [])],
           mutations:{suites:MUTATION_SUITES,maxLiveVariants:MAX_LIVE_MUTATIONS,maxPreviewVariants:1000},
           endpoints: Object.fromEntries(Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([,v]) => v).map(([k,v]) => [k, sanitizedRpcLabel(v)])) });
+      } else if(req.method==='GET'&&route.pathname==='/api/community/saved'){
+        json(res,200,await savedCommunity({suite:route.searchParams.get('suite')||undefined,ruleId:route.searchParams.get('rule')||undefined,implementation:route.searchParams.get('implementation')||undefined,owner:route.searchParams.get('owner')||undefined}));
       } else if(req.method==='GET'&&route.pathname==='/api/community'){
         if(offlineDemo)return json(res,503,{error:'Saved-evidence offline mode: live Arkiv discovery is disabled. Inspect the saved imported PREVIEW in the evidence library; it is not a fresh query.'});
         const registry=communityRegistry??createRegistry();

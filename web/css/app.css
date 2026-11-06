@@ -666,3 +666,28 @@ body.presenting .present-bar { display: flex !important; }
   .hero h1 { max-width: none; }
   body.presenting .briefing-slide { padding: 24px 16px; min-height: auto; }
 }
+
+/* Targeted accessibility and small-screen containment. */
+.card, .stack, .split-detail > *, .grid-2 > *, .controls, .kv-row > * { min-width: 0; }
+.code-box { max-width: 100%; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }
+.mono, .kv-row b, .tiny { overflow-wrap: anywhere; }
+.topbar, .topbar-left, .topbar-right, .controls, .hero-actions { flex-wrap: wrap; }
+tr[role="button"]:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+tr[aria-pressed="true"] { background: var(--accent-soft); }
+[aria-busy="true"] { cursor: progress; }
+@media (max-width: 600px) {
+  .nav-list { gap: 6px; }
+  .nav-item, .btn, input:not([type="checkbox"]), select, summary { min-height: 44px; }
+  .nav-item { flex: 1 1 42%; }
+  .controls > .field { min-width: 0; width: 100%; }
+  .topbar-left, .topbar-right { width: 100%; }
+  .card { padding: 14px; }
+  .present-bar { flex-wrap: wrap; padding: 10px !important; }
+  body.presenting .content { padding-left: 8px; padding-right: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html, * { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+
+.row > * { min-width: 0; }
+h1, h2, h3, h4, .summary { overflow-wrap: anywhere; }

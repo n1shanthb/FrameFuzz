@@ -1,10 +1,10 @@
-## Completion sprint — Pass 2 in progress
+## Completion sprint — Pass 2 dashboard checkpoint
 
-147 tests pass,0failed/skipped (baseline119 retained). Offline preparation/proof refinements reject owner/payer/CREATE collisions, normalize equivalent input ordering and require the supported witness structure. Raw proof CLI is exercised with an explicitly constructed fixture, never LIVE proof.
+Final implementation verification: npm test147pass,0fail,0skip (all119 baseline retained); npm run verify63modules plus evidence-fact consistency; live evidence guide matches; npm run run:preview7unsigned cases/0submissions; read-only dependency audit0 known vulnerabilities.
 
-Real read-only Arkiv query succeeded at block293040. Premium browser Query→Select→Verify→Import PREVIEW→Inspect succeeded with zero submissions; selection rechecked expiry at block293088. Offline snapshots, all four filters, request cancellation,375/768/1440px containment and presentation focus/Tab/Escape were verified. Anonymous GitHub repository/branch requests returned404; remote branch remains b15df81. No writes/model calls/push.
+C6 real SDK/browser query→retrieve→verify→import PREVIEW→inspect succeeded. SDK query block293040; browser selection expiry block293088. Four filters, cancellation/stale-response guards and explicit saved snapshots verified. F6 briefing now derives counts/hashes from canonical reports and a verified test checkpoint. F8 targeted375/768/1440px, local table scrolling,44px mobile navigation and presentation focus/Tab/Escape checked in actual browser. Automated browser-engine suite added0; manual engine checks separate from Node tests. New proof capture: evidence/completion-pass2/2026-11-06/; original history unchanged.
 
-Remaining: commit tested dashboard/facts changes, align canonical handoff and exact Pass2 report, run final verification, then STOP. G6 delivery and E7 live proof remain incomplete.
+Next: finalize canonical documentation, archived pre-Pass2 status and delivery report, then STOP. G6 external delivery and E7 actual live proof remain PARTIAL. No blockchain/model/publication writes or push.
 
 ## Completion sprint — Pass 0 + Pass 1 complete
 

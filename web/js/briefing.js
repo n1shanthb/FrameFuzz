@@ -1,64 +1,19 @@
-/** Verified facts sourced from committed evidence and docs/LIVE_EVIDENCE.md.
- *  Do not invent values here. Omit anything not independently established. */
-export const BRIEFING = {
-  generatedFrom: 'docs/LIVE_EVIDENCE.md + evidence/mutations + evidence/live + evidence/swarm',
-  gasCampaign: {
-    file: 'evidence/mutations/2026-11-06/2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.json',
-    capturedAt: '2026-11-05T22:40:15.811Z',
-    sha256: 'de690539fac4b65b5047141d592bd8cef44ef3991a030d6912c730ae08ee2972',
-    variants: 7,
-    admissionChecks: 14,
-    matchedDecisions: 14,
-    includedSuccess: 8,
-    unexpected: 0,
-    components: { sender: 30000, payer: 67200, signature: 2800, cap: 100000 },
-    samples: [
-      { value: 67199, region: 'below', outcome: 'accepted' },
-      { value: 67200, region: 'at', outcome: 'accepted' },
-      { value: 67201, region: 'above', outcome: 'rejected' },
-    ],
-  },
-  uniswap: {
-    file: 'evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json',
-    capturedAt: '2026-11-05T22:04:27.052Z',
-    sha256: 'c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6',
-    rows: [
-      {
-        id: 'basic-baseline-50000',
-        label: 'Basic sponsored transaction',
-        public: { admission: 'accepted', receipt: 'INCLUDED_SUCCESS' },
-        alt: { admission: 'accepted', receipt: 'INCLUDED_SUCCESS' },
-      },
-      {
-        id: 'unstaked-baseline-50000',
-        label: 'Unstaked Uniswap v4 pool read',
-        public: { admission: 'rejected', receipt: 'NOT_CHECKED' },
-        alt: { admission: 'rejected', receipt: 'NOT_CHECKED' },
-      },
-      {
-        id: 'staked-baseline-50000',
-        label: 'Staked Uniswap v4 pool read',
-        public: { admission: 'rejected', receipt: 'NOT_CHECKED' },
-        alt: { admission: 'accepted', receipt: 'INCLUDED_SUCCESS', hash: '0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c' },
-      },
-    ],
-  },
-  arkiv: {
-    gasEntity: '0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1',
-    uniswapEntity: '0x6779cf38a4398eb90da94b11885e691b84a6bb09dda59974cf5b8f1a21db773e',
-    note: 'Publisher-claimed LIVE evidence is not independently attested by Arkiv.',
-  },
-  swarm: {
-    contractsCompiled: true,
-    offlineSignatureBinding: true,
-    readOnlyPreflight: true,
-    liveAuthorization: false,
-    llmCalls: true,
-    independentLiveReproduction: false,
-    artifact: 'evidence/investigator/2026-11-06/sonnet-retry-2.json',
-  },
-  testsAtCheckpoint: 119,
-  disclaimer: 'EIP-8141 experimental environment only. No mainnet frame support is claimed.',
+import {EVIDENCE_FACTS as facts} from './evidence-facts.js';
+const gasFile=Object.keys(facts.sources).find(p=>p.includes('/mutations/'));
+const uniswapFile=Object.keys(facts.sources).find(p=>p.includes('/live/'));
+const labels=['Basic sponsored transaction','Unstaked Uniswap v4 pool read','Staked Uniswap v4 pool read'];
+export const BRIEFING={
+ generatedFrom:'canonical evidence + docs/TEST_CHECKPOINT.json',
+ gasCampaign:{file:gasFile,capturedAt:facts.gas.capturedAt,sha256:facts.sources[gasFile],variants:facts.gas.variants,admissionChecks:facts.gas.decisions,
+  matchedDecisions:facts.gas.matches,includedSuccess:facts.gas.included,unexpected:facts.gas.decisions-facts.gas.matches,
+  components:{sender:facts.gas.components.sender,payer:facts.gas.components.payer,signature:facts.gas.components.signature,cap:facts.gas.components.cap},
+  samples:facts.gas.samples},
+ uniswap:{file:uniswapFile,capturedAt:facts.uniswap.capturedAt,sha256:facts.sources[uniswapFile],rows:facts.uniswap.rows.map((r,i)=>({id:r.id,label:labels[i],...Object.fromEntries(r.paths.map(p=>[p.id,{admission:p.admission,receipt:p.receipt.toUpperCase(),hash:p.hash}]))}))},
+ arkiv:{gasEntity:facts.arkiv.publications[0].entityKey,uniswapEntity:facts.arkiv.publications[1].entityKey,published:facts.arkiv.publications.length,note:'Historical writes; publisher outcomes are claims, not chain execution attested by Arkiv.'},
+ swarm:{contractsCompiled:true,offlineSignatureBinding:true,readOnlyPreflight:true,liveAuthorization:false,llmCalls:facts.sonnet.calls>0,
+  independentLiveReproduction:false,artifact:'evidence/investigator/2026-11-06/sonnet-retry-2.json'},
+ sonnet:facts.sonnet,testsAtCheckpoint:facts.testCheckpoint.passed,testCheckpoint:facts.testCheckpoint,
+ disclaimer:'EIP-8141 experimental environment only. No mainnet frame support is claimed.'
 };
 
 export const SLIDES = [
@@ -103,7 +58,7 @@ export const FAQ = [
   },
   {
     q: 'Is the AI swarm working?',
-    a: 'Four real Sonnet responses drove two offline signature-binding experiments with fresh-process reproduction. No owned-validator EVM execution or vulnerability is proven.',
+    a: `${BRIEFING.sonnet.calls} real Sonnet responses drove ${BRIEFING.sonnet.experiments} offline signature-binding experiments with ${BRIEFING.sonnet.replayed} fresh-process replays. No owned-validator EVM execution or vulnerability is proven.`,
   },
   {
     q: 'How is admission different from inclusion and action execution?',
