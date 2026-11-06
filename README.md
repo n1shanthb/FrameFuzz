@@ -153,3 +153,7 @@ Read [AGENTS.md](AGENTS.md), [AUTHORITY.md](AUTHORITY.md), [CURRENT_STATUS.md](C
 Opt in with `FRAMEFUZZ_SWARM=on`, configure `OPENROUTER_API_KEY` in the launching terminal and select `OPENROUTER_MODEL=anthropic/claude-sonnet-4.6` (or `sonnet`). Run `node bin/framefuzz.mjs swarm investigate --mode openrouter`, or open Swarm Lab on the normal dashboard and authorize bounded model requests. No blockchain writes are available. [Investigator setup, budgets, exports and replay](docs/INVESTIGATOR.md).
 
 The implemented loop uses one model with three specialist perspectives and an observation-conditioned follow-up. Results are OFFLINE_SIGNATURE_BINDING, not EVM execution or a verified vulnerability. The real Sonnet4.6 demonstration completed four validated model calls, two model-selected experiments and independent descriptor replays; 93 tests pass. Evidence: `evidence/investigator/2026-11-06/sonnet-retry-2.json`. This proves offline signature binding only. [Current live compatibility blockers](docs/LIVE_COMPATIBILITY_AUDIT.md).
+
+### Isolated self-funded candidate
+
+`swarm self-funded-readiness` prepares a two-frame sender-as-payer variant using the actual Sonnet descriptor. It removes the separate PAYMENT sponsor from this candidate, but remains PLAUSIBLE_UNVERIFIED with no live execution.107tests pass. [Feasibility, funding caps and alternative devnet observations](docs/SELF_FUNDED_FEASIBILITY.md). Original sponsored flow remains intact.

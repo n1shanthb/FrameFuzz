@@ -1,5 +1,15 @@
 # Build status — Arkiv regression registry and mutation engine
 
+## Phase3B self-funded feasibility - preparation complete
+
+SELF_FUNDED_PATH PLAUSIBLE_UNVERIFIED. Separate two-frame self-funded validators, builder, fee-bound calculation, versioned configuration and normalized-evidence oracle implemented. Sponsored contracts/scene/UI/evidence unchanged; sponsored compiler digest unchanged. Both variants compile offline;107tests pass/0failed (all99retained). Sonnet record(2,10) descriptor preserved exactly; derived action frame1 mapping explicit. No new model calls or live execution.
+
+Source supports SelfVerify scope3 charging sender; runtime canonical hash/helpers/validation gas remain UNVERIFIED. Proposal removes PAYMENT sponsor dependency, but needs deployer/owner and four funded owned senders. Per sender cap/funding target0.001 test ETH;5deployments+4fundings+4submissions,0.066 total proposed cap/source-wallet funding target (funding principal pays frame fees, counted once). Fresh independent context is another13transactions/0.066 cap, not authorized. Exact CREATE addresses and post-constructor account nonces unresolved.
+
+Official devnet1/2/3 RPC+gateway reads: all six hosts transport-failed from this environment;24initial+3secondhead requests. Chain IDs/versions/advancement/methods/envelopes UNKNOWN; second RPC reads ECONNRESET. No simulation/send/admin/faucet calls, allowlist changes, deployments, transfers or publication. Funding instructions remain operator-dependent for alternatives; do not run the workshop's automatic funding step without separate approval.
+
+Read docs/SELF_FUNDED_FEASIBILITY.md and evidence/swarm/phase-3b/. Next: STOP live work. Resolve securely configured owned funded context, exact deployment/sender funding addresses and runtime baseline strategy, then seek separate approval. If unavailable, preserve offline Sonnet and historical LIVE demo. No sponsor restoration is required by the new isolated candidate. Earlier checkpoints below are historical.
+
 ## Phase 3 readiness - stopped before live approval
 
 Implemented gated swarm readiness preparation consuming actual Sonnet experiment variant1 record(2,10), with strict descriptor/source checks, conditional5-deployment/4-submission plan, full bytecode digests, cap0.064 test ETH excluding unresolved sponsor funding, and no signing/write capability. Exact manifest docs/PHASE3_MANIFEST.md; compatibility report docs/PHASE3_COMPATIBILITY.md; evidence evidence/swarm/phase-3/.
@@ -356,3 +366,16 @@ With FRAMEFUZZ_SWARM=on:
 - node scripts/live-evidence.mjs --check:Committed evidence guide matches. Protected-path diff vs27ab379 empty.
 
 No transaction hashes or receipts exist for this task:0 transactions sent.
+
+## Phase3B exact verification
+
+- node --test test/swarm-self-funded.test.mjs:8passed.
+- npm test, loopback permitted:107passed/0failed; final complete run20.818s; normalized-oracle guards included. Original99retained. No external broadcasts/paid model calls from tests.
+- node scripts/live-evidence.mjs --check:Committed evidence guide matches.
+- compileOwnedFixtures():sponsored input digest unchanged; compileOwnedFixtures({variant:'self-funded-v1'}):both new validators compile under solc0.8.28, input454b5c58d3f7f874729abce73f864cecd43d7315775701d1bc18e52b0ef58f71.
+- Executed offline CLI: node --env-file=.env bin/framefuzz.mjs swarm self-funded-readiness --investigation evidence/investigator/2026-11-06/sonnet-retry-2.json --preflight evidence/swarm/phase-3/preflight.json --head evidence/swarm/phase-3/head-second.json --variant 1 --output evidence/swarm/phase-3b/self-funded-readiness.json (FRAMEFUZZ_SWARM=on).
+- surveyDevnets():24 read calls to the exact official listing endpoints, then surveyDevnets({previous:first}):3secondhead calls. Captures record transport errors; no fallback host/path probing. Source evidence extracted from already pinned phase3 source, local workshop/PoC; no private funding file fetched.
+- Environment presence checks only: FRAMEFUZZ_DEPLOYER_KEY false, FRAMEFUZZ_SWARM_OWNER_ADDRESS false. Values never logged.
+- Protected-path diff vsb15df81 empty for original contracts, all prior evidence, premium web and preflight execution allowlist.
+
+Transactions/receipts for Phase3B:none. No funding, deploy, broadcast, faucet use, publication or visibility change.

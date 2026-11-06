@@ -1,5 +1,15 @@
 # Current status
 
+## Phase3B self-funded feasibility - preparation complete
+
+SELF_FUNDED_PATH PLAUSIBLE_UNVERIFIED. Separate two-frame self-funded validators, builder, fee-bound calculation, versioned configuration and normalized-evidence oracle implemented. Sponsored contracts/scene/UI/evidence unchanged; sponsored compiler digest unchanged. Both variants compile offline;107tests pass/0failed (all99retained). Sonnet record(2,10) descriptor preserved exactly; derived action frame1 mapping explicit. No new model calls or live execution.
+
+Source supports SelfVerify scope3 charging sender; runtime canonical hash/helpers/validation gas remain UNVERIFIED. Proposal removes PAYMENT sponsor dependency, but needs deployer/owner and four funded owned senders. Per sender cap/funding target0.001 test ETH;5deployments+4fundings+4submissions,0.066 total proposed cap/source-wallet funding target (funding principal pays frame fees, counted once). Fresh independent context is another13transactions/0.066 cap, not authorized. Exact CREATE addresses and post-constructor account nonces unresolved.
+
+Official devnet1/2/3 RPC+gateway reads: all six hosts transport-failed from this environment;24initial+3secondhead requests. Chain IDs/versions/advancement/methods/envelopes UNKNOWN; second RPC reads ECONNRESET. No simulation/send/admin/faucet calls, allowlist changes, deployments, transfers or publication. Funding instructions remain operator-dependent for alternatives; do not run the workshop's automatic funding step without separate approval.
+
+Read docs/SELF_FUNDED_FEASIBILITY.md and evidence/swarm/phase-3b/. Next: STOP live work. Resolve securely configured owned funded context, exact deployment/sender funding addresses and runtime baseline strategy, then seek separate approval. If unavailable, preserve offline Sonnet and historical LIVE demo. No sponsor restoration is required by the new isolated candidate. Earlier checkpoints below are historical.
+
 ## Phase 3 readiness - stopped before live approval
 
 Implemented gated swarm readiness preparation consuming actual Sonnet experiment variant1 record(2,10), with strict descriptor/source checks, conditional5-deployment/4-submission plan, full bytecode digests, cap0.064 test ETH excluding unresolved sponsor funding, and no signing/write capability. Exact manifest docs/PHASE3_MANIFEST.md; compatibility report docs/PHASE3_COMPATIBILITY.md; evidence evidence/swarm/phase-3/.

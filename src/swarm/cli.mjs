@@ -8,10 +8,11 @@ export async function swarmCommand(options){
   const [action='offline']=options._;let report;
   if(action==='offline')report=await(await import('./offline.mjs')).offlineSwarm({seed:options.seed===undefined?42:Number(options.seed)});
   else if(action==='preflight')report=await(await import('./preflight.mjs')).swarmPreflight({deployer:options.deployer,owner:options.owner});
-  else if(action==='readiness'){
+  else if(['readiness','self-funded-readiness'].includes(action)){
     if(!options.investigation||!options.preflight||!options.head)throw new Error('Readiness requires --investigation, --preflight and --head evidence files');
     const load=async file=>JSON.parse(await readFile(file,'utf8'));
-    report=await(await import('./readiness.mjs')).prepareLiveProof({investigation:await load(options.investigation),preflight:await load(options.preflight),secondHead:await load(options.head),variant:Number(options.variant??1)});
+    const preparation={investigation:await load(options.investigation),preflight:await load(options.preflight),secondHead:await load(options.head),variant:Number(options.variant??1)};
+    report=action==='readiness'?await(await import('./readiness.mjs')).prepareLiveProof(preparation):await(await import('./self-funded.mjs')).prepareSelfFundedReadiness(preparation);
   }
   else if(action==='investigate'){
     if(options.offline&&options.mode==='openrouter')throw new Error('Offline mode prohibits model network requests');

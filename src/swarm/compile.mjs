@@ -10,11 +10,14 @@ const packageRoot=path.dirname(createRequire(import.meta.url).resolve('@forshtat
 export const FIXTURES=['SenderValidatorUnsafe','SenderValidatorSafe','ActionRecorder'];
 const sha=x=>createHash('sha256').update(x).digest('hex');
 const cache=new Map();
-export async function compileOwnedFixtures(){
+export async function compileOwnedFixtures({variant='sponsored'}={}){
   assertSwarmEnabled();
+  if(!['sponsored','self-funded-v1'].includes(variant))throw new Error('Unknown owned compilation variant');
+  const self=variant==='self-funded-v1',fixtures=self?['SenderValidatorUnsafeSelfFunded','SenderValidatorSafeSelfFunded','ActionRecorder']:FIXTURES;
+  const sourcePath=name=>self&&name!=='ActionRecorder'?`contracts/self-funded/${name}.sol`:`contracts/${name}.sol`;
   if(!solc.version().startsWith('0.8.28+'))throw new Error('Exact solc 0.8.28 compiler required');
   const sources={};
-  for(const name of [...FIXTURES,'OwnedValidatorBase'])sources[`contracts/${name}.sol`]={content:await readFile(path.join(root,'contracts',name+'.sol'),'utf8')};
+  for(const name of [...fixtures,self?'OwnedSelfFundedBase':'OwnedValidatorBase'])sources[sourcePath(name)]={content:await readFile(path.join(root,sourcePath(name)),'utf8')};
   async function imports(dir,prefix){for(const e of await readdir(dir,{withFileTypes:true})){if(e.isDirectory())await imports(path.join(dir,e.name),prefix+e.name+'/');else if(e.name.endsWith('.sol'))sources[prefix+e.name]={content:await readFile(path.join(dir,e.name),'utf8')};}}
   await imports(path.join(packageRoot,'contracts'),'@forshtat/hegota-support/contracts/');
   const settings={optimizer:{enabled:true,runs:200},evmVersion:'cancun',outputSelection:{'*':{'*':['abi','evm.bytecode.object','evm.deployedBytecode.object','evm.deployedBytecode.immutableReferences']}}};
@@ -22,7 +25,7 @@ export async function compileOwnedFixtures(){
   if(cache.has(inputDigest))return structuredClone(cache.get(inputDigest));
   const output=JSON.parse(solc.compile(JSON.stringify(input)));
   const errors=(output.errors??[]).filter(e=>e.severity==='error');if(errors.length)throw new Error(errors.map(e=>e.formattedMessage).join('\n'));
-  const artifacts={};for(const name of FIXTURES){const c=output.contracts?.[`contracts/${name}.sol`]?.[name];if(!c?.evm.bytecode.object)throw new Error('Missing owned fixture artifact '+name);artifacts[name]={contract:name,source:`contracts/${name}.sol`,abi:c.abi,bytecode:'0x'+c.evm.bytecode.object,deployedBytecode:'0x'+c.evm.deployedBytecode.object,immutableReferences:c.evm.deployedBytecode.immutableReferences};}
+  const artifacts={};for(const name of fixtures){const c=output.contracts?.[sourcePath(name)]?.[name];if(!c?.evm.bytecode.object)throw new Error('Missing owned fixture artifact '+name);artifacts[name]={contract:name,source:sourcePath(name),abi:c.abi,bytecode:'0x'+c.evm.bytecode.object,deployedBytecode:'0x'+c.evm.deployedBytecode.object,immutableReferences:c.evm.deployedBytecode.immutableReferences};}
   const result={schema:'framefuzz.swarm-compilation.v1',compiler:solc.version(),inputDigest,settings,sourceDigests:Object.fromEntries(Object.entries(sources).map(([name,s])=>[name,sha(s.content)])),artifacts};
   cache.set(inputDigest,result);return structuredClone(result);
 }

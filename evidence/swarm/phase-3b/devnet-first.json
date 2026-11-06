@@ -1,0 +1,275 @@
+{
+  "schema": "framefuzz.devnet-read-survey.v1",
+  "source": "READ_ONLY_NETWORK_DISCOVERY",
+  "officialListing": "https://ethglobal.com/events/mumbai/prizes",
+  "generatedAt": "2026-11-06T08:27:56.553Z",
+  "requestCount": 24,
+  "observations": [
+    {
+      "network": 2,
+      "endpoint": "https://devnet2.altmempool.wtf",
+      "method": "eth_chainId",
+      "observedAt": "2026-11-06T08:27:49.745Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_chainId: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://devnet3.altmempool.wtf",
+      "method": "eth_chainId",
+      "observedAt": "2026-11-06T08:27:49.746Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_chainId: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://devnet1.altmempool.wtf",
+      "method": "eth_chainId",
+      "observedAt": "2026-11-06T08:27:49.721Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_chainId: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://devnet2.altmempool.wtf",
+      "method": "web3_clientVersion",
+      "observedAt": "2026-11-06T08:27:50.737Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling web3_clientVersion: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://devnet1.altmempool.wtf",
+      "method": "web3_clientVersion",
+      "observedAt": "2026-11-06T08:27:50.791Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling web3_clientVersion: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://devnet3.altmempool.wtf",
+      "method": "web3_clientVersion",
+      "observedAt": "2026-11-06T08:27:50.768Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling web3_clientVersion: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://devnet2.altmempool.wtf",
+      "method": "eth_getBlockByNumber",
+      "observedAt": "2026-11-06T08:27:51.160Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_getBlockByNumber: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://devnet1.altmempool.wtf",
+      "method": "eth_getBlockByNumber",
+      "observedAt": "2026-11-06T08:27:51.230Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_getBlockByNumber: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://devnet3.altmempool.wtf",
+      "method": "eth_getBlockByNumber",
+      "observedAt": "2026-11-06T08:27:51.584Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_getBlockByNumber: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://devnet2.altmempool.wtf",
+      "method": "rpc_modules",
+      "observedAt": "2026-11-06T08:27:52.003Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling rpc_modules: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://devnet1.altmempool.wtf",
+      "method": "rpc_modules",
+      "observedAt": "2026-11-06T08:27:52.039Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling rpc_modules: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://devnet3.altmempool.wtf",
+      "method": "rpc_modules",
+      "observedAt": "2026-11-06T08:27:52.509Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling rpc_modules: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://gateway2.altmempool.wtf",
+      "method": "eth_chainId",
+      "observedAt": "2026-11-06T08:27:52.831Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_chainId: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://gateway1.altmempool.wtf",
+      "method": "eth_chainId",
+      "observedAt": "2026-11-06T08:27:52.969Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_chainId: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://gateway3.altmempool.wtf",
+      "method": "eth_chainId",
+      "observedAt": "2026-11-06T08:27:53.341Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling eth_chainId: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://gateway2.altmempool.wtf",
+      "method": "web3_clientVersion",
+      "observedAt": "2026-11-06T08:27:53.798Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling web3_clientVersion: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://gateway1.altmempool.wtf",
+      "method": "web3_clientVersion",
+      "observedAt": "2026-11-06T08:27:53.896Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling web3_clientVersion: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://gateway3.altmempool.wtf",
+      "method": "web3_clientVersion",
+      "observedAt": "2026-11-06T08:27:54.291Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling web3_clientVersion: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://gateway1.altmempool.wtf",
+      "method": "skandha_explorer_info",
+      "observedAt": "2026-11-06T08:27:54.751Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling skandha_explorer_info: fetch failed"
+      }
+    },
+    {
+      "network": 1,
+      "endpoint": "https://gateway1.altmempool.wtf",
+      "method": "rpc_modules",
+      "observedAt": "2026-11-06T08:27:55.589Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling rpc_modules: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://gateway2.altmempool.wtf",
+      "method": "skandha_explorer_info",
+      "observedAt": "2026-11-06T08:27:54.737Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling skandha_explorer_info: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://gateway2.altmempool.wtf",
+      "method": "rpc_modules",
+      "observedAt": "2026-11-06T08:27:55.678Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling rpc_modules: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://gateway3.altmempool.wtf",
+      "method": "skandha_explorer_info",
+      "observedAt": "2026-11-06T08:27:55.172Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling skandha_explorer_info: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://gateway3.altmempool.wtf",
+      "method": "rpc_modules",
+      "observedAt": "2026-11-06T08:27:56.075Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "message": "Transport error calling rpc_modules: fetch failed"
+      }
+    }
+  ],
+  "executionAllowlistChanged": false,
+  "broadcasts": 0
+}

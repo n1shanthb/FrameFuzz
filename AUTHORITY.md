@@ -42,3 +42,6 @@ The user explicitly requested a real bounded investigator using OpenRouter and s
 
 ## Phase3 authority
 User explicitly authorizes a short read-only readiness pass and conditional owned proof harness only. STOP before deployment, broadcast, test-ETH spending or Arkiv publication. Phase3 P5 stops live work when sponsor/wallet/runtime compatibility cannot be established. Exact manifest and source report are in docs/PHASE3_MANIFEST.md and docs/PHASE3_COMPATIBILITY.md. No separate live approval has been given.
+
+## Phase3B authority
+User authorizes isolated self_verify code, offline feasibility/signing tests, and read-only inspection of the three officially listed devnets. These hosts are survey-only, not additions to execution allowlists. No deployment, transfer/faucet funding, signed broadcast, Arkiv write or endpoint switch is authorized. Runtime uncertainty and funding/address gates remain. See docs/SELF_FUNDED_FEASIBILITY.md.

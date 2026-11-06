@@ -1,0 +1,441 @@
+{
+  "schema": "framefuzz.self-funded-readiness.v1",
+  "generatedAt": "2026-11-06T08:38:29.096Z",
+  "SELF_FUNDED_PATH": "PLAUSIBLE_UNVERIFIED",
+  "configuration": {
+    "version": "framefuzz.self-funded.v1",
+    "chainId": 1337,
+    "profile": "ethrex-eip8141-tracer",
+    "layout": "VERIFY(EXECUTION_AND_PAYMENT,sender) -> SENDER(ActionRecorder)",
+    "verificationData": "0x01",
+    "verificationExecutionGas": 60000,
+    "actionExecutionGas": 150000,
+    "actionStateGas": 200000,
+    "maxTotalGas": 500000,
+    "maxFeePerGasWei": "2000000000",
+    "maxFeePerSenderWei": "1000000000000000",
+    "originalModelReport": "evidence/investigator/2026-11-06/sonnet-retry-2.json",
+    "originalVariant": 1,
+    "originalDescriptorDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76",
+    "executionAuthorized": false,
+    "runtimeCompatibility": "UNVERIFIED"
+  },
+  "classification": "OFFLINE_SELF_FUNDED_PREPARATION",
+  "sourceSupport": "Advertised ethrex SelfVerify prefix + APPROVE scope3; workshop/PoC examples; source vector matches. Runtime execution not verified.",
+  "chainId": 1337,
+  "endpoints": {
+    "admission": "https://altmempool.forshtat.com/rpc",
+    "execution": "https://altmempool.forshtat.com"
+  },
+  "executionAllowlistChanged": false,
+  "originalModel": {
+    "provider": "OpenRouter",
+    "name": "anthropic/claude-sonnet-4.6",
+    "proposal": {
+      "suite": "frame-authorization",
+      "assumption": "SenderValidatorUnsafe omits calldata (operation and parameter) from the hash, so a record(1,10) signature should also recover OWNER for a different operation value like record(2,10), since neither field is committed.",
+      "change": "operation",
+      "operation": 2,
+      "parameter": 10,
+      "unsafePrediction": "OWNER_RECOVERED",
+      "safePrediction": "OWNER_NOT_RECOVERED",
+      "falsifier": "If unsafe recovers OWNER for record(2,10) with the record(1,10) signature, operation exclusion is independently confirmed; if not, some other per-call field may still bind implicitly.",
+      "revision": "Prior test confirmed parameter exclusion; this tests operation exclusion orthogonally. Remaining untested: whether nonce-per-call differences affect the unsafe hash across replays of the same record."
+    },
+    "mutationValues": {
+      "operation": 2,
+      "parameter": 10
+    },
+    "descriptorDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76"
+  },
+  "derivation": {
+    "schema": "framefuzz.self-funded-derivation.v1",
+    "originalDescriptor": {
+      "schema": "framefuzz.offline-regression.v1",
+      "executionClass": "OFFLINE_SIGNATURE_BINDING",
+      "mutation": {
+        "schema": "framefuzz.frame-mutation.v2",
+        "definition": {
+          "version": "framefuzz.semantic.v2",
+          "suite": "frame-authorization",
+          "seed": 42,
+          "authorizedAction": {
+            "operation": 1,
+            "parameter": 10
+          },
+          "mutation": {
+            "type": "replace-action-calldata",
+            "frameIndex": 2,
+            "operation": 2,
+            "parameter": 10
+          },
+          "invariants": {
+            "retainTarget": true,
+            "retainOwnerAuthorization": true,
+            "retainNonce": true,
+            "frameCount": 3
+          }
+        },
+        "definitionDigest": "9caa33713b6478847b23394cf27013166e8398c4f2724ec0f87e515a6af0cb14",
+        "authorized": {
+          "operation": 1,
+          "parameter": 10,
+          "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+        },
+        "tampered": {
+          "operation": 2,
+          "parameter": 10,
+          "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a"
+        },
+        "targetUnchanged": true,
+        "witnessPolicy": "Reuse the original authorization for A; never sign B"
+      },
+      "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+      "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+      "sourceDigests": {
+        "contracts/SenderValidatorUnsafe.sol": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "contracts/SenderValidatorSafe.sol": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9",
+        "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+        "contracts/OwnedValidatorBase.sol": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d",
+        "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+        "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+        "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+        "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+        "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+        "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+      },
+      "semanticProperties": {
+        "unsafe": {
+          "sameWitness": true,
+          "sameTarget": true,
+          "canonicalHashChanged": true,
+          "authorizedOwnerRecovered": true,
+          "tamperedOwnerRecovered": true
+        },
+        "safe": {
+          "sameWitness": true,
+          "sameTarget": true,
+          "canonicalHashChanged": true,
+          "authorizedOwnerRecovered": true,
+          "tamperedOwnerRecovered": false
+        }
+      },
+      "contentDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76"
+    },
+    "originalDescriptorDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76",
+    "completeDescriptorSha256": "4839d52f6f12e5e77b7f3387943294c974328d38fdbaeedc406aa2b22abca5e3",
+    "originalActionFrameIndex": 2,
+    "preparedActionFrameIndex": 1,
+    "paymentChange": "Sender is also payer; scope3 replaces separate PAYMENT frame"
+  },
+  "compiler": {
+    "version": "0.8.28+commit.7893614a.Emscripten.clang",
+    "inputDigest": "454b5c58d3f7f874729abce73f864cecd43d7315775701d1bc18e52b0ef58f71",
+    "sourceDigests": {
+      "contracts/self-funded/SenderValidatorUnsafeSelfFunded.sol": "04b5f809e0b527a857694c8923406f52f1be218585d12f82a80691c639b826a4",
+      "contracts/self-funded/SenderValidatorSafeSelfFunded.sol": "abecec3620b3fc0fde0b91f52ad447379f9c1446d3c99a2cebb4cd3bf87d9499",
+      "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+      "contracts/self-funded/OwnedSelfFundedBase.sol": "72742d2e461ed488c26e1f50cce44b20c920172afb1a7e402c8b34c09d360e8c",
+      "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+      "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+      "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+      "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+      "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+      "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+    }
+  },
+  "compatibility": {
+    "source": "https://raw.githubusercontent.com/lambdaclass/ethrex/9aa3645d795945c64400f41a70aace0edfa7f383/crates/common/types/transaction.rs",
+    "sourceSha256": "8c657bde609a6bec61986e774dd2fd90526045eaaa35b8c5afc58f5b43f8d669",
+    "test": "golden_frame_tx_rlp_and_sig_hash",
+    "expectedHash": "0xd4df51143828c0338882dbd10c3308f3569972fe1928a7b5040ee18057920510",
+    "actualHash": "0xd4df51143828c0338882dbd10c3308f3569972fe1928a7b5040ee18057920510",
+    "byteRoundtrip": true,
+    "sourceVectorMatches": true,
+    "workshopCommitsToWitnessLength": false,
+    "currentEipCommitsToWitnessLength": true,
+    "sourceAgreement": "VERIFIED_VECTOR",
+    "runtimeCompatibility": "UNVERIFIED",
+    "reason": "Advertised commit source/vector agrees; no runtime canonical hash response or owned baseline execution obtained"
+  },
+  "requiresSeparateSponsor": false,
+  "requiresFundedSender": true,
+  "requiresFundedDeployer": true,
+  "feeExposure": {
+    "wireBytes": "243",
+    "gasUpperBound": "438502",
+    "derivedMaxFeeUpperBoundWei": "877004000000000",
+    "proposedFeeCapWei": "1000000000000000",
+    "requiredFundingWei": "1000000000000000",
+    "assumption": "Pinned advertised-client gas schedule; runtime unverified. Contract independently checks TXPARAM(MAX_COST) <=cap.",
+    "sizing": "Synthetic length-only envelope with safe-integer nonce upper bound; no address is claimed deployed",
+    "senderCount": 4,
+    "allSenderFundingWei": "4000000000000000",
+    "deploymentFeeCapWei": "60000000000000000",
+    "fundingTransferCount": 4,
+    "fundingTransferGasCap": 250000,
+    "fundingTransferFeeCapWei": "2000000000000000",
+    "sourceWalletFundingTargetWei": "66000000000000000",
+    "maximumTotalFeesWei": "66000000000000000",
+    "accounting": "0.06 deployment +0.002 transfer fees +0.004 prefunded frame fees; frame fees consume sender funding, never count it twice. Residual balances remain owned. All values proposed, no transfers performed."
+  },
+  "deployments": [
+    {
+      "role": "action",
+      "contract": "ActionRecorder",
+      "address": null,
+      "constructorArguments": [],
+      "creationBytecodeHash": "0x607ee6be8b39717320d707606f5848c39c76da9aa599af2c32f8275eb411eeab",
+      "initCodeHash": "0x607ee6be8b39717320d707606f5848c39c76da9aa599af2c32f8275eb411eeab",
+      "gasCap": "6000000",
+      "maxFeePerGasWei": "2000000000",
+      "valueWei": "0"
+    },
+    {
+      "role": "unsafe_authorized",
+      "contract": "SenderValidatorUnsafeSelfFunded",
+      "address": null,
+      "constructorArguments": null,
+      "creationBytecodeHash": "0x872ef454ac31077a31e178d3b90021537ae4fd9ff530eed230e31a3fb495ba5b",
+      "initCodeHash": null,
+      "gasCap": "6000000",
+      "maxFeePerGasWei": "2000000000",
+      "valueWei": "0"
+    },
+    {
+      "role": "unsafe_tampered",
+      "contract": "SenderValidatorUnsafeSelfFunded",
+      "address": null,
+      "constructorArguments": null,
+      "creationBytecodeHash": "0x872ef454ac31077a31e178d3b90021537ae4fd9ff530eed230e31a3fb495ba5b",
+      "initCodeHash": null,
+      "gasCap": "6000000",
+      "maxFeePerGasWei": "2000000000",
+      "valueWei": "0"
+    },
+    {
+      "role": "safe_authorized",
+      "contract": "SenderValidatorSafeSelfFunded",
+      "address": null,
+      "constructorArguments": null,
+      "creationBytecodeHash": "0xddf78c2bd7d05572a929cdec17776c741f883193973a588a29609e94058c0345",
+      "initCodeHash": null,
+      "gasCap": "6000000",
+      "maxFeePerGasWei": "2000000000",
+      "valueWei": "0"
+    },
+    {
+      "role": "safe_tampered",
+      "contract": "SenderValidatorSafeSelfFunded",
+      "address": null,
+      "constructorArguments": null,
+      "creationBytecodeHash": "0xddf78c2bd7d05572a929cdec17776c741f883193973a588a29609e94058c0345",
+      "initCodeHash": null,
+      "gasCap": "6000000",
+      "maxFeePerGasWei": "2000000000",
+      "valueWei": "0"
+    }
+  ],
+  "cases": [
+    {
+      "role": "unsafe_authorized",
+      "sender": null,
+      "payer": null,
+      "actionTarget": null,
+      "actionFrameIndex": 1,
+      "nonceSeq": null,
+      "nonceKeys": [
+        "0"
+      ],
+      "nonceRequirement": "Read latest/pending ACCOUNT nonce after deployment and internal helper CREATEs. Do not assume nonce0 or infer key0 nonce from NONCE_MANAGER storage.",
+      "authorizedAction": {
+        "operation": 1,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "submittedAction": {
+        "operation": 1,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "frameLayout": [
+        {
+          "mode": 1,
+          "flags": 3,
+          "target": "sender",
+          "data": "0x01",
+          "execution": 60000,
+          "state": 0
+        },
+        {
+          "mode": 2,
+          "flags": 0,
+          "target": "ActionRecorder",
+          "execution": 150000,
+          "state": 200000,
+          "valueWei": "0"
+        }
+      ],
+      "signaturePolicy": "Sign A per actual isolated context; retain its original ARBITRARY65-byte r||s||v witness for B. No signed transaction is generated by this plan.",
+      "requiredSenderBalanceWei": "1000000000000000",
+      "maximumFeeWei": "1000000000000000",
+      "expected": "ACTION_EXECUTED_HYPOTHESIS"
+    },
+    {
+      "role": "unsafe_tampered",
+      "sender": null,
+      "payer": null,
+      "actionTarget": null,
+      "actionFrameIndex": 1,
+      "nonceSeq": null,
+      "nonceKeys": [
+        "0"
+      ],
+      "nonceRequirement": "Read latest/pending ACCOUNT nonce after deployment and internal helper CREATEs. Do not assume nonce0 or infer key0 nonce from NONCE_MANAGER storage.",
+      "authorizedAction": {
+        "operation": 1,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "submittedAction": {
+        "operation": 2,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "frameLayout": [
+        {
+          "mode": 1,
+          "flags": 3,
+          "target": "sender",
+          "data": "0x01",
+          "execution": 60000,
+          "state": 0
+        },
+        {
+          "mode": 2,
+          "flags": 0,
+          "target": "ActionRecorder",
+          "execution": 150000,
+          "state": 200000,
+          "valueWei": "0"
+        }
+      ],
+      "signaturePolicy": "Sign A per actual isolated context; retain its original ARBITRARY65-byte r||s||v witness for B. No signed transaction is generated by this plan.",
+      "requiredSenderBalanceWei": "1000000000000000",
+      "maximumFeeWei": "1000000000000000",
+      "expected": "ACTION_EXECUTED_HYPOTHESIS"
+    },
+    {
+      "role": "safe_authorized",
+      "sender": null,
+      "payer": null,
+      "actionTarget": null,
+      "actionFrameIndex": 1,
+      "nonceSeq": null,
+      "nonceKeys": [
+        "0"
+      ],
+      "nonceRequirement": "Read latest/pending ACCOUNT nonce after deployment and internal helper CREATEs. Do not assume nonce0 or infer key0 nonce from NONCE_MANAGER storage.",
+      "authorizedAction": {
+        "operation": 1,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "submittedAction": {
+        "operation": 1,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "frameLayout": [
+        {
+          "mode": 1,
+          "flags": 3,
+          "target": "sender",
+          "data": "0x01",
+          "execution": 60000,
+          "state": 0
+        },
+        {
+          "mode": 2,
+          "flags": 0,
+          "target": "ActionRecorder",
+          "execution": 150000,
+          "state": 200000,
+          "valueWei": "0"
+        }
+      ],
+      "signaturePolicy": "Sign A per actual isolated context; retain its original ARBITRARY65-byte r||s||v witness for B. No signed transaction is generated by this plan.",
+      "requiredSenderBalanceWei": "1000000000000000",
+      "maximumFeeWei": "1000000000000000",
+      "expected": "ACTION_EXECUTED_HYPOTHESIS"
+    },
+    {
+      "role": "safe_tampered",
+      "sender": null,
+      "payer": null,
+      "actionTarget": null,
+      "actionFrameIndex": 1,
+      "nonceSeq": null,
+      "nonceKeys": [
+        "0"
+      ],
+      "nonceRequirement": "Read latest/pending ACCOUNT nonce after deployment and internal helper CREATEs. Do not assume nonce0 or infer key0 nonce from NONCE_MANAGER storage.",
+      "authorizedAction": {
+        "operation": 1,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "submittedAction": {
+        "operation": 2,
+        "parameter": 10,
+        "data": "0x377144a60000000000000000000000000000000000000000000000000000000000000002000000000000000000000000000000000000000000000000000000000000000a"
+      },
+      "frameLayout": [
+        {
+          "mode": 1,
+          "flags": 3,
+          "target": "sender",
+          "data": "0x01",
+          "execution": 60000,
+          "state": 0
+        },
+        {
+          "mode": 2,
+          "flags": 0,
+          "target": "ActionRecorder",
+          "execution": 150000,
+          "state": 200000,
+          "valueWei": "0"
+        }
+      ],
+      "signaturePolicy": "Sign A per actual isolated context; retain its original ARBITRARY65-byte r||s||v witness for B. No signed transaction is generated by this plan.",
+      "requiredSenderBalanceWei": "1000000000000000",
+      "maximumFeeWei": "1000000000000000",
+      "expected": "AUTHORIZATION_REJECTED_NO_ACTION_HYPOTHESIS"
+    }
+  ],
+  "topLevelTransactionCounts": {
+    "deployments": 5,
+    "fundingTransfers": 4,
+    "frameSubmissions": 4,
+    "total": 13
+  },
+  "actionEvidenceRequirements": [
+    "Both authorized baselines must execute record(1,10)",
+    "Individual action frame1 succeeds; matching owned ActionRecorded event, caller and parameters and recorder state",
+    "Actual receipt payer equals sender; sufficient pre-approval balance separately verified",
+    "Safe AuthorizationRejected plus canonical no-effect observation; funding/gas/nonce/transport are separate confounders",
+    "Independent reproduction requires a fresh deployment/account context and newly signed A; no exhausted nonce reuse"
+  ],
+  "blockers": [
+    "No configured funded deployer/owner or funded sender accounts",
+    "Runtime canonical hash, helper opcodes, validation gas and self-payment behavior unverified",
+    "Gateway write/inclusion health unverified by read-only discovery",
+    "Separate human authorization needed for exact deployment, sender funding and submissions; alternative endpoint/chain changes are not authorized"
+  ],
+  "technicallyReadyForApproval": false,
+  "liveTransactionsSent": 0,
+  "deploymentsSent": 0,
+  "fundingTransfersSent": 0,
+  "arkivWrites": 0
+}
