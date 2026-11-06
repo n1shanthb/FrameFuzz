@@ -44,3 +44,8 @@ Baseline164/164 tests verified; isolated compiler3 tests pass. Fixed source file
 
 ## Real agent quality / Uniswap / preflight — 2026-11-06
 178/178 tests; verify 90 modules; audit 0. ABI_TOOL_TEST vs impossible ABI fixed. Sprint OpenRouter spend $0.62201304 / $1.00. Genuine paid BYOC FreshInventoryLock COMPLETE (`8edbdf04…`, 7 calls). Genuine paid Uniswap ReserveReadingPaymaster COMPLETE (`da5e54ff…`, 7 calls, PREDICTED historical/context — not fresh admission). Arkiv ARKIV_PUBLICATION_BLOCKED. Fresh EIP-8141 FRESH_EIP8141_BLOCKED_EXTERNAL (gateway alive; no deployer key/approval). Evidence: `evidence/playground/2026-11-06/`. No push/chain/Arkiv writes.
+
+## Stage A live readiness — 2026-11-06
+Commit `cf4be7e` implements the normal `LIVE_READ_ONLY` launcher, three explicit capability modes, readiness UI/API, bounded two-endpoint chain-ID probing, credential-presence reporting without authority, exact Arkiv and first EF manifests, and a manifest-specific one-time approval stop that issues no token. Saved demo is irrevocably network/paid/write disabled even with keys.
+
+Observed real browser proof: normal server loaded `.env`; OpenRouter was configured but no call was made; Arkiv chain 7794095 and EIP-8141 chain 1337 both answered the bounded read-only probe; Arkiv and EF manifests rendered; submit stayed disabled; approval stopped with no write. `npm test` 185/185, `npm run verify` 91 modules, audit 0, preview 7 variants/0 submissions. Zero new paid calls and zero real transactions/publications/deployments/funding. No push.
