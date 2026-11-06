@@ -20,6 +20,18 @@ Open http://127.0.0.1:4192. Select historical reports in Evidence Explorer, insp
 
 Current test results are recorded in [TEST_CHECKPOINT.json](docs/TEST_CHECKPOINT.json). Briefing facts are generated from canonical evidence and this explicit checkpoint. `node scripts/briefing-facts.mjs --check` detects drift; see [verification limitations](docs/CURRENT_CAPABILITIES.md#verification-limits-and-human-delivery).
 
+## Normal launcher and Stage A readiness
+
+Normal read-only mode loads `.env`, exposes the Live Readiness panel, permits only deliberate bounded chain-ID health checks, and never makes an OpenRouter request:
+
+```powershell
+node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_READ_ONLY --results runs --port 4177
+```
+
+Exact supported environment names are `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENROUTER_ENDPOINT`, `ARKIV_PRIVATE_KEY`, `ARKIV_ACCESS_KEY`, `ARKIV_READER_ADDRESS`, `FRAMEFUZZ_DEPLOYER_KEY`, `FRAMEFUZZ_RPC`, `FRAMEFUZZ_PUBLIC_RPC`, `FRAMEFUZZ_ALT_RPC`, `FRAMEFUZZ_LIVE_CONFIG`, and opt-in `FRAMEFUZZ_SWARM=on`. Key presence reports configuration only: it does not authorize paid calls, signing, publication, or broadcast.
+
+The explicit capability modes are `SAVED_DEMO`, `LIVE_READ_ONLY`, and `LIVE_AUTHORIZED`. `SAVED_DEMO` is irrevocably network/paid/write disabled even when keys exist. Stage A `LIVE_AUTHORIZED` is still write-disabled: it prepares operation-specific manifests and stops at the one-time approval boundary. See [Stage A operations](docs/STAGE_A_OPERATIONS.md).
+
 ## What the evidence establishes
 
 - **Gas:** seven generated variants,14 historical real admission decisions,14 matches, eight included-success receipts. Sender VERIFY30000 + payer VERIFY67200 + signature2800 =100000 in the tested workshop profile.

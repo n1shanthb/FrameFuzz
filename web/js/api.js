@@ -36,4 +36,8 @@ export const api = {
   swarmRun: (body) => fetch('/api/swarm/run',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}).then(parse),
   swarmTranscript: (id) => fetch(`/api/swarm/transcript?id=${encodeURIComponent(id)}`).then(parse),
   swarmExport: (id,format='json') => `/api/swarm/export?id=${encodeURIComponent(id)}&format=${format}`,
+  readiness: () => fetch('/api/readiness').then(parse),
+  readinessProbe: () => fetch('/api/readiness/probe',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}).then(parse),
+  readinessPrepare: operation => fetch('/api/readiness/prepare',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation})}).then(parse),
+  readinessApprove: manifest => fetch('/api/readiness/approve',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation:manifest.operation,manifestDigest:manifest.manifestDigest})}).then(parse),
 };

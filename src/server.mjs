@@ -17,6 +17,7 @@ import {EXECUTION_CHAINS} from './safety.mjs';
 import {savedCommunity} from './arkiv/saved.mjs';
 import {evidenceView} from './evidence-status.mjs';
 import {createPlaygroundRoutes} from './playground/http.mjs';
+import {approvalStop,boundedReadinessProbe,capabilityModel,prepareStageAManifest} from './live-readiness.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
 const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
@@ -45,11 +46,12 @@ async function serveStatic(res, pathname) {
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
-  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env,apiReadTimeoutMs=10000,playgroundProviderFactory }) {
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env,apiReadTimeoutMs=10000,playgroundProviderFactory,capabilityMode }) {
   if(!Number.isSafeInteger(apiReadTimeoutMs)||apiReadTimeoutMs<1||apiReadTimeoutMs>15000)throw new Error('Invalid bounded API read timeout');
   let running = false;
   const configured = !offlineDemo&&Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
-  const enabled = Boolean(submit && configured && EXECUTION_CHAINS.includes(allowChainId));
+  const capabilities=capabilityModel({offlineDemo,requestedMode:offlineDemo?undefined:(capabilityMode??(submit?'LIVE_AUTHORIZED':undefined)),env:swarmEnvironment});
+  const enabled = Boolean(capabilities.mode==='LIVE_AUTHORIZED'&&submit && configured && EXECUTION_CHAINS.includes(allowChainId));
   const selectedReport=async id=>{if(!/^[\w.-]+\.json$/.test(id??''))throw new ApiError(400,'INVALID_REPORT_ID','Invalid report filename');try{return evidenceView(await loadReport(resultDir,id));}catch(e){if(e.code==='ENOENT')throw new ApiError(404,'REPORT_NOT_FOUND','Saved report not found');throw e;}};
   const swarmRoutes=createSwarmRoutes({resultDir,offlineDemo,getRunning:()=>running,setRunning:value=>{running=value;},runner:swarmRunner,env:swarmEnvironment});
   const playgroundRoutes=createPlaygroundRoutes({resultDir,offlineDemo,env:swarmEnvironment,getRunning:()=>running,setRunning:value=>{running=value;},json,providerFactory:playgroundProviderFactory});
@@ -69,9 +71,23 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         return;
       } else if (req.method === 'GET' && route.pathname === '/api/config') {
         json(res, 200, { offlineDemo,defaultRun,rpcConfigured: configured, submitEnabled: enabled, allowChainId: allowChainId ?? null, casesLocation, running,
+          capabilities,
           scenario: scenario ?? 'fixtures', scenarios: [{ id: 'fixtures', label: 'Signed case fixtures' }, ...(adapterFile && rulesFile ? SCENARIOS : [])],
           mutations:{suites:MUTATION_SUITES,maxLiveVariants:MAX_LIVE_MUTATIONS,maxPreviewVariants:1000},
           endpoints: Object.fromEntries(Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([,v]) => v).map(([k,v]) => [k, sanitizedRpcLabel(v)])) });
+      } else if(req.method==='GET'&&route.pathname==='/api/readiness'){
+        json(res,200,{capabilities,openRouter:{status:capabilities.credentials.OPENROUTER_API_KEY?'CONFIGURED_CONSENT_REQUIRED':'NOT_CONFIGURED',paidCallsEnabled:false},
+          arkiv:{status:capabilities.credentials.ARKIV_PRIVATE_KEY?'WRITER_CONFIGURED_APPROVAL_REQUIRED':'READ_ONLY_ONLY',chainId:7794095},
+          eip8141:{status:capabilities.credentials.FRAMEFUZZ_DEPLOYER_KEY?'SIGNER_CONFIGURED_APPROVAL_REQUIRED':'READ_ONLY_ONLY',chainId:1337}});
+      } else if(req.method==='POST'&&route.pathname==='/api/readiness/probe'){
+        const body=await readJsonObject(req,[],256);if(Object.keys(body).length)throw new ApiError(400,'INVALID_PROBE','Readiness probe accepts no options');
+        json(res,200,await boundedReadinessProbe({mode:capabilities.mode}));
+      } else if(req.method==='POST'&&route.pathname==='/api/readiness/prepare'){
+        const body=await readJsonObject(req,['operation'],512);
+        json(res,200,prepareStageAManifest(body.operation,{env:swarmEnvironment}));
+      } else if(req.method==='POST'&&route.pathname==='/api/readiness/approve'){
+        const body=await readJsonObject(req,['operation','manifestDigest'],512);
+        json(res,409,approvalStop(body.manifestDigest,body.operation));
       } else if(req.method==='GET'&&route.pathname==='/api/community/saved'){
         json(res,200,await savedCommunity({suite:route.searchParams.get('suite')||undefined,ruleId:route.searchParams.get('rule')||undefined,implementation:route.searchParams.get('implementation')||undefined,owner:route.searchParams.get('owner')||undefined}));
       } else if(req.method==='GET'&&route.pathname==='/api/community'){

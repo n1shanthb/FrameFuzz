@@ -17,7 +17,8 @@ FrameFuzz — EIP-8141 admission testing scaffold
 
 Usage:
   node bin/framefuzz.mjs run <cases-dir|case.json|case.mjs> --rpc <testnet-url> --allow-chain <id> [--submit] [--receipt-wait-ms 5000] [--results runs]
-  node bin/framefuzz.mjs serve --results runs [--cases examples/cases] [--port 4177] [--rpc <testnet-url> --allow-chain <id> --submit]
+  node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_READ_ONLY --results runs --port 4177
+  node bin/framefuzz.mjs serve --mode LIVE_AUTHORIZED --results runs [--rpc <testnet-url> --allow-chain <id> --submit]
   node bin/framefuzz.mjs demo --results runs
   node bin/framefuzz.mjs help
   node bin/framefuzz.mjs swarm offline --output runs/swarm-offline.json  # requires FRAMEFUZZ_SWARM=on
@@ -130,7 +131,7 @@ async function main() {
       mutationConfigFile:options.config,mutationRulesFile:options['mutation-rules'],
       allowChainId: numericArg(options['allow-chain'], null),
       submit: Boolean(options.submit), receiptWaitMs: numericArg(options['receipt-wait-ms'], 0),
-      offlineDemo:command==='saved-demo'||Boolean(options.offline),defaultRun:demo?.defaultRun,
+      offlineDemo:command==='saved-demo'||Boolean(options.offline),defaultRun:demo?.defaultRun,capabilityMode:options.mode,
     });
     server.listen(port, '127.0.0.1', () => console.log(`FrameFuzz dashboard: http://127.0.0.1:${port}\nLive submission: ${options.submit ? 'enabled with chain guard' : 'DISABLED'}`));
   } else if (command === 'mock-demo') {

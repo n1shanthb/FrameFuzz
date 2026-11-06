@@ -32,6 +32,9 @@ const state = {
   swarmBusy: false,
   swarmRecent: [],
   proposalFilter: 'all',
+  readiness: null,
+  readinessProbe: null,
+  readinessManifest: null,
 };
 
 let presentationReturnFocus=null;
@@ -65,6 +68,7 @@ function navigate(page) {
   });
   render();
   if(page==='swarm')refreshSwarm();
+  if(page==='readiness')refreshReadiness();
   window.scrollTo({ top: 0, behavior: scrollBehavior() });
 }
 
@@ -529,6 +533,32 @@ function renderArkiv() {
     </div>`;
 }
 
+function renderReadiness(){
+  const r=state.readiness,c=r?.capabilities??state.config?.capabilities,p=state.readinessProbe,m=state.readinessManifest;
+  const credentialRows=Object.entries(c?.credentials??{}).map(([name,value])=>`<div class="kv-row"><span class="mono">${esc(name)}</span><b>${value?'PRESENT · does not authorize use':'NOT CONFIGURED'}</b></div>`).join('');
+  return `<div class="card">
+    <div class="card-head"><div><div class="eyebrow">Stage A</div><h2>Live Readiness</h2><p class="summary">Inspect → prepare exact manifest → stop for separate approval</p></div><span class="pill ${c?.mode==='LIVE_AUTHORIZED'?'warn':'info'}">${esc(c?.mode??'LOADING')}</span></div>
+    <div class="alert"><strong>${esc(c?.stage??'A_STOPPED_AT_APPROVAL')}</strong> · ${esc(c?.notice??'Credentials never enable writes by themselves.')}</div>
+    <div class="grid-2" style="margin-top:16px"><div><h3>Capability model</h3><div class="kv">
+      <div class="kv-row"><span>Network reads</span><b>${c?.readOnlyNetwork?'ENABLED':'DISABLED'}</b></div>
+      <div class="kv-row"><span>Paid provider calls</span><b>DISABLED until per-run consent</b></div>
+      <div class="kv-row"><span>Chain / Arkiv writes</span><b>DISABLED</b></div>
+      <div class="kv-row"><span>Approval</span><b>one-time · operation + manifest digest</b></div></div>
+      <button class="btn btn-secondary" id="readinessProbe" ${c?.mode==='SAVED_DEMO'?'disabled':''}>Run bounded read-only health checks</button>
+      <pre class="code-box">${esc(p?JSON.stringify(p,null,2):'No fresh health check. No paid API method is called.')}</pre>
+    </div><div><h3>Exact environment names</h3><div class="kv">${credentialRows}</div></div></div>
+    <div class="grid-2" style="margin-top:16px">
+      <div class="card"><h3>Arkiv publication pathway</h3><p>Prepare → Approve → Submit → Reconcile → Query → Verify → Import. Stage A stops at Approve.</p><button class="btn btn-secondary" data-prepare-operation="ARKIV_PUBLISH">Prepare exact Arkiv manifest</button></div>
+      <div class="card"><h3>Uniswap / EIP-8141 pathway</h3><p>Read-only inspect → Prepare exact transaction manifest → Approve → Broadcast → Reconcile → Verify. Stage A stops at Approve.</p><button class="btn btn-secondary" data-prepare-operation="EIP8141_UNISWAP_COMPARE">Prepare first EF manifest</button></div>
+    </div>
+    ${m?`<div class="card" style="margin-top:16px"><h3>${esc(m.operation)} · ${esc(m.status)}</h3><pre class="code-box">${esc(JSON.stringify(m,null,2))}</pre>
+      <label class="row"><input type="checkbox" id="manifestConsent"> I reviewed this exact digest; request separate approval (no write).</label>
+      <button class="btn btn-primary" id="requestManifestApproval">Stop at approval boundary</button>
+      <button class="btn btn-secondary" disabled>Submit unavailable in Stage A</button></div>`:''}
+    <div class="card" style="margin-top:16px"><h3>OpenRouter normal-mode readiness</h3><p>${esc(r?.openRouter?.status??'Loading…')} · Key presence is not consent. Existing investigation controls require a deliberate checkbox per run. This panel makes no provider call.</p></div>
+  </div>`;
+}
+
 function renderAgenticProposals(report){
  const filters=[['all','All proposals'],['executed','Executed'],['expected','Expected rejections'],['unexpected','Unexpected results'],['invalid','Invalid/filtered'],['missing','Missing prerequisites']];
  const visible=report.proposals.filter(p=>state.proposalFilter==='all'||state.proposalFilter==='executed'&&p.state==='EXECUTED'||state.proposalFilter==='expected'&&Object.values(p.candidate.expectedVerdict).includes('REJECT')||state.proposalFilter==='unexpected'&&p.outcomes?.some(o=>o.findingCandidate)||state.proposalFilter==='invalid'&&['INVALID','DUPLICATE','UNSUPPORTED'].includes(p.feasibility?.decision)||state.proposalFilter==='missing'&&p.feasibility?.decision==='CONDITIONAL');
@@ -830,6 +860,7 @@ function pageHtml() {
     case 'campaigns': return renderCampaigns();
     case 'evidence': return renderEvidence();
     case 'arkiv': return renderArkiv();
+    case 'readiness': return renderReadiness();
     case 'swarm': return renderSwarm();
     case 'playground': return renderPlayground();
     case 'briefing': return renderBriefing();
@@ -921,6 +952,9 @@ function bindPage() {
   $('cancelCommunity')?.addEventListener('click',()=>{cancelCommunity('Request cancelled.');render();});
   $('openSavedCommunityPreview')?.addEventListener('click',async()=>{const run=findRunByHint('saved-arkiv-import-preview');if(!run){setStatus('Use saved-demo to restore the already imported PREVIEW. No current expiry check is implied.');return;}await loadRun(run.id);navigate('campaigns');});
   $('importCommunity')?.addEventListener('click', importCommunity);
+  $('readinessProbe')?.addEventListener('click',probeReadiness);
+  document.querySelectorAll('[data-prepare-operation]').forEach(el=>el.addEventListener('click',()=>prepareReadiness(el.dataset.prepareOperation)));
+  $('requestManifestApproval')?.addEventListener('click',requestReadinessApproval);
   $('swarmRefresh')?.addEventListener('click',refreshSwarm);
   $('proposalFilter')?.addEventListener('change',e=>{state.proposalFilter=e.target.value;render();});
   $('swarmAI')?.addEventListener('click',()=>startSwarm('openrouter'));
@@ -943,6 +977,10 @@ function bindPage() {
 }
 
 async function refreshSwarm(){try{state.swarmConfig=await api.swarmConfig();if(state.swarmConfig.enabled||state.swarmConfig.canReadSaved)state.swarmRecent=(await api.swarmRecent()).investigations;if(state.page==='swarm')render();}catch(e){setStatus(`Swarm configuration: ${e.message}`);}}
+async function refreshReadiness(){try{state.readiness=await api.readiness();if(state.page==='readiness')render();}catch(e){setStatus(`Readiness: ${e.message}`);}}
+async function probeReadiness(){try{setStatus('Running two bounded read-only chain-ID probes…');state.readinessProbe=await api.readinessProbe();setStatus(state.readinessProbe.status);render();}catch(e){setStatus(`Readiness probe: ${e.message}`);}}
+async function prepareReadiness(operation){try{state.readinessManifest=await api.readinessPrepare(operation);setStatus(`Prepared ${operation}; no signature or write.`);render();}catch(e){setStatus(`Manifest preparation: ${e.message}`);}}
+async function requestReadinessApproval(){if(!$('manifestConsent')?.checked){setStatus('Review and consent to the exact manifest digest first.');return;}try{await api.readinessApprove(state.readinessManifest);}catch(e){setStatus(`Approval boundary reached: ${e.message}. No write occurred.`);}}
 async function startSwarm(mode){
   const authorized=mode==='simulated'||$('swarmConsent')?.checked;
   if(!authorized){setStatus('Explicit OpenRouter request authorization is required.');return;}
