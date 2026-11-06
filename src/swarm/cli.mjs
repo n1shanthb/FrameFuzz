@@ -7,7 +7,8 @@ export async function swarmCommand(options){
   for(const key of Object.keys(options))if(!['_','output','seed','deployer','owner'].includes(key))throw new Error('Unsupported swarm option '+key);
   const [action='offline']=options._;let report;
   if(action==='offline')report=await(await import('./offline.mjs')).offlineSwarm({seed:options.seed===undefined?42:Number(options.seed)});
-  else throw new Error('Milestone1 supports swarm offline only');
+  else if(action==='preflight')report=await(await import('./preflight.mjs')).swarmPreflight({deployer:options.deployer,owner:options.owner});
+  else throw new Error('Milestones 1–2 support swarm offline or swarm preflight only');
   const output=options.output??`runs/swarm-${action}.json`;
   await mkdir(path.dirname(output),{recursive:true});await writeFile(output,stringify(report)+'\n');
   console.log(stringify({output:path.resolve(output),schema:report.schema,source:report.source,milestone:report.milestone,verdict:report.verdict,liveExecutions:0,realLLMCalls:0,unauthorizedActionProven:false,blockers:report.blockers??report.limitations}));

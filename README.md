@@ -10,6 +10,8 @@ FrameFuzz generates semantic transaction variations, signs and submits them to s
 
 ## Quickstart — no wallet or devnet required
 
+Experimental owned-validator work is isolated behind `FRAMEFUZZ_SWARM=on` and disabled by default. Only offline compilation/signature coverage and read-only preflight are implemented; no live unauthorized action, LLM investigation or contract-level execution is claimed. See [milestone evidence and stop gate](docs/SWARM_MILESTONES.md). The full automated suite now has83 passing tests, retaining the71-test submission baseline. Existing demo and v1 fixtures remain unchanged.
+
 Requires Node20.12+; tested on22.13.0. From this repository:
 
 ```powershell

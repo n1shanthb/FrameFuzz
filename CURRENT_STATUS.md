@@ -1,5 +1,12 @@
 # Current status
 
+## Swarm milestone2 — stopped before live approval
+Read-only preparation implemented/executed:8 allowlisted chain1337 RPC reads; latest block0x63ac6 was19114 seconds old at capture. Sponsor code/balance verified, nonce-manager storage readable. No secure deployer key or owned deployer/owner address configured. Exact conditional manifest contains5 deployments and4 isolated alternative submissions; unresolved addresses/initcode remain null. Future fee cap0.06 test ETH for deployments is an upper bound, not an estimate or spend.
+
+**83 tests pass**, preserving all71 original tests; npm audit0 vulnerabilities. Artifacts under `evidence/swarm/milestone-2/`; detailed reports in `docs/SWARM_MILESTONES.md`. Milestone1 commit a1ff75a. Real LLM calls, live executions, proven unauthorized action and independent live reproduction are all NO. No existing UI, registry flow, v1 digests or historical evidence changed.
+
+STOP: separate live approval, securely configured funded test wallet/owner, confirmed write/mining health and verified canonical hash compatibility are still required. No live action is authorized by the implementation prompt. No Swarm Lab or real investigator is claimed; those are later milestones. Existing submission-ready product remains available with swarm off by default.
+
 ## Swarm milestone1 checkpoint
 User approved offline implementation and read-only milestone2 only. Baseline through0b1040c was pushed and remote SHA verified; public URL returned404, visibility unverified. User subsequently requested implementation.
 

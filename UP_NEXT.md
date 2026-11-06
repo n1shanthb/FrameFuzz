@@ -1,7 +1,9 @@
 # Up next
 
-## Active — approved swarm, stop after read-only milestone2
-Milestone1 complete with79 tests. Read `docs/SWARM_MILESTONES.md` for actual evidence and signing-hash compatibility limitation. Implement/run only read-only preflight and conditional deployment/submission manifest next. No live deployment, broadcast, LLM execution claim or Arkiv write is authorized. Secure funded wallet, healthy authorized chain1337 endpoint, verified canonical hash behavior and separate human approval are prerequisites for the next phase. Preserve all71 baseline tests and v1 fixture digests.
+## STOP — offline milestone1 and read-only milestone2 implemented
+83 tests pass (all71 baseline +12 swarm). Read `docs/SWARM_MILESTONES.md` and `evidence/swarm/milestone-2/preflight.json`. Do not deploy or broadcast. The executed preflight found a stale execution head, no secure funded deployer key/owner addresses, unverified canonical-hash compatibility and unconfirmed write health. Conditional plan:5 owned deployments,4 isolated alternative submissions; no live execution or action proof exists.
+
+Next only after new instructions: resolve funded devnet-only deployment environment and owner address without pasting keys, obtain operator confirmation of health, verify client canonical hash, present the resolved manifest and obtain separate explicit live approval. Then implement/execute milestone3 safely. Milestone4 real LLM investigator and milestone5 UI/Arkiv integration are deferred. Arkiv writes require separate approval. Keep the existing saved demo, historical evidence and v1 fixtures unchanged; no current feature should imply a live finding.
 
 ## Ready — final submission materials
 README/product copy, generated `docs/LIVE_EVIDENCE.md`, four-minute `docs/DEMO_SCRIPT.md`, checklist, project description, recording guidance, FEEDBACK and sponsor docs are complete.71 tests pass. The offline saved demo and live Arkiv query/import were verified in browser. Exact proof: `evidence/submission/2026-11-06/`. Preserve successful historical LIVE evidence unchanged.
