@@ -1,4 +1,8 @@
-# Current status — admission Step 1 read-only preparation
+# Current status — admission Step 2A self-funded EOA preparation
+
+Pinned ethrex source and sidecar documentation support a no-paymaster EOA `self_verify` prefix. A fresh type-0x06 transaction was signed locally using the pinned workshop codec and an ignored devnet-only `FRAMEFUZZ_SENDER_KEY`; signed bytes and request payloads are in ignored `runs/step2a-self-relay-candidate.json`. Transaction hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226`; sender/payer `0x366E6203603C39Eec1e75b3be6f078911447f235`, code empty, balance 0, nonce 0. This is an **infrastructure milestone**, with no pasted-source participation or fresh admission verdict. No deployment, funding, broadcast, paid call, Arkiv write or push. Full prerequisites and the smaller 0.000542 test ETH proposed packet: `docs/ADMISSION_STEP2A.md`.
+
+# Previous status — admission Step 1 read-only preparation
 
 The user redirected the next milestone to fresh EIP-8141 admission comparison and explicitly limited this step to preparation. The source-bound readiness module and panel are implemented; the EF endpoints answered read-only probes on chain 1337. The pinned basic paymaster has empty code and zero balance, and no deployer key is configured in this process. Pasted ordinary source remains `UNKNOWN` for EIP-8141 role. No candidate, admission verdict, chain write, paid call, Arkiv publication or push was produced. `npm test` passed 217/217; details and proposed one-shot approval packet are in `docs/ADMISSION_STEP1.md`.
 

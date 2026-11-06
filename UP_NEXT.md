@@ -1,4 +1,11 @@
-# Up next — after admission Step 1
+# Up next — after admission Step 2A
+
+1. STOP before funding or submitting the saved self-relay candidate. No write authorization was granted in Step 2A.
+2. Resolve an operator-controlled chain-1337 test-ETH funding wallet without sharing a key in chat. Read its address, balance and pending nonce; recheck the candidate sender code/nonce, head and client versions. If context drifted, re-sign and replace the candidate/packet.
+3. Seek separate explicit approval for the **resolved** one-transfer/two-submission packet in `docs/ADMISSION_STEP2A.md`. Capture each raw endpoint response and timing; treat known/duplicate as inconclusive, then query canonical and frame receipts.
+4. Only after the infrastructure comparison, implement exact pasted-source artifact deployment and source-to-target binding for BYOC; no current Solidity source participates in the self-relay candidate.
+
+# Previous up next — after admission Step 1
 
 1. STOP before any deployment, funding, submission, paid model call, Arkiv write or push. Step 1 is complete and Step 2 needs separate explicit authorization.
 2. Resolve a devnet-only funded deployer wallet, its chain 1337 nonce and balance, and the exact basic paymaster deployment address/code hash after deployment approval. The historical basic address is empty.

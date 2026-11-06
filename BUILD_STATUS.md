@@ -1,4 +1,10 @@
-# Build status — admission Step 1
+# Build status — admission Step 2A
+
+Full suite: `npm test` → **220/220 pass, 0 fail**.
+
+Pinned ethrex default-code VERIFY supports an EOA self-funded scope-3 prefix at source level; runtime admission of the fresh candidate is unverified. Added `src/adapters/self-relay.mjs`, `scripts/step2a-prepare-self-relay.mjs`, `test/self-relay.test.mjs`, and `docs/ADMISSION_STEP2A.md`. Read-only EF checks observed chain 1337, matching advertised execution commit, sender code empty/balance zero/pending nonce zero. Locally signed hash `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226`; signed bytes are ignored under `runs/`, with no private key in the artifact. No fresh admission response/receipt; source digest null because no pasted Solidity participates. The proposed no-deployment packet moves at most 0.000542 test ETH from an as-yet unresolved funding wallet. Commands: `node --test test/self-relay.test.mjs`, `node --env-file=.env scripts/step2a-prepare-self-relay.mjs`, `npm test`. Full results and limits: `docs/ADMISSION_STEP2A.md`.
+
+# Previous build status — admission Step 1
 
 `src/playground/admission.mjs` and the Contract Playground readiness panel now connect exact compiled-source identity to read-only EF endpoint and paymaster checks. The existing workshop codec can prepare one signed raw/structured candidate after verified prerequisites, but none was prepared for the current generic source or missing paymaster. `node --test test/playground-admission.test.mjs`: 3/3 pass. `npm test`: 217/217 pass, 0 fail. EF chain 1337 public and alternative RPC reads succeeded; pinned basic payer code is empty and balance is zero. No new live submissions, receipts or transaction hashes. Full commands, blockers and approval scope: `docs/ADMISSION_STEP1.md`.
 
