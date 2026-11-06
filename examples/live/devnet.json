@@ -1,8 +1,8 @@
 {
   "chainId": 1337,
   "authorizedEndpoints": [
-    "https://altmempool.forshtat.com/rpc",
-    "https://altmempool.forshtat.com"
+    "https://altmempool.forshtat.com",
+    "https://altmempool.forshtat.com/rpc/"
   ],
   "recipient": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
   "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",

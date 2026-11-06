@@ -8,6 +8,7 @@ import {redact} from '../safety.mjs';
 import {mutationDefinition,generateMutations,regenerateMutation,GENERATOR_VERSION} from './generator.mjs';
 import {compareMutation} from './oracle.mjs';
 import {inspectUniswap} from '../adapters/uniswap-state.mjs';
+import {EF_CANONICAL_ENDPOINT,EF_ALTERNATIVE_ENDPOINT} from '../adapters/ef-routing.mjs';
 
 export const DEFAULT_CONFIG='examples/live/devnet.json';
 export const DEFAULT_RULES='rules/devnet-1337.v1.json';
@@ -53,7 +54,7 @@ export async function runMutationCampaign(options={}) {
   const config=options.config??JSON.parse(await readFile(options.configFile??DEFAULT_CONFIG,'utf8'));
   if(submit&&(options.allowChainId!==1337||config.chainId!==1337))throw new Error('Explicit --allow-chain 1337 required; mainnet and other chains are blocked');
   if(submit&&(definition.ruleModel.gas?.senderExecution!==30000||definition.ruleModel.gas?.signatureCost!==2800))throw new Error('Rule components do not match the existing workshop builder');
-  const endpoints={public:options.rpcUrls?.public??options.rpcUrl??config.authorizedEndpoints[0],alt:options.rpcUrls?.alt??options.rpcUrl??config.authorizedEndpoints[0]};
+  const endpoints={public:options.rpcUrls?.public??options.rpcUrl??EF_CANONICAL_ENDPOINT,alt:options.rpcUrls?.alt??options.rpcUrl??EF_ALTERNATIVE_ENDPOINT};
   for(const v of variants){
     const kind=v.setup.configuration.kind,bindings=definition.ruleModel.provenance?.fixtureCodeHashes;
     if(bindings&&bindings[kind]!==config.paymasterCodeHashes?.[kind])for(const o of Object.values(v.oracle))Object.assign(o,{expected:null,confidence:'UNKNOWN',reason:'Configured sponsor code hash is not bound to the rule-model evidence'});
@@ -61,7 +62,7 @@ export async function runMutationCampaign(options={}) {
   let network=null;
   const uniswap=submit&&definition.suite==='uniswap-storage'&&!options.rpcFn?await inspectUniswap(config,endpoints.public):null;
   if(submit&&!options.rpcFn){
-    network={executionClient:await rpc(config.authorizedEndpoints[1]??endpoints.public,'web3_clientVersion'),sidecar:await rpc(endpoints.alt,'skandha_explorer_info')};
+    network={executionClient:await rpc(endpoints.public,'web3_clientVersion'),sidecar:await rpc(endpoints.alt,'skandha_explorer_info')};
     const source=definition.ruleModel.provenance;
     if(!network.executionClient.includes(source?.executionCommit??'[unknown]')||network.sidecar.version!==source?.sidecarVersion)for(const v of variants)for(const o of Object.values(v.oracle))Object.assign(o,{expected:null,confidence:'UNKNOWN',reason:'Live client version differs from the rule-model evidence; expectations require reverification'});
   }

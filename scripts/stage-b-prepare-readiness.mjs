@@ -150,7 +150,7 @@ else if(arkiv.sourceReportError||!arkiv.sourceReport?.hasReproduction)arkiv.clas
 else arkiv.classification='READY_FOR_EXPLICIT_APPROVAL';
 out.arkiv=arkiv;
 
-const EF_RPC='https://altmempool.forshtat.com/rpc';
+const EF_RPC='https://altmempool.forshtat.com/rpc/';
 const EF_EXEC='https://altmempool.forshtat.com';
 const config=JSON.parse(await readFile('examples/live/devnet.json','utf8'));
 const ef={chainId:1337,admissionRpc:EF_RPC,executionRpc:EF_EXEC,keyConfigured:out.credentials.FRAMEFUZZ_DEPLOYER_KEY,configPath:'examples/live/devnet.json'};

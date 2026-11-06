@@ -1,4 +1,11 @@
-# Up next — after admission Step 2C
+# Up next — after admission Step 2D
+
+1. STOP before submission. Candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` awaits the exact approval in `docs/ADMISSION_STEP2D.md`.
+2. On approval, rerun the read-only/offline Step 2D preparation. Stop if nonce is not 1, balance is insufficient, either client role changes, sidecar health fails, or the hash changes.
+3. Initiate the alternative structured request first and canonical raw request immediately afterward without awaiting; never retry automatically.
+4. Preserve each response independently and require `skandha_explorer_getTransaction` evidence before claiming alternative admission.
+
+# Previous up next — after admission Step 2C
 
 1. Preserve the live evidence and do not resubmit the included nonce-0 candidate.
 2. Resolve the currently supported alternative admission endpoint/method using read-only official documentation or operator guidance. Do not probe support by sending another transaction.

@@ -2,23 +2,25 @@ import {privateKeyToAccount} from 'viem/accounts';
 import {keccak256} from 'viem';
 import {buildSponsored} from '../adapters/workshop-codec.mjs';
 import {rpc} from '../rpc.mjs';
+import {EF_CANONICAL_ENDPOINT,EF_ALTERNATIVE_ENDPOINT,classifyEfEndpoint} from '../adapters/ef-routing.mjs';
 
-export const EF_PUBLIC='https://altmempool.forshtat.com/rpc';
-export const EF_ALTERNATIVE='https://altmempool.forshtat.com';
+export const EF_PUBLIC=EF_CANONICAL_ENDPOINT;
+export const EF_ALTERNATIVE=EF_ALTERNATIVE_ENDPOINT;
 const ADDRESS=/^0x[0-9a-f]{40}$/i;
 const HEXKEY=/^0x[0-9a-f]{64}$/i;
 const cleanError=e=>String(e?.message??e).slice(0,180);
-const snapshot=async(url,rpcFn)=>{
+const snapshot=async(url,rpcFn,expectedRole)=>{
  try{
   const [chain,client,head]=await Promise.all([
    rpcFn(url,'eth_chainId'),rpcFn(url,'web3_clientVersion'),rpcFn(url,'eth_blockNumber')]);
-  return {status:Number(BigInt(chain))===1337?'READY':'UNAVAILABLE',chainId:Number(BigInt(chain)),clientVersion:String(client).slice(0,120),blockNumber:head,readOnly:true};
+  const identity=classifyEfEndpoint({chainId:chain,clientVersion:client});
+  return {status:identity.role===expectedRole?'READY':'UNAVAILABLE',chainId:Number(BigInt(chain)),clientVersion:String(client).slice(0,120),identity,blockNumber:head,readOnly:true};
  }catch(e){return {status:'UNAVAILABLE',reason:cleanError(e),readOnly:true};}
 };
 
 /** Read-only chain state. A role declaration never substitutes for deployed bytecode. */
 export async function admissionReadiness(analysis,{rpcFn=rpc,env=process.env,config={}}={}){
- const [publicPath,alternativePath]=await Promise.all([snapshot(EF_PUBLIC,rpcFn),snapshot(EF_ALTERNATIVE,rpcFn)]);
+ const [publicPath,alternativePath]=await Promise.all([snapshot(EF_PUBLIC,rpcFn,'CANONICAL_EXECUTION'),snapshot(EF_ALTERNATIVE,rpcFn,'ALTERNATIVE_SIDECAR')]);
  const sourceReady=analysis?.status==='READY';
  const role=analysis?.detectedRole?.role??'UNKNOWN';
  const supportedRole=['SENDER_VALIDATOR','PAYMASTER'].includes(role);

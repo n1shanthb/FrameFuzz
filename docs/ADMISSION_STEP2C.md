@@ -31,6 +31,8 @@ The public transaction was canonically included in block `0x23c1` with outer sta
 
 This proves one genuine self-funded EIP-8141 transaction flowed through FrameFuzz, was publicly admitted, included and executed successfully. It does **not** establish an alternative-mempool admission verdict because the configured alternative method was unavailable. Retrying the now-included transaction on a newly discovered endpoint would yield duplicate/nonce-confounded evidence and was not attempted.
 
+Subsequent Step 2D read-only investigation established that the labels were reversed: the root is canonical ethrex, while `/rpc/` is the Skandha alternative sidecar. This correction does not alter the immutable raw Step 2C observation or retroactively create a sidecar verdict. See `docs/ADMISSION_STEP2D.md`.
+
 Full raw requests, responses, timestamps and receipt: `evidence/admission/2026-11-07/self-relay-first-comparison.json`.
 
 No deployment or additional funding was required. Duplicate, already-known and timeout responses remain inconclusive by policy; none was converted into an invented verdict.

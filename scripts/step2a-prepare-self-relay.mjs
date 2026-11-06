@@ -4,7 +4,8 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {privateKeyToAccount} from 'viem/accounts';
 import {rpc} from '../src/rpc.mjs';
 import {prepareSelfRelayCandidate} from '../src/adapters/self-relay.mjs';
-const publicRpc='https://altmempool.forshtat.com/rpc',alternative='https://altmempool.forshtat.com';
+import {EF_CANONICAL_ENDPOINT,EF_ALTERNATIVE_ENDPOINT,assertEfRouting} from '../src/adapters/ef-routing.mjs';
+const publicRpc=EF_CANONICAL_ENDPOINT,alternative=EF_ALTERNATIVE_ENDPOINT;
 const methods=new Set(['eth_chainId','web3_clientVersion','eth_blockNumber','eth_getBalance','eth_getCode','eth_getTransactionCount','eth_gasPrice']);
 const read=(url,method,params=[])=>{
  if(![publicRpc,alternative].includes(url)||!methods.has(method))throw Error('Read-only EF method/endpoint allowlist');
@@ -18,6 +19,7 @@ const [pubChain,altChain,pubVersion,altVersion,pubHead,altHead,code,balance,nonc
  read(publicRpc,'eth_blockNumber'),read(alternative,'eth_blockNumber'),read(publicRpc,'eth_getCode',[sender,'latest']),
  read(publicRpc,'eth_getBalance',[sender,'latest']),read(publicRpc,'eth_getTransactionCount',[sender,'pending']),read(publicRpc,'eth_gasPrice')]);
 if(Number(BigInt(pubChain))!==1337||Number(BigInt(altChain))!==1337)throw Error('EF chain ID mismatch; no candidate signed');
+assertEfRouting({canonical:{chainId:pubChain,clientVersion:pubVersion},alternative:{chainId:altChain,clientVersion:altVersion}});
 if(code!=='0x')throw Error('Fresh sender unexpectedly has deployed code; no EOA candidate signed');
 const seq=BigInt(nonce);if(seq>BigInt(Number.MAX_SAFE_INTEGER))throw Error('Unsafe pending nonce');
 const candidate=await prepareSelfRelayCandidate({privateKey:key,recipient:sender,nonce:Number(seq)});

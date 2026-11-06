@@ -3,6 +3,7 @@ import {toWire} from '@forshtat/hegota-support/rpc';
 import {privateKeyToAccount} from 'viem/accounts';
 import {keccak256} from 'viem';
 import {profile} from './workshop-codec.mjs';
+import {EF_CANONICAL_ENDPOINT,EF_ALTERNATIVE_ENDPOINT} from './ef-routing.mjs';
 
 export const SELF_RELAY_PROFILE='ethrex-eip8141-tracer';
 export const SELF_RELAY_MAX_FEE_WEI=500000000000000n;
@@ -29,8 +30,8 @@ export async function prepareSelfRelayCandidate({privateKey,recipient,nonce=0,so
   sender,payer:sender,recipient,nonceKeys:['0'],nonceSeq:String(nonce),frames:wire.frames,signature:wire.signatures[0],
   signatureHash:sigHash(profile,signed),transactionHash:hash,raw,wire,
   fee:{maxFeePerGasWei:'2000000000',gasUpperBound:String(gasUpperBound),maxFeeWei:String(maxFeeWei),fundingCapWei:String(SELF_RELAY_MAX_FEE_WEI),verificationGas:30000,actionGas:50000,signatureVerificationGas:2800,maxVerifyGas:100000},
-  requests:{public:{endpoint:'https://altmempool.forshtat.com/rpc',method:'eth_sendRawTransaction',params:[raw]},
-   alternative:{endpoint:'https://altmempool.forshtat.com',method:'eth_sendFrameTransaction',params:[wire]}},
+  requests:{public:{endpoint:EF_CANONICAL_ENDPOINT,method:'eth_sendRawTransaction',params:[raw]},
+   alternative:{endpoint:EF_ALTERNATIVE_ENDPOINT,method:'eth_sendFrameTransaction',params:[wire]}},
   observed:{public:null,alternative:null},submissionPlan:{ordering:'PUBLIC_THEN_ALTERNATIVE_OR_CONCURRENT_AFTER_APPROVAL',timestamps:'CAPTURE_AT_ACTUAL_SUBMISSION',duplicatePolicy:'KNOWN_OR_DUPLICATE_IS_INCONCLUSIVE',receiptMethods:['eth_getTransactionReceipt','eth_getFrameTransactionReceipt'],receiptQueries:'Query public canonical receipt and sidecar frame receipt after submission; verify matching hash and canonical block'},
   broadcasts:0,warning:'Offline signed bytes only. Read-only checks cannot prove admission, runtime signing compatibility or future nonce/funding state.'};
 }

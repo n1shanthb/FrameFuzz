@@ -5,6 +5,7 @@ import {recoverAddress} from 'viem';
 import {decodeTx} from '@forshtat/hegota-support/tx';
 import {profile} from '../src/adapters/workshop-codec.mjs';
 import {prepareSelfRelayCandidate,SELF_RELAY_MAX_FEE_WEI} from '../src/adapters/self-relay.mjs';
+import {EF_CANONICAL_ENDPOINT,EF_ALTERNATIVE_ENDPOINT} from '../src/adapters/ef-routing.mjs';
 const recipient='0x'+'2'.repeat(40);
 test('pinned self-relay signs canonical scope-3 sender/payer with no paymaster',async()=>{
  const key=generatePrivateKey(),address=privateKeyToAccount(key).address;
@@ -17,6 +18,8 @@ test('pinned self-relay signs canonical scope-3 sender/payer with no paymaster',
  assert.equal((await recoverAddress({hash:c.signatureHash,signature:canonical})).toLowerCase(),address.toLowerCase());
  assert(BigInt(c.fee.maxFeeWei)<=SELF_RELAY_MAX_FEE_WEI);assert.equal(c.broadcasts,0);
  assert.equal(c.requests.public.params[0],c.raw);assert.deepEqual(c.requests.alternative.params[0],c.wire);
+ assert.equal(c.requests.public.endpoint,EF_CANONICAL_ENDPOINT);assert.equal(c.requests.alternative.endpoint,EF_ALTERNATIVE_ENDPOINT);
+ assert.equal(new URL(c.requests.public.endpoint).pathname,'/');assert.equal(new URL(c.requests.alternative.endpoint).pathname,'/rpc/');
  assert.deepEqual(c.observed,{public:null,alternative:null});assert.equal(JSON.stringify(c).includes(key),false);
 });
 test('fresh sender or nonce changes signed identity, and invalid context fails closed',async()=>{

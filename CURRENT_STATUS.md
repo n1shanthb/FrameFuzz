@@ -1,4 +1,8 @@
-# Current status — admission Step 2C first live comparison
+# Current status — admission Step 2D corrected routing
+
+Read-only probes confirmed canonical ethrex at `https://altmempool.forshtat.com` and alternative Skandha at `https://altmempool.forshtat.com/rpc/`, both chain 1337. Skandha config/info are healthy; explorer lookup for nonce-0 hash `0xd4d612…ba226` returned `Frame transaction not found`, so no alternative verdict is claimed. Identity-based routing and reversed-endpoint tests are implemented. Fresh offline nonce-1 candidate: `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510`; balance 0.000459796 test ETH, signed maximum spend 0.000206508, proposed ceiling 0.00021. Broadcasts 0. See `docs/ADMISSION_STEP2D.md`.
+
+# Previous status — admission Step 2C first live comparison
 
 The exact self-funded candidate `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` passed final preflight and was submitted once to each configured path. Public `eth_sendRawTransaction` accepted it and it was included successfully in block `0x23c1`; the outer receipt and both frame receipts have status `0x1`. Actual sender expenditure was 0.000040204 test ETH; post-state balance is 0.000459796 and nonce 1. Alternative `eth_sendFrameTransaction` returned `-32601 Method not found`, classified as `UNOBSERVED_METHOD_UNSUPPORTED`, not an admission rejection. No retries, deployments or additional funding occurred. Raw evidence: `evidence/admission/2026-11-07/self-relay-first-comparison.json`; report: `docs/ADMISSION_STEP2C.md`.
 

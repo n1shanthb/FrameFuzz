@@ -8,7 +8,7 @@ const config={paymasters:{basic:payer},paymasterCodeHashes:{basic:keccak256('0x6
 const read=(url,method,params=[])=>{
  assert.ok([EF_PUBLIC,EF_ALTERNATIVE].includes(url));
  if(method==='eth_chainId')return '0x539';
- if(method==='web3_clientVersion')return 'ethrex-test';
+ if(method==='web3_clientVersion')return url===EF_PUBLIC?'ethrex/test':'skandha/test';
  if(method==='eth_blockNumber')return '0x12';
  if(method==='eth_getCode')return '0x6000';
  if(method==='eth_getBalance')return params[0]===payer?'0x3e8':'0x0';
@@ -34,6 +34,7 @@ test('one prepared candidate retains signed identity across both distinct reques
  const readiness={classification:'READY_FOR_CANDIDATE',analysisId:'a',deployment:{address:payer}};
  const c=await prepareSponsoredCandidate({analysis,readiness,senderKey:generatePrivateKey(),payer,recipient,nonce:0});
  assert.equal(c.requests.public.method,'eth_sendRawTransaction');assert.equal(c.requests.alternative.method,'eth_sendFrameTransaction');
+ assert.equal(new URL(c.requests.public.endpoint).pathname,'/');assert.equal(new URL(c.requests.alternative.endpoint).pathname,'/rpc/');
  assert.equal(c.requests.public.params[0],c.raw);assert.deepEqual(c.requests.alternative.params[0],c.wire);
  assert.equal(c.hash.length,66);assert.deepEqual(c.observedAdmissions,[]);assert.equal(c.broadcasts,0);
 });

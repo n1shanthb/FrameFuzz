@@ -1,4 +1,8 @@
-# Build status — admission Step 2C
+# Build status — admission Step 2D
+
+Canonical/alternative routing is corrected and identity-based. Root ethrex receives raw type-0x06 transactions; `/rpc/` Skandha receives structured frames. Read-only Skandha config/info succeeded; the old hash was absent from its explorer. Fresh funded nonce-1 candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` is prepared offline under a proposed 0.00021 test-ETH ceiling. Routing/signing/Playground focused tests pass 8/8; full suite passes 224/224. No broadcasts or other writes.
+
+# Previous build status — admission Step 2C
 
 One genuine self-funded EIP-8141 transaction flowed end-to-end through the public path. Candidate `0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226` was accepted, included in block `0x23c1`, and executed with successful outer and two frame receipts. Alternative returned `-32601 Method not found`, so its admission verdict is unobserved rather than rejected. No retry, deployment or additional funding. Evidence and exact requests are in `evidence/admission/2026-11-07/self-relay-first-comparison.json`. Harness syntax/evidence validation passed; focused signer tests 3/3 passed. The immediately preceding full suite passed 181/181.
 
