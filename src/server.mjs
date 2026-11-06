@@ -16,6 +16,7 @@ import {ApiError,readJsonObject,readDeadline} from './http-errors.mjs';
 import {EXECUTION_CHAINS} from './safety.mjs';
 import {savedCommunity} from './arkiv/saved.mjs';
 import {evidenceView} from './evidence-status.mjs';
+import {createPlaygroundRoutes} from './playground/http.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
 const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
@@ -44,13 +45,14 @@ async function serveStatic(res, pathname) {
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
-  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env,apiReadTimeoutMs=10000 }) {
+  mutationConfigFile=DEFAULT_CONFIG,mutationRulesFile=DEFAULT_RULES,communityRegistry,offlineDemo=false,defaultRun,swarmRunner,swarmEnvironment=process.env,apiReadTimeoutMs=10000,playgroundProviderFactory }) {
   if(!Number.isSafeInteger(apiReadTimeoutMs)||apiReadTimeoutMs<1||apiReadTimeoutMs>15000)throw new Error('Invalid bounded API read timeout');
   let running = false;
   const configured = !offlineDemo&&Boolean(rpcUrl || (rpcUrls.public && rpcUrls.alt));
   const enabled = Boolean(submit && configured && EXECUTION_CHAINS.includes(allowChainId));
   const selectedReport=async id=>{if(!/^[\w.-]+\.json$/.test(id??''))throw new ApiError(400,'INVALID_REPORT_ID','Invalid report filename');try{return evidenceView(await loadReport(resultDir,id));}catch(e){if(e.code==='ENOENT')throw new ApiError(404,'REPORT_NOT_FOUND','Saved report not found');throw e;}};
   const swarmRoutes=createSwarmRoutes({resultDir,offlineDemo,getRunning:()=>running,setRunning:value=>{running=value;},runner:swarmRunner,env:swarmEnvironment});
+  const playgroundRoutes=createPlaygroundRoutes({resultDir,offlineDemo,env:swarmEnvironment,getRunning:()=>running,setRunning:value=>{running=value;},json,providerFactory:playgroundProviderFactory});
   const server=http.createServer(async (req, res) => {
     const route = new URL(req.url, 'http://localhost');
     try {
@@ -58,6 +60,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
       if (!['127.0.0.1', 'localhost', '[::1]'].includes(requestHost)) return json(res, 403, { error: 'Localhost Host header required' });
       if(req.method==='POST'&&req.headers.origin){let valid=false;try{valid=new URL(req.headers.origin).host===req.headers.host;}catch{}if(!valid)return json(res,403,{error:'Invalid Origin',code:'INVALID_ORIGIN'});}
       if(await swarmRoutes(req,res,route))return;
+      if(await playgroundRoutes(req,res,route))return;
       if (req.method === 'GET' && route.pathname === '/') {
         const html = await readFile(path.join(WEB_ROOT, 'index.html'));
         res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
