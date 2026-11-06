@@ -93,4 +93,5 @@ test('evidence refresh is read-only and preserves original submission hash and r
   }});
   assert.deepEqual(calls,['eth_chainId','eth_getTransactionReceipt']);assert.equal(out.totals.matched,1);assert.equal(out.results[0].paths[0].observed.hash,hash);
   assert.deepEqual(out.results[0].paths[0].replay.params,['0xcafe']);assert.equal(report.results[0].paths[0].receipt,undefined);
+  assert.equal(out.results[0].paths[0].historicalReceipt,null);assert.equal(out.results[0].paths[0].receiptObservations.length,1);
 });

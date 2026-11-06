@@ -63,9 +63,24 @@ export async function saveReport(output, directory) {
 
 export function toReplay(output) {
   return redact({ schema: 'framefuzz.replay.v1', source: output.source, chainId: output.chainId,campaign:output.campaign,coverage:output.coverage,communityOrigin:output.communityOrigin,
+    broadcastAllowed: false,
+    reproductionKind: output.campaign ? 'SEMANTIC_REGENERATION_WITH_HISTORICAL_RECORDS' : 'HISTORICAL_RECORDS_ONLY',
+    historicalSignedData: output.results.some(c=>c.paths.some(p=>p.replay?.signedRaw)),
+    freshSigningRequired: true,
     warning: 'Contains potentially stale signed bytes. Rebuild with the original signer and isolated state. No automatic broadcast is performed.',
     cases: output.results.map(c => ({ id: c.id, family: c.family, mutation: c.mutation, ruleProvenance: c.ruleProvenance, reproduction: c.reproduction,
+      semanticDescriptor: semanticReplay(c),
+      historicalOutcomes: c.paths.map(p=>({id:p.id,observed:p.observed,receipt:p.receipt})),
       paths: c.paths.filter(p => p.replay).map(p => ({ id: p.id, expected: p.expected, expectedRule: p.expectedRule,oracle:p.oracle,observed:p.observed,receipt:p.receipt,admissionReport:p.admissionReport, ...p.replay })) })) });
+}
+
+function semanticReplay(c) {
+  const source=c.reproduction??{};
+  const fields=['schema','generatorVersion','definition','definitionDigest','variantIndex','baseTemplateId','unsignedModel','setup','oracle','accountAllocation'];
+  const reproduction=Object.fromEntries(fields.filter(key=>source[key]!==undefined).map(key=>[key,source[key]]));
+  return {mutation:c.mutation??null,reproduction,
+    previewCli:typeof source.cli==='string'?source.cli.replace(/--submit(?:\s+--allow-chain\s+\d+)?/g,'--preview'):null,
+    broadcastAllowed:false};
 }
 
 export async function listReports(directory) {

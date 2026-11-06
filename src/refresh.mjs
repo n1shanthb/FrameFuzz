@@ -18,7 +18,11 @@ export async function refreshEvidence(report, { rpcUrls, rpcUrl, allowChainId, r
   for (const c of output.results) {
     for (const p of c.paths) {
       if (p.observed.status === 'rejected') p.observed = describeRpcError(new RpcResponseError(p.observed.code,p.observed.message,p.observed.data));
-      if (p.observed.status === 'accepted') p.receipt = await getReceipt(endpointFor(p,{rpcUrls,rpcUrl}),p.observed.hash,{waitMs:receiptWaitMs,rpcFn});
+      if (p.observed.status === 'accepted') {
+        if (!Object.hasOwn(p,'historicalReceipt')) p.historicalReceipt=structuredClone(p.receipt??null);
+        p.receipt = await getReceipt(endpointFor(p,{rpcUrls,rpcUrl}),p.observed.hash,{waitMs:receiptWaitMs,rpcFn});
+        p.receiptObservations=[...(p.receiptObservations??[]),{checkedAt:output.refreshedAt,receipt:structuredClone(p.receipt)}];
+      }
       p.comparison = p.oracle?compareMutation(p.oracle,p.observed):compareAdmission(p.expected,p.observed,p.expectedRule,p.expectedErrorClass);
     }
     c.verdict = c.paths.some(p=>p.comparison.verdict.startsWith('UNEXPECTED')) ? 'UNEXPECTED'

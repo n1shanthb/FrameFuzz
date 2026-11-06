@@ -1,3 +1,4 @@
+import { assertTestChain } from '../safety.mjs';
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
 import { HEX_TRANSACTION } from '../verdict.mjs';
@@ -22,6 +23,7 @@ export function createAdapter(plugin) {
       busy = true;
       try {
         if (!Number.isSafeInteger(chainId) || chainId <= 1) throw new Error('Adapter requires an explicitly checked non-mainnet chain');
+        assertTestChain(chainId, chainId);
         const context = { caseId, pathId, rpcUrl, chainId };
         const account = await plugin.accountFor(context);
         if (!ADDRESS.test(account?.sender ?? '')) throw new Error('accountFor must return a sender address');

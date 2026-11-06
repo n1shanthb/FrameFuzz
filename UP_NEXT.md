@@ -1,3 +1,9 @@
+## Completion sprint — Pass 1 core checkpoint
+
+Core reliability fixes verified with 119 passing full-suite tests, followed by 17 targeted tests after receipt-history refinement. Explicit execution chain IDs1337/31337; standalone reserve CLI requires --submit --allow-chain1337. Export adds unsigned semantic projection and historical labels. Receipt refresh retains original receipt separately; new frame summaries do not claim action-state proof. Wrapped funding/nonce and unknown diagnostics preserved.
+
+Remaining Pass 1 registry/replay/demo/UI changes are under verification in the working tree. No PARTIAL pass, chain writes, paid calls or push. Next: complete disposition report and local checks, then STOP.
+
 ## Completion sprint — Pass 0
 
 Fixed generic LIVE scenario method mapping (public raw, alternative frame). Default `npm run run:preview` generates seven unsigned offline variants without credentials or RPC. Regression composes the real workshop signer/adapter/scenario/runner with mocked final transport; no network writes.

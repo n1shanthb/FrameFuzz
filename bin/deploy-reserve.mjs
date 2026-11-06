@@ -3,6 +3,7 @@ import { deployReserve } from '../src/adapters/workshop-setup.mjs';
 
 const configFile='examples/live/devnet.json';
 try {
+  if (!process.argv.includes('--submit') || !process.argv.includes('--allow-chain') || process.argv[process.argv.indexOf('--allow-chain')+1] !== '1337') throw new Error('Deployment requires explicit --submit --allow-chain 1337');
   const config=JSON.parse(await readFile(configFile,'utf8'));
   const artifact=JSON.parse(await readFile('vendor/paymaster/ReserveReadingPaymaster.json','utf8'));
   const result=await deployReserve({config,artifact,privateKey:process.env.FRAMEFUZZ_DEPLOYER_KEY,rpcUrl:process.env.FRAMEFUZZ_SETUP_RPC??config.authorizedEndpoints[0]});

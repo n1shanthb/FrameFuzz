@@ -61,6 +61,9 @@ export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutM
         gasUsed: receipt.gasUsed ?? null,
         payer: receipt.payer ?? null,
         frameReceipts: receipt.frameReceipts ?? null,
+        frames: summarizeFrames(receipt.frameReceipts),
+        actionStateProof: 'not_collected',
+        checkedAt: new Date().toISOString(),
         raw: receipt,
       };
     } catch (error) {
@@ -75,4 +78,12 @@ export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutM
 export function sanitizedRpcLabel(url) {
   try { const x = new URL(url); return `${x.protocol}//${x.hostname}${x.port ? `:${x.port}` : ''}`; }
   catch { return '[unrecognized endpoint]'; }
+}
+
+// Frame success is a receipt observation, never proof of a particular state effect.
+export function summarizeFrames(frames) {
+  if (!Array.isArray(frames)) return {state:'unavailable',items:[]};
+  return {state:'reported',items:frames.map((frame,index)=>({index,status:frame?.status??null,
+    state:frame?.status==='0x1'?'success':frame?.status==='0x0'?'reverted':'unknown',
+    gasUsed:frame?.gasUsed??null}))};
 }

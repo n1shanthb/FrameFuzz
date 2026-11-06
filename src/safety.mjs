@@ -10,7 +10,10 @@ export function redact(value) {
   return value;
 }
 
+export const EXECUTION_CHAINS = Object.freeze([1337, 31337]);
+
 export function assertTestChain(chainId, allowed) {
   if (chainId === 1) throw new Error('SAFETY STOP: mainnet submissions are disabled');
+  if (!EXECUTION_CHAINS.includes(chainId)) throw new Error('SAFETY STOP: chain is not in the explicit execution allowlist (1337, 31337)');
   if (!Number.isSafeInteger(allowed) || allowed <= 0 || chainId !== allowed) throw new Error(`SAFETY STOP: RPC is chain ${chainId}, but --allow-chain is ${allowed}`);
 }
