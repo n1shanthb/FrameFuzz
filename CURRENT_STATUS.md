@@ -1,6 +1,6 @@
-## Completion sprint — Pass 1 in progress
+## Completion sprint — Pass 1 UI checkpoint
 
-119 tests pass,0fail,0skip. Registry bounded-result contract and semantic-only replay are committed. Saved-demo restores exact genuine Sonnet evidence; fresh offline server/browser loaded four historical real calls/two experiments without a key. Replay now binds actual worker PID and compares semantic properties independent of key order; same-implementation limitation explicit. Existing saved captures unchanged. Remaining: UI/verification/docs checkpoints, then STOP before PARTIAL pass.
+119 tests pass,0fail,0skip. Browser verified unsigned seed123 preview with preserved inputs and real coverage, keyboard row invocation, restored genuine Sonnet transcript without a key, presentation Next/Escape and retained checklist selection. Five added SPA behavior tests use DOM doubles, not a browser engine. Gateway response now means chain_verified with write health explicitly unverified; registry reads have a request deadline and bounded-result notice. No frontend redesign, chain writes, paid calls or push. Remaining: final build/docs checkpoint, then STOP before PARTIAL pass.
 
 ## Completion sprint — Pass 0
 

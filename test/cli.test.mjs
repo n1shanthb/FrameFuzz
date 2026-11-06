@@ -60,7 +60,7 @@ test('dashboard runs selected mutation through configured adapter and rejects cr
     assert.equal(response.status,200); const result = await response.json(); assert.equal(result.totals.matched,3);
     const evidence = await (await fetch(`${base}/api/run?id=${encodeURIComponent(result.file)}`)).json(); assert.match(evidence.source,/MOCK/);
     assert.equal((await (await fetch(`${base}/api/config`)).json()).running,false);
-    const network = await (await fetch(`${base}/api/network`)).json(); assert.equal(network.endpoints[0].state,'ready');
+    const network = await (await fetch(`${base}/api/network`)).json(); assert.equal(network.endpoints[0].state,'chain_verified');
   } finally {
     for (const s of [dashboard,gateway]) if (s?.listening) await new Promise(r=>s.close(r));
     await rm(directory, {recursive:true,force:true});

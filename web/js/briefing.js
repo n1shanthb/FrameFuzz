@@ -53,11 +53,11 @@ export const BRIEFING = {
     offlineSignatureBinding: true,
     readOnlyPreflight: true,
     liveAuthorization: false,
-    llmCalls: false,
+    llmCalls: true,
     independentLiveReproduction: false,
-    artifact: 'evidence/swarm/milestone-1/offline.json',
+    artifact: 'evidence/investigator/2026-11-06/sonnet-retry-2.json',
   },
-  testsAtCheckpoint: 83,
+  testsAtCheckpoint: 119,
   disclaimer: 'EIP-8141 experimental environment only. No mainnet frame support is claimed.',
 };
 
@@ -103,7 +103,7 @@ export const FAQ = [
   },
   {
     q: 'Is the AI swarm working?',
-    a: 'Offline tooling exists; no real LLM calls at the latest checkpoint. Do not advertise autonomous investigation until real calls are recorded.',
+    a: 'Four real Sonnet responses drove two offline signature-binding experiments with fresh-process reproduction. No owned-validator EVM execution or vulnerability is proven.',
   },
   {
     q: 'How is admission different from inclusion and action execution?',

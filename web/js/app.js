@@ -18,7 +18,9 @@ const state = {
   presenting: false,
   slideIndex: 0,
   evidenceFilter: 'all',
-  swarmEnabled: false,
+  formValues: {},
+  checklist: {},
+  communityStatus: 'Not queried.',
   swarmConfig: null,
   swarmReport: null,
   swarmTimeline: [],
@@ -147,7 +149,7 @@ function renderOverview() {
     <div class="grid-4" style="margin-top:18px">
       <div class="metric"><div class="metric-label">Gas admission matches</div><div class="metric-value" style="color:var(--success)">${g.matchedDecisions}/${g.admissionChecks}</div><div class="metric-note">Historical LIVE · ${g.variants} variants</div></div>
       <div class="metric"><div class="metric-label">Successful inclusions</div><div class="metric-value">${g.includedSuccess}</div><div class="metric-note">Gas campaign receipts · status 0x1</div></div>
-      <div class="metric"><div class="metric-label">Automated tests</div><div class="metric-value">${BRIEFING.testsAtCheckpoint}</div><div class="metric-note">Latest checkpoint · not a live proof</div></div>
+      <div class="metric"><div class="metric-label">Automated tests</div><div class="metric-value">${BRIEFING.testsAtCheckpoint}</div><div class="metric-note">Verified offline checkpoint · not a live proof</div></div>
       <div class="metric"><div class="metric-label">Library runs loaded</div><div class="metric-value">${k.live}<span class="muted" style="font-size:16px"> LIVE</span></div><div class="metric-note">${k.preview} preview · ${k.mock} mock</div></div>
     </div>
 
@@ -238,6 +240,15 @@ function caseDetailHtml(report, c) {
     <p class="mono muted" style="margin-top:10px">${esc(c.reproduction?.cli || `Case ${c.id} · chain ${report.chainId}`)}</p>`;
 }
 
+function coverageHtml(report) {
+  if(!report?.coverage)return '<p class="muted">No generated coverage recorded for this run.</p>';
+  return `<div class="card" id="coverageSummary" style="margin-top:16px"><h3>Generated rule coverage</h3>
+    ${(report.coverage.rules??[]).map(r=>`<p>${esc(r.ruleId)} / ${esc(r.path)}: ${esc(r.variants)} variants, ${esc(r.matched)} matches, ${esc(r.unexpected)} unexpected; regions ${esc((r.regions??[]).join(', '))}; verified ${esc(r.verified)}, inferred ${esc(r.inferred)}, unknown ${esc(r.unknown)}</p>`).join('')}
+    <p class="muted">Generated case coverage is not exhaustive protocol correctness. Shrinking is bounded, explicit and never automatically probes a gateway.</p>
+    ${(report.results??[]).filter(c=>c.shrink||c.reproduction?.shrink).map(c=>`<pre class="code-box">${esc(JSON.stringify({case:c.id,shrink:c.shrink??c.reproduction.shrink},null,2))}</pre>`).join('')}
+    </div>`;
+}
+
 function renderCampaigns() {
   const c = state.config;
   const enabled = Boolean(c?.submitEnabled);
@@ -283,7 +294,7 @@ function renderCampaigns() {
       <p class="muted" id="runHelp" style="margin-top:10px">${esc(c?.offlineDemo
     ? 'Saved-evidence mode. Live tests and network checks are disabled.'
     : enabled
-      ? `Ready to run signed fixtures from ${c.casesLocation} on chain ${c.allowChainId}.`
+      ? `Submission configured for signed fixtures from ${c.casesLocation} on chain ${c.allowChainId}.`
       : 'Read-only mode. Configure --rpc, --allow-chain and --submit for live submissions.')}</p>
       <div class="alert" style="margin-top:12px">A submitted transaction hash proves an admission response only. Inclusion and execution are reported separately.</div>
 
@@ -333,6 +344,7 @@ function renderCampaigns() {
       </div>
     </div>
 
+    ${coverageHtml(report)}
     <div class="split-detail" style="margin-top:16px">
       <div class="card" id="cases" style="padding:0;overflow:hidden">
         <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
@@ -361,7 +373,7 @@ function filteredResults(report) {
     if (f === 'rejected') return (c.paths ?? []).some((p) => p.observed?.status === 'rejected');
     if (f === 'included') return (c.paths ?? []).some((p) => p.receipt?.state === 'included_success' || p.receipt?.state === 'INCLUDED_SUCCESS' || /included_success/i.test(p.receipt?.state ?? ''));
     if (f === 'inconclusive') return c.verdict === 'INCONCLUSIVE' || (c.paths ?? []).some((p) => p.comparison?.verdict === 'INCONCLUSIVE');
-    if (f === 'infra') return (c.paths ?? []).some((p) => p.comparison?.verdict === 'INFRASTRUCTURE_FAILURE');
+    if (f === 'infra') return (c.paths ?? []).some((p) => (['INFRASTRUCTURE_FAILURE','TRANSPORT_FAILURE'].includes(p.comparison?.verdict) || p.observed?.errorClass==='gateway_infrastructure'));
     return true;
   });
 }
@@ -380,6 +392,7 @@ function renderEvidence() {
     .map((f) => `<button class="chip ${state.evidenceFilter === f ? 'active' : ''}" data-filter="${f}">${f}</button>`).join('');
 
   const results = filteredResults(report);
+  if (!results.includes(report?.results?.[state.selectedCase])) state.selectedCase = results.length ? report.results.indexOf(results[0]) : -1;
   const selected = report?.results?.[state.selectedCase];
   const stages = (selected?.paths ?? []).map((p) => {
     const admitted = p.observed?.status === 'accepted';
@@ -480,7 +493,7 @@ function renderArkiv() {
         <label class="field">Owner<input id="communityOwner" placeholder="Optional 0x wallet"></label>
         <button class="btn btn-secondary" id="queryCommunity" ${offline ? 'disabled' : ''}>Query Arkiv</button>
       </div>
-      <p class="muted" id="communityStatus" style="margin-top:10px">${offline ? 'Live Arkiv disabled in offline mode.' : 'Not queried. RPC: https://rpc.rabdi.db-chain.testnet.arkiv.network'}</p>
+      <p class="muted" id="communityStatus" style="margin-top:10px">${offline ? 'Live Arkiv disabled in offline mode.' : esc(state.communityStatus)}</p>
       <div class="pipeline" style="margin:16px 0">
         <div class="node">Discover</div><div class="arrow">→</div>
         <div class="node">Verify integrity</div><div class="arrow">→</div>
@@ -671,7 +684,7 @@ function renderBriefing() {
           <ul>
             <li>Owner signs partial authorization</li>
             <li>Calldata is not committed</li>
-            <li>Proposed mutation: record(1,10) → record(2,999)</li>
+            <li>Sonnet-selected offline mutation: record(1,10) → record(2,10)</li>
             <li>Retained signature still passes offline partial-binding check</li>
           </ul>
         </div>
@@ -716,10 +729,10 @@ function renderBriefing() {
     'Workshop codec versus current EIP-8141 draft hash/envelope differences.',
     'Exact live client TXPARAM(SIG_HASH) compatibility unverified.',
     'Sidecar previously failed with disk exhaustion (dated capture; do not imply current health from stale observations).',
-    'Last observed head was stale at milestone-2 preflight; block production/writes unverified at that capture.',
+    'Phase 3 read-only capture observed advancing blocks; current write health and owned-validator execution remain unverified.',
     'Deployer and owner context not configured at last preflight.',
     'New validator attack not executed live.',
-    'Agentic LLM provider not yet run.',
+    'Four real Sonnet calls and two offline experiments are saved; no owned-validator EVM execution.',
     'Sidecar binary commit unavailable despite version response.',
   ].map((t, i) => `<div class="check-item"><span class="tag idle">${i + 1}</span><div>${esc(t)}</div></div>`).join('')}
       </div>
@@ -805,10 +818,20 @@ function render() {
   renderShellChrome();
   $('pageRoot').innerHTML = pageHtml();
   bindPage();
+  for (const [id,value] of Object.entries(state.formValues)) { const el=$(id); if(el)el.value=value; }
+  document.querySelectorAll('[data-ef-q]').forEach(el=>{el.checked=Boolean(state.checklist[el.dataset.efQ]);});
   if (state.presenting) applyPresentSlide();
 }
 
 function bindPage() {
+  for(const id of ['scenarioSelect','mutationSelect','mutationSuite','mutationSeed','mutationCount','communitySuite','communityRule','communityVersion','communityOwner']) {
+    const el=$(id); if(el) { const save=()=>{state.formValues[id]=el.value;}; el.addEventListener('input',save); el.addEventListener('change',save); }
+  }
+  document.querySelectorAll('[data-ef-q]').forEach(el=>el.addEventListener('change',()=>{state.checklist[el.dataset.efQ]=el.checked;}));
+  document.querySelectorAll('tr[data-case]').forEach(el=>{
+    el.tabIndex=0; el.setAttribute('role','button'); el.setAttribute('aria-label','Inspect case '+el.dataset.case);
+    el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();el.click();}});
+  });
   document.querySelectorAll('[data-nav]').forEach((el) => {
     el.addEventListener('click', () => navigate(el.dataset.nav));
   });
@@ -860,7 +883,7 @@ function bindPage() {
   if (suite) {
     suite.addEventListener('change', () => {
       const count = $('mutationCount');
-      if (count) count.value = suite.value === 'uniswap-storage' ? 3 : 7;
+      if (count) { count.value = suite.value === 'uniswap-storage' ? 3 : 7; state.formValues.mutationCount=count.value; }
     });
   }
 
@@ -961,6 +984,8 @@ async function runLiveSuite() {
 }
 
 async function queryCommunity() {
+  state.communityStatus='Querying Arkiv (15 second deadline)…';
+  if($('communityStatus'))$('communityStatus').textContent=state.communityStatus;
   try {
     const q = new URLSearchParams();
     for (const [key, id] of [['suite', 'communitySuite'], ['rule', 'communityRule'], ['implementation', 'communityVersion'], ['owner', 'communityOwner']]) {
@@ -970,16 +995,16 @@ async function queryCommunity() {
     const d = await api.community(q);
     state.community = d;
     state.selectedCommunity = null;
-    const status = $('communityStatus');
+    state.communityStatus=`${d.source} · ${d.cases.length} active · ${d.rejected.length} quarantined · ${d.discovery?.notice??'Bounded results'}${d.discovery?.possiblyTruncated?' Limit reached; refine filters.':''}`;
     render();
     const el = $('communityStatus');
     if (el) {
-      el.textContent = `${d.source} · chain ${d.chainId} · block ${d.currentBlock} · reader ${d.reader.walletAddress ?? 'public anonymous'} · ${d.cases.length} active · ${d.rejected.length} quarantined`;
+      el.textContent = state.communityStatus + ` · chain ${d.chainId} · block ${d.currentBlock} · reader ${d.reader.walletAddress ?? 'public anonymous'}`;
     }
   } catch (e) {
     setStatus(`Arkiv query failed: ${e.message}`);
     const el = $('communityStatus');
-    if (el) el.textContent = `Arkiv query failed: ${e.message}`;
+    state.communityStatus=`Arkiv query failed: ${e.message}`; if (el) el.textContent=state.communityStatus;
   }
 }
 
@@ -1060,6 +1085,7 @@ async function refresh(loadDefault = true) {
 
 function onKey(e) {
   if (!state.presenting) return;
+  if (e.key !== 'Escape' && (e.target?.closest?.('input,textarea,select,[contenteditable]') || e.ctrlKey || e.altKey || e.metaKey)) return;
   if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); stepSlide(1); }
   if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); stepSlide(-1); }
   if (e.key === 'Escape') { e.preventDefault(); exitPresent(); }

@@ -20,8 +20,8 @@ export const api = {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   }).then(parse),
-  community: (params) => fetch(`/api/community?${params}`).then(parse),
-  communityCase: (key) => fetch(`/api/community/case?key=${encodeURIComponent(key)}`).then(parse),
+  community: (params) => fetch(`/api/community?${params}`,{signal:AbortSignal.timeout(15000)}).then(parse),
+  communityCase: (key) => fetch(`/api/community/case?key=${encodeURIComponent(key)}`,{signal:AbortSignal.timeout(15000)}).then(parse),
   communityImport: (key) => fetch('/api/community/import', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },

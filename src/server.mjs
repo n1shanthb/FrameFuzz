@@ -79,7 +79,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         if(offlineDemo)return json(res,200,{offlineDemo:true,endpoints:[]});
         const endpoints = Object.entries({ default: rpcUrl, ...rpcUrls }).filter(([, v]) => v);
         const status = await Promise.all(endpoints.map(async ([id, url]) => {
-          try { const chainId = await getChainId(url, { timeoutMs: 3000 }); assertTestChain(chainId, allowChainId); return { id, rpc: sanitizedRpcLabel(url), chainId, state: 'ready' }; }
+          try { const chainId = await getChainId(url, { timeoutMs: 3000 }); assertTestChain(chainId, allowChainId); return { id, rpc: sanitizedRpcLabel(url), chainId, state: 'chain_verified', writeHealth:'unverified', message:'Chain ID matches; mining, funding and write health are not checked' }; }
           catch (error) { return { id, rpc: sanitizedRpcLabel(url), state: 'unavailable', message: redact(error.message) }; }
         }));
         json(res, 200, { endpoints: status });
