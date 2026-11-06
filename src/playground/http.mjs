@@ -16,6 +16,29 @@ import {saveReport} from '../reports.mjs';
 const UUID=/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i,HASH=/^[\da-f]{64}$/;
 const reportDigest=value=>{const text=JSON.stringify(value);if(Buffer.byteLength(text)>2*1024*1024)throw Error('REPORT_SIZE_LIMIT');return sha256(text);};
 const operatorConfigured=env=>/^0x[\da-fA-F]{64}$/.test(env?.ARKIV_PRIVATE_KEY||'');
+/** Playground live agents: LIVE_READ_ONLY/AUTHORIZED with OpenRouter, or legacy FRAMEFUZZ_SWARM=on. */
+export function playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider}={}){
+  const blockers=[];
+  if(offlineDemo)blockers.push('SAVED_DEMO_OR_OFFLINE disables paid investigations');
+  const mode=capabilityMode??'LIVE_READ_ONLY';
+  const swarmOn=env?.FRAMEFUZZ_SWARM==='on';
+  const liveMode=mode==='LIVE_READ_ONLY'||mode==='LIVE_AUTHORIZED';
+  if(!liveMode&&!swarmOn)blockers.push('Start with --mode LIVE_READ_ONLY (recommended) or set FRAMEFUZZ_SWARM=on for Swarm Lab offline crypto');
+  const keyOk=Boolean(providerFactory)||Boolean(provider?.configured)||Boolean(env?.OPENROUTER_API_KEY?.trim());
+  if(!keyOk)blockers.push('OPENROUTER_API_KEY is not configured in the server environment');
+  return {
+    canStart:blockers.length===0,
+    blockers,
+    mode,
+    openRouterConfigured:Boolean(provider?.configured)||Boolean(env?.OPENROUTER_API_KEY?.trim()),
+    openRouterKeyPresent:Boolean(env?.OPENROUTER_API_KEY?.trim()),
+    swarmEnvEnabled:swarmOn,
+    liveModeEnablesAgents:liveMode,
+    notice:blockers.length===0
+      ?'Ready for consented OpenRouter investigation. No chain broadcast from Playground start.'
+      :blockers.join(' · '),
+  };
+}
 export function reportMarkdown(report){
  const safe=x=>String(x??'').replace(/[<>`]/g,'').replace(/\r?\n/g,' ');
  const arkiv=report.arkivIntelligence;
@@ -25,7 +48,7 @@ export function reportMarkdown(report){
   ...report.workspace.proposals.flatMap(e=>[`## ${safe(e.proposal.id)} — ${safe(e.state)}`,`Function/tool: ${safe(e.proposal.functionSignature)} / ${safe(e.proposal.tool)}. Domain: ${safe(e.proposal.domain)}`,`Original: ${safe(JSON.stringify(e.proposal.originalArgs))}; mutation: ${safe(JSON.stringify(e.proposal.mutatedArgs))}`,`Feasibility: ${safe(e.feasibility?.effective)}. ${safe(e.feasibility?.deterministic.reason)}`,`Outcome: ${safe(e.outcome?.classification)}; domain ${safe(e.outcome?.outcomeDomain)}; expected ${safe(e.outcome?.expectedVerdict)}; observed ${safe(e.outcome?.observedVerdict??'NONE')}`,`Reproduction: ${safe(e.reproduction?.status??'NOT_REQUESTED')}`]),
   '## Limitations',...(report.limitations??[]).map(safe),`Content digest: ${report.contentDigest}`,''].join('\n\n');
 }
-export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,setRunning,json,providerFactory,arkivRegistryFactory,arkivSavedLookup,arkivPublishSubmit=null}){
+export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,setRunning,json,providerFactory,capabilityMode,arkivRegistryFactory,arkivSavedLookup,arkivPublishSubmit=null}){
  const analyses=new Map(),jobs=new Map(),directory=path.join(resultDir,'playground');
  const pendingPublish=new Map();
  const load=async id=>{
@@ -53,7 +76,8 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
   if(!url.pathname.startsWith('/api/playground/'))return false;
   if(req.method==='GET'&&url.pathname==='/api/playground/config'){
    const provider=openRouterStatus(env),budget=await budgetStatus(resultDir);
-   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId},canStart:!offlineDemo&&env.FRAMEFUZZ_SWARM==='on'&&(provider.configured||!!providerFactory),offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:false,arkivChainId:ARKIV_CHAIN_ID});return true;
+   const readiness=playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider});
+   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId},canStart:readiness.canStart,investigationReadiness:readiness,offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:false,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/budget'){json(res,200,await budgetStatus(resultDir));return true;}
   if(req.method==='POST'&&url.pathname==='/api/playground/analyze'){
@@ -77,7 +101,8 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
   if(req.method==='POST'&&url.pathname==='/api/playground/start'){
    const input=await readJsonObject(req,['analysisId','sourceDigest','authorizeProvider','budgetUSD']);
    if(!HASH.test(input.analysisId??'')||!HASH.test(input.sourceDigest??'')||input.authorizeProvider!==true)throw new ApiError(400,'CONSENT_OR_IDENTITY','Exact analysis/source identity and deliberate consent required');
-   if(offlineDemo||env.FRAMEFUZZ_SWARM!=='on'||!providerFactory&&!env.OPENROUTER_API_KEY)throw new ApiError(409,'PROVIDER_DISABLED','Investigation requires normal mode, FRAMEFUZZ_SWARM=on, configured provider and consent; compilation remains available offline');
+   const readiness=playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider:openRouterStatus(env)});
+   if(!readiness.canStart)throw new ApiError(409,'PROVIDER_DISABLED',readiness.notice);
    const cached=analyses.get(input.analysisId);if(!cached||Date.now()-cached.at>600000||cached.analysis.sourceDigest!==input.sourceDigest)throw new ApiError(409,'STALE_ANALYSIS','Analyze the exact current source/selection again');
    if(getRunning())throw new ApiError(409,'BUSY','An experiment is already running');
    if(jobs.size>=10){const old=[...jobs].find(([,j])=>j.state!=='RUNNING');if(old)jobs.delete(old[0]);else throw new ApiError(429,'JOB_LIMIT','Investigation capacity reached');}

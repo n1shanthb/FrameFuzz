@@ -114,6 +114,13 @@ export function bindPlayground(){s.active=true;document.querySelectorAll('[data-
  $('byocRole')?.addEventListener('change',e=>{s.role=e.target.value;invalidate();});
  $('byocContract')?.addEventListener('change',e=>{s.contractName=e.target.value;invalidate();});
  $('byocAnalyze').addEventListener('click',analyze);$('byocStart').addEventListener('click',start);$('byocCancel').addEventListener('click',cancel);paint();
- request('config').then(c=>{s.config=c;s.budget=c.sprintBudget;if(s.active){$('byocConfig').textContent=`${c.transport} · ${c.model} · ${c.canStart?'provider available':'investigations disabled'}`;const checkbox=$('byocConsent');checkbox.parentElement.lastChild.textContent=c.transport.startsWith('MOCK')?' I authorize this mocked test-transport investigation; no paid model.':` I consent to OpenRouter Sonnet under the remaining sprint budget (cap $${c.sprintBudget?.capUSD??1}); no blockchain/Arkiv writes.`;paint();}}).catch(e=>{s.error=e.message;paint();});
+ request('config').then(c=>{s.config=c;s.budget=c.sprintBudget;if(s.active){
+  const r=c.investigationReadiness;
+  $('byocConfig').textContent=c.canStart
+    ?`${c.transport} · ${c.model} · READY · mode ${r?.mode??c.capabilityMode??'n/a'} · OpenRouter key ${r?.openRouterKeyPresent?'loaded':'missing'} · budget $${Number(c.sprintBudget?.remainingUSD??0).toFixed(4)} remaining`
+    :`${c.transport} · ${c.model} · investigations disabled — ${r?.notice||'see investigationReadiness'}`;
+  const checkbox=$('byocConsent');checkbox.parentElement.lastChild.textContent=c.transport.startsWith('MOCK')?' I authorize this mocked test-transport investigation; no paid model.':` I consent to OpenRouter Sonnet under the remaining sprint budget (cap $${c.sprintBudget?.capUSD??1}); no blockchain/Arkiv writes until I start.`;
+  paint();
+ }}).catch(e=>{s.error=e.message;paint();});
 }
 export function leavePlayground(){if(isBusy())cancel();s.active=false;}

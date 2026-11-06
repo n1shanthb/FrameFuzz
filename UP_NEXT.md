@@ -1,13 +1,13 @@
-# Up next — after Arkiv×Playground integration
+# Up next — after acceptance readiness
 
-## Done this pass
-Native Arkiv discovery/import/operator-publish in Playground; agents consult verified summaries; 205 tests green.
+## Ready now (human gate)
+1. **You** click Start Investigation on QuotaVault at http://127.0.0.1:4190/ (consent already checked; budget $1.0000 remaining). Agents will use OpenRouter; no chain/Arkiv write from start.
 
-## Sensible next options
-1. Serve with `FRAMEFUZZ_SWARM=on` + mock or budgeted provider to demo agent Arkiv influence live in the UI
-2. Prefer live Rabdi discovery when `ARKIV_ACCESS_KEY` is set (reduce SAVED_FALLBACK rate-limits)
-3. EF Uniswap path only after paymaster restoration + new digest approval
-4. Submission polish / Present-to-EF using saved evidence (deadline 2026-11-07 09:00 IST)
+## After that run
+2. Review agent sessions + mutation workbench; export evidence if useful
+3. Optional: Uniswap profile investigate with Arkiv influence under the same consent/budget rules
+4. EF Uniswap live path only after paymaster restoration + new digest approval
+5. Submission polish / Present-to-EF using saved evidence (deadline 2026-11-07 09:00 IST)
 
 ## Hard stops
-No automatic Arkiv retry, no EF broadcast, no funding transfers, no paid LLM without consent, no push without authorization.
+No automatic Start, no EF broadcast, no funding transfers, no paid LLM without your consent click, no push without authorization.

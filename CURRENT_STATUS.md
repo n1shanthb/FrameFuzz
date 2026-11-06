@@ -1,25 +1,27 @@
-# Current status — Arkiv native in Playground investigation
+# Current status — real-user acceptance readiness (QuotaVault)
 
-Arkiv is wired into Contract Playground analyze → agent investigation → import → optional operator publish. No new chain writes or paid LLM calls this pass. Full suite **205/205** pass.
+Playground is **ready for the operator to personally authorize one real QuotaVault investigation**. No paid OpenRouter calls and no chain/Arkiv broadcasts were made in this pass.
 
-## Product behavior (verified)
-- **Analyze** auto-runs bounded Arkiv discovery (no consent). Uniswap profile: `AVAILABLE` with relevant `uniswap-storage` + `verification-gas` cases and relevance reasons. Generic ERC-20: `NO_APPLICABLE_QUERY` (no fishing).
-- Live Rabdi may rate-limit → **SAVED_FALLBACK** with honest labeling; investigation continues.
-- Agents receive `COMMUNITY_REGRESSION_INTELLIGENCE` + `arkiv_regressions` tool; usage recorded in `report.arkivIntelligence`.
-- **Import** `/api/playground/arkiv/import` → unsigned preview, `broadcasts:0` (confirmed for entity `0xf1089c05…06a1`).
-- **Publish** preview/confirm for operator only (`ARKIV_PRIVATE_KEY`); public gets 403. Intent digest + fee ceiling; no auto-retry.
-- Browser (http://127.0.0.1:4188): Playground Uniswap analyze shows **Community Regression Intelligence** with 3 cases including our published entity; Start Investigation disabled without `FRAMEFUZZ_SWARM=on` (expected for this serve mode).
+## Acceptance evidence (browser + API)
+- Server: `FRAMEFUZZ_SWARM=on` + `node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_READ_ONLY --results runs --port 4190`
+- URL: http://127.0.0.1:4190/ → Contract Playground → BYOC
+- **OPENROUTER_API_KEY**: present (length 73, `sk-or-v…`); config API reports `openRouterKeyPresent: true` with **no key material** in JSON
+- **QuotaVault** analyzed: READY · profile byoc · solc `0.8.28+commit.7893614a…` · digest `4953d79f…` · analysis `d98ee41b…` · role UNKNOWN · 7 ABI functions
+- **Arkiv**: `NO_APPLICABLE_QUERY` · 0 cases · broadcasts **0** · notice “No EIP-8141 admission/paymaster signals…” — analysis stayed READY (non-blocking)
+- Consent checked → **Start Investigation enabled** without `--submit` and without `LIVE_AUTHORIZED`
+- Agent cards: 0 actual requests (Start not clicked)
+- Provider line: `OpenRouter · anthropic/claude-sonnet-4.6 · READY · mode LIVE_READ_ONLY · OpenRouter key loaded · budget $1.0000 remaining`
+- Config: `canStart: true`, `writesEnabled: false`, `arkivWritesEnabled: false`, `chainBroadcastEnabled: false`, sprint spent `$0.0000` / remaining `$1.0000`
 
-## Key files
-- `src/playground/arkiv-intelligence.mjs` — discovery, relevance, sanitize, publish confirmation
-- `src/playground/{investigate,http,session,tools,schemas}.mjs` — agent + API wiring
-- `web/js/playground.js` + `web/css/app.css` — Community Regression Intelligence UI
-- Tests: `test/arkiv-intelligence.test.mjs`, `test/playground-arkiv-http.test.mjs`
+## Live-agent enablement (no hidden toggle)
+`playgroundInvestigationReadiness()` treats **`--mode LIVE_READ_ONLY` or `LIVE_AUTHORIZED` + OpenRouter key** as sufficient. `FRAMEFUZZ_SWARM=on` remains a legacy/alternate enable for Swarm Lab offline crypto; it is **not** required for Playground when live mode is set. If blocked, the UI shows the explicit `investigationReadiness.notice` / blockers (not a silent disable).
 
-## Prior Arkiv one-shot (unchanged)
-Entity `0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1` · contentDigest `0f7f0145…` · evidence under `evidence/arkiv/2026-11-07/`.
+## Fixture
+- `examples/contracts/QuotaVault.sol` — self-contained BYOC acceptance fixture (not EIP-8141; not a live deploy target)
 
-## Limitations
-- Saved snapshots mark `replayAllowed:false`; import still re-verifies live when clicked.
-- Agent decision influence with a **paid** Uniswap run not re-executed this pass (no paid LLM); covered by mock-provider tests.
-- EF Uniswap live path still paymaster-blocked. No push.
+## Tests
+- `node --test test/playground-readiness.test.mjs` → 4/4 pass
+- Prior full suite: **205/205** (Arkiv×Playground); readiness test is additive
+
+## Operator next step
+In the open browser session: leave consent checked and click **Start Investigation** only when you personally authorize the paid QuotaVault run. Do not expect chain broadcast from Playground start.
