@@ -4,9 +4,13 @@ import {assertSwarmEnabled,rejectNetworkWrites} from './gate.mjs';
 const stringify=value=>JSON.stringify(value,(_,v)=>typeof v==='bigint'?String(v):v,2);
 export async function swarmCommand(options){
   assertSwarmEnabled();rejectNetworkWrites(options);
-  for(const key of Object.keys(options))if(!['_','output','seed','deployer','owner','mode','offline','variant','investigation','preflight','head','context'].includes(key))throw new Error('Unsupported swarm option '+key);
+  for(const key of Object.keys(options))if(!['_','output','seed','deployer','owner','mode','offline','variant','investigation','preflight','head','context','bundle'].includes(key))throw new Error('Unsupported swarm option '+key);
   const [action='offline']=options._;let report;
-  if(action==='sponsored-plan'){
+  if(action==='verify-action'){
+    if(!options.bundle)throw new Error('Action verification requires --bundle JSON file');
+    report=(await import('./raw-action-proof.mjs')).ingestRawActionProof(JSON.parse(await readFile(options.bundle,'utf8')));
+  }
+  else if(action==='sponsored-plan'){
     if(!options.investigation||!options.context)throw new Error('Sponsored plan requires --investigation and --context JSON files');
     report=await(await import('./sponsored-plan.mjs')).prepareSponsoredPlan({investigation:JSON.parse(await readFile(options.investigation,'utf8')),context:JSON.parse(await readFile(options.context,'utf8')),variant:Number(options.variant??1)});
   }
