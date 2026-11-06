@@ -54,7 +54,11 @@ function analysisHtml(){const a=s.analysis;if(!a)return '<p class="muted">Choose
 }
 function resultsHtml(){const r=s.report;if(!r)return `<p class="muted">${s.phase==='INVESTIGATING'?'Only actual agent requests and completed tool events appear below.':'No investigation result yet.'}</p>`;
  const entries=r.workspace.proposals.filter(e=>s.filter==='all'||s.filter==='executed'&&e.state==='EXECUTED'||s.filter==='negative'&&e.proposal.expectedVerdict==='REJECT'||s.filter==='unexpected'&&e.outcome?.findingCandidate||s.filter==='invalid'&&['INVALID','DUPLICATE','UNSUPPORTED'].includes(e.feasibility?.effective)||s.filter==='missing'&&e.feasibility?.effective==='CONDITIONAL');
- return `<div class="alert"><strong>${esc(r.source)} · ${esc(r.profileId||'byoc')} · ${esc(r.status)}</strong><p>${r.realModelCalls} genuine model calls · ${r.provider.calls} transport requests · $${Number(r.provider.transport==='OPENROUTER'?r.provider.costUSD:0).toFixed(8)} paid/accounted. EVM executed: ${r.evmExecuted}. Admission verified: ${r.admissionVerified}. Verified vulnerability: ${r.verifiedVulnerability}.</p>${r.error?`<p>${esc(r.error)}</p>`:''}</div>
+ const budgetFail=/input too large|USD budget exhausted|token budget exhausted|call limit|Agent budget exhausted|SPRINT_BUDGET/i.test(r.error||s.error||'');
+ return `<div class="alert"><strong>${esc(r.source)} · ${esc(r.profileId||'byoc')} · ${esc(r.status)}</strong><p>${r.realModelCalls} genuine model calls · ${r.provider.calls} transport requests · $${Number(r.provider.transport==='OPENROUTER'?r.provider.costUSD:0).toFixed(8)} paid/accounted. EVM executed: ${r.evmExecuted}. Admission verified: ${r.admissionVerified}. Verified vulnerability: ${r.verifiedVulnerability}.</p>
+ ${r.budget?`<p class="muted">Run budget: allocated $${Number(r.budget.allocatedUSD).toFixed(4)} · est. finish $${Number(r.budget.estimatedFinishUSD).toFixed(4)} · sprint remaining before start $${Number(r.budget.sprintRemainingBefore).toFixed(4)}</p>`:''}
+ ${r.error?`<p class="${budgetFail?'tag warn':''}">${budgetFail?'Budget/limit gate: ':''}${esc(r.error)}</p>`:''}
+ ${(r.partialErrors||[]).length?`<p class="muted">Partial continuation after: ${esc(r.partialErrors.join(' · '))}</p>`:''}</div>
  <div class="row"><a class="btn btn-secondary" download href="/api/playground/export?id=${encodeURIComponent(s.job)}&format=json">Export JSON</a><a class="btn btn-secondary" download href="/api/playground/export?id=${encodeURIComponent(s.job)}&format=markdown">Export Markdown</a><label>Filter <select id="byocFilter">${filters.map(([id,label])=>`<option value="${id}" ${s.filter===id?'selected':''}>${label}</option>`).join('')}</select></label></div>
  ${entries.map(e=>`<section class="card" style="margin-top:12px"><h3>${esc(e.proposal.id)} · rev ${e.revision} · ${esc(e.state)}</h3><p>${esc(e.proposal.hypothesis)}</p><p class="mono">${esc(e.proposal.functionSignature)} · ${esc(e.proposal.domain)} · ${esc(e.proposal.tool)}</p><p>Original ${esc(JSON.stringify(e.proposal.originalArgs))} → mutated ${esc(JSON.stringify(e.proposal.mutatedArgs))}</p><p><strong>Validator:</strong> ${esc(e.feasibility?.model.decision??'PENDING')} · ${esc(e.feasibility?.model.reason??'')}</p><p><strong>Deterministic:</strong> ${esc(e.feasibility?.effective??'PENDING')} · ${esc(e.feasibility?.deterministic.reason??'')}</p><p class="tag ${e.outcome?.findingCandidate?'warn':'info'}">${esc(e.outcome?.classification??'NOT EXECUTED')} · domain ${esc(e.outcome?.outcomeDomain??e.proposal.domain)}</p><p>Expected ${esc(e.outcome?.expectedVerdict??e.proposal.expectedVerdict)} / observed ${esc(e.outcome?.observedVerdict??'NONE')}. Provenance: ${esc(e.outcome?.provenance??'n/a')}.</p><details><summary>Tool output & descriptor</summary><pre class="details">${esc(JSON.stringify({proposal:e.proposal,feasibility:e.feasibility,execution:e.execution,reproduction:e.reproduction},null,2))}</pre></details>${e.state==='EXECUTED'?`<button class="btn btn-secondary" data-byoc-replay="${esc(e.entryId)}">Replay local tool</button>`:''}</section>`).join('')||'<p>No proposals match this filter.</p>'}
  ${r.critic?`<h3>Evidence Critic</h3><p>${esc(r.critic.assessment)}</p><p>Unresolved: ${esc(r.critic.unresolved.join('; '))}</p>`:''}
@@ -65,7 +69,12 @@ function paint(){if(!s.active||!$('byocPanels'))return;
  $('byocStatus').textContent=s.error||`${s.phase} · mode ${s.mode} · no automatic chain/Arkiv writes`;
  $('byocAnalyze').disabled=isBusy()||(needsSource&&!s.source.trim());$('byocStart').disabled=isBusy()||s.analysis?.status!=='READY'||!s.config?.canStart;$('byocCancel').disabled=!isBusy();
  if($('byocSourceWrap'))$('byocSourceWrap').hidden=s.mode!=='byoc';
- if($('byocBudget'))$('byocBudget').textContent=s.budget?`Sprint budget remaining $${Number(s.budget.remainingUSD).toFixed(4)} / $${Number(s.budget.capUSD).toFixed(2)} (spent $${Number(s.budget.spentUSD).toFixed(4)})`:'Budget unknown';
+ if($('byocBudget')){
+  const plan=s.config?.investigationBudget?.[s.mode==='uniswap-v4-paymaster'?'uniswap':'byoc'];
+  $('byocBudget').textContent=s.budget
+   ?`Sprint ${s.budget.sprintId||''}: $${Number(s.budget.remainingUSD).toFixed(4)} remaining / $${Number(s.budget.capUSD).toFixed(2)} cap (spent $${Number(s.budget.spentUSD).toFixed(4)}) · per-run allocate ~$${Number(plan?.allocatedUSD??0).toFixed(2)} · est. finish ~$${Number(plan?.estimatedFinishUSD??0).toFixed(2)} · OpenRouter key limit is separate`
+   :'Budget unknown';
+ }
  $('byocAnalysis').innerHTML=analysisHtml();$('byocPanels').innerHTML=`<h2>Live agent sessions</h2>${agentCards()}<h2 style="margin-top:24px">Mutation workbench & experiment results</h2>${resultsHtml()}${s.replay?`<pre class="details">${esc(JSON.stringify(s.replay,null,2))}</pre>`:''}${s.timeline.length?`<details><summary>Trace (${s.timeline.length} events)</summary><pre class="details">${esc(JSON.stringify(s.timeline,null,2))}</pre></details>`:''}`;
  $('byocFilter')?.addEventListener('change',e=>{s.filter=e.target.value;paint();});
  document.querySelectorAll('[data-byoc-replay]').forEach(el=>el.addEventListener('click',async()=>{const version=s.version;el.disabled=true;try{const result=await request('replay',{id:s.job,entryId:el.dataset.byocReplay});if(version===s.version)s.replay=result;}catch(e){s.error=e.message;}if(version===s.version)paint();}));
@@ -94,7 +103,9 @@ async function analyze(){const version=++s.version;s.phase='ANALYZING';s.error='
  const select=$('byocContract');if(select){select.innerHTML='<option value="">Auto-select single contract</option>'+(s.contracts||[]).map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');select.value=s.contractName||'';}
  }catch(e){if(version===s.version){s.error=e.name==='AbortError'?'Analysis cancelled':e.message;s.phase='INCOMPLETE';}}if(version===s.version)paint();}
 async function start(){if(!$('byocConsent')?.checked){s.error='Explicit consent is required before any model requests.';paint();return;}const version=s.version;s.phase='INVESTIGATING';s.error='';s.report=null;s.timeline=[];paint();
- try{const job=await request('start',{analysisId:s.analysis.analysisId,sourceDigest:s.analysis.sourceDigest,authorizeProvider:true,budgetUSD:s.mode==='uniswap-v4-paymaster'?0.35:0.55});if(version!==s.version){request('cancel',{id:job.id}).catch(()=>{});return;}s.job=job.id;
+ const plan=s.config?.investigationBudget?.[s.mode==='uniswap-v4-paymaster'?'uniswap':'byoc'];
+ if(plan?.blockers?.length){s.error=plan.blockers[0];s.phase='INCOMPLETE';paint();return;}
+ try{const job=await request('start',{analysisId:s.analysis.analysisId,sourceDigest:s.analysis.sourceDigest,authorizeProvider:true,budgetUSD:plan?.allocatedUSD});if(version!==s.version){request('cancel',{id:job.id}).catch(()=>{});return;}s.job=job.id;
   while(version===s.version){const current=await request('job?id='+encodeURIComponent(s.job));if(version!==s.version)return;s.timeline=current.timeline??[];s.report=current.report;s.phase=current.state==='RUNNING'?s.phase:current.state;if(current.error)s.error=current.error;paint();if(current.state!=='RUNNING')break;await new Promise(r=>setTimeout(r,500));}
   try{s.budget=await request('budget');}catch{}paint();
  }catch(e){if(version===s.version){s.error=e.message;s.phase='INCOMPLETE';paint();}}
@@ -116,10 +127,11 @@ export function bindPlayground(){s.active=true;document.querySelectorAll('[data-
  $('byocAnalyze').addEventListener('click',analyze);$('byocStart').addEventListener('click',start);$('byocCancel').addEventListener('click',cancel);paint();
  request('config').then(c=>{s.config=c;s.budget=c.sprintBudget;if(s.active){
   const r=c.investigationReadiness;
+  const plan=c.investigationBudget?.[s.mode==='uniswap-v4-paymaster'?'uniswap':'byoc'];
   $('byocConfig').textContent=c.canStart
-    ?`${c.transport} · ${c.model} · READY · mode ${r?.mode??c.capabilityMode??'n/a'} · OpenRouter key ${r?.openRouterKeyPresent?'loaded':'missing'} · budget $${Number(c.sprintBudget?.remainingUSD??0).toFixed(4)} remaining`
+    ?`${c.transport} · ${c.model} · READY · mode ${r?.mode??c.capabilityMode??'n/a'} · OpenRouter key ${r?.openRouterKeyPresent?'loaded':'missing'} · sprint $${Number(c.sprintBudget?.remainingUSD??0).toFixed(4)} remaining · run ~$${Number(plan?.allocatedUSD??0).toFixed(2)} (est. finish ~$${Number(plan?.estimatedFinishUSD??0).toFixed(2)})`
     :`${c.transport} · ${c.model} · investigations disabled — ${r?.notice||'see investigationReadiness'}`;
-  const checkbox=$('byocConsent');checkbox.parentElement.lastChild.textContent=c.transport.startsWith('MOCK')?' I authorize this mocked test-transport investigation; no paid model.':` I consent to OpenRouter Sonnet under the remaining sprint budget (cap $${c.sprintBudget?.capUSD??1}); no blockchain/Arkiv writes until I start.`;
+  const checkbox=$('byocConsent');checkbox.parentElement.lastChild.textContent=c.transport.startsWith('MOCK')?' I authorize this mocked test-transport investigation; no paid model.':` I consent to OpenRouter Sonnet under the FrameFuzz sprint budget (cap $${c.sprintBudget?.capUSD??1}, remaining $${Number(c.sprintBudget?.remainingUSD??0).toFixed(4)}); OpenRouter account limits are separate; no blockchain/Arkiv writes until I start.`;
   paint();
  }}).catch(e=>{s.error=e.message;paint();});
 }

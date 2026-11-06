@@ -23,7 +23,7 @@ test('OpenRouter structured request and logs never emit credentials, even if ech
  assert.equal(request.headers.Authorization,'Bearer '+key);const body=JSON.parse(request.body);assert.equal(body.response_format.json_schema.strict,true);assert.equal(body.provider.require_parameters,true);assert(!request.body.includes(key));assert.equal(proposal.assumption,'[REDACTED]');assert(!JSON.stringify(p).includes(key));assert(!JSON.stringify(p.summary()).includes(key));
 });
 test('provider enforces call, token and cost reservations before sending and times out unresponsive transport',async()=>{
- let calls=0;const p=provider(async()=>{calls++;return response(h());},{maxCalls:1});await p.propose([]);await assert.rejects(p.propose([]),/budget/);assert.equal(calls,1);
+ let calls=0;const p=provider(async()=>{calls++;return response(h());},{maxCalls:1});await p.propose([]);await assert.rejects(p.propose([]),/call limit|budget/);assert.equal(calls,1);
  for(const limits of [{maxTotalTokens:1},{maxCostUSD:0.000001}])await assert.rejects(provider(async()=>assert.fail('must not send'),limits).propose([]),/budget/);
  await assert.rejects(provider(()=>new Promise(()=>{}),{timeoutMs:10}).propose([]),/timeout/);
  const err=provider(async()=>{throw new Error('network '+key);});await assert.rejects(err.propose([]));assert(!JSON.stringify(err.summary()).includes(key));

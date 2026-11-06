@@ -8,7 +8,7 @@ import {analyzeContract,COMPILE_LIMITS} from './compile.mjs';
 import {investigateContract,INVESTIGATION_LIMITS} from './investigate.mjs';
 import {TOOLS,replayDescriptor} from './tools.mjs';
 import {PROFILES,loadUniswapProfileAnalysis} from './profiles.mjs';
-import {budgetStatus,attachSprintBudget,SPRINT_BUDGET_USD} from './budget.mjs';
+import {budgetStatus,attachSprintBudget,planInvestigationBudget,SPRINT_BUDGET_USD,MIN_INVESTIGATION_USD} from './budget.mjs';
 import {discoverCommunityRegressions,buildPublishConfirmation,ENTITY} from './arkiv-intelligence.mjs';
 import {arkivClients,ARKIV_CHAIN_ID} from '../arkiv/client.mjs';
 import {createRegistry} from '../arkiv/registry.mjs';
@@ -77,7 +77,9 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
   if(req.method==='GET'&&url.pathname==='/api/playground/config'){
    const provider=openRouterStatus(env),budget=await budgetStatus(resultDir);
    const readiness=playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider});
-   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId},canStart:readiness.canStart,investigationReadiness:readiness,offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:false,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
+   const byocPlan=planInvestigationBudget({profileId:'byoc',remainingUSD:budget.remainingUSD});
+   const uniPlan=planInvestigationBudget({profileId:'uniswap-v4-paymaster',remainingUSD:budget.remainingUSD});
+   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId,reservedUSD:budget.reservedUSD},investigationBudget:{byoc:byocPlan,uniswap:uniPlan,minInvestigationUSD:MIN_INVESTIGATION_USD,layers:{providerAccount:'OpenRouter key limit is separate and is not FrameFuzz authorization',sprintAggregate:`FrameFuzz sprint ${budget.sprintId} cap $${SPRINT_BUDGET_USD}`,perRun:'Allocated at Start from remaining sprint budget'}},canStart:readiness.canStart&&byocPlan.blockers.length===0,investigationReadiness:{...readiness,canStart:readiness.canStart&&byocPlan.blockers.length===0,blockers:[...readiness.blockers,...byocPlan.blockers],notice:byocPlan.blockers[0]??readiness.notice},offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:false,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/budget'){json(res,200,await budgetStatus(resultDir));return true;}
   if(req.method==='POST'&&url.pathname==='/api/playground/analyze'){
@@ -107,16 +109,20 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    if(getRunning())throw new ApiError(409,'BUSY','An experiment is already running');
    if(jobs.size>=10){const old=[...jobs].find(([,j])=>j.state!=='RUNNING');if(old)jobs.delete(old[0]);else throw new ApiError(429,'JOB_LIMIT','Investigation capacity reached');}
    const profileId=cached.analysis.profile?.id??'byoc';
-   const maxUSD=typeof input.budgetUSD==='number'&&input.budgetUSD>0&&input.budgetUSD<=SPRINT_BUDGET_USD?input.budgetUSD:(profileId==='uniswap-v4-paymaster'?0.35:0.55);
-   const id=randomUUID(),controller=new AbortController(),job={state:'RUNNING',controller,timeline:[],report:null};jobs.set(id,job);setRunning(true);json(res,202,{id,state:job.state,sourceDigest:input.sourceDigest,transport:providerFactory?'MOCK_LLM_TRANSPORT':'OPENROUTER',budgetUSD:maxUSD,profileId});
+   const sprint=await budgetStatus(resultDir);
+   const plan=planInvestigationBudget({profileId,requestedUSD:input.budgetUSD,remainingUSD:sprint.remainingUSD,allowBelowMinimum:Boolean(providerFactory)});
+   if(!providerFactory&&plan.blockers.length)throw new ApiError(409,'SPRINT_BUDGET_TOO_LOW',plan.blockers[0]);
+   if(!providerFactory&&!plan.canComplete)throw new ApiError(409,'INVESTIGATION_BUDGET_INSUFFICIENT',`Allocated $${plan.allocatedUSD.toFixed(4)} is below estimated finish $${plan.estimatedFinishUSD}; sprint remaining $${sprint.remainingUSD.toFixed(4)}`);
+   const maxUSD=Math.max(plan.allocatedUSD,providerFactory?0.01:plan.allocatedUSD);
+   const id=randomUUID(),controller=new AbortController(),job={state:'RUNNING',controller,timeline:[],report:null,budget:{sprintRemainingBefore:sprint.remainingUSD,...plan}};jobs.set(id,job);setRunning(true);json(res,202,{id,state:job.state,sourceDigest:input.sourceDigest,transport:providerFactory?'MOCK_LLM_TRANSPORT':'OPENROUTER',budgetUSD:maxUSD,estimatedFinishUSD:plan.estimatedFinishUSD,sprintRemainingUSD:sprint.remainingUSD,profileId});
    setImmediate(async()=>{let provider;try{
-    provider=providerFactory?providerFactory():attachSprintBudget(new OpenRouterProvider({env,limits:{maxCalls:8,maxCostUSD:maxUSD,maxTotalTokens:60000}}),resultDir,profileId+':'+id,{maxUSD});
+    provider=providerFactory?providerFactory():attachSprintBudget(new OpenRouterProvider({env,limits:{maxCalls:10,maxCostUSD:maxUSD,maxTotalTokens:90000,maxOutputTokens:1600,maxInputBytes:48000}}),resultDir,profileId+':'+id,{maxUSD});
     const report=await investigateContract(cached.analysis,{
      id,provider,authorizeProvider:true,signal:controller.signal,onEvent:e=>job.timeline.push(e),
      arkivDiscovery:cached.analysis.arkivDiscovery,
      arkivRegistryFactory,arkivSavedLookup,
     });
-    report.profileId=profileId;report.contentDigest=reportDigest(report);job.report=report;job.state=report.status;
+    report.profileId=profileId;report.budget=job.budget;report.contentDigest=reportDigest(report);job.report=report;job.state=report.status;
     await provider.settleSprint?.({failed:report.status!=='COMPLETE'});
     await mkdir(directory,{recursive:true});await writeFile(path.join(directory,id+'.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
    }catch(e){job.state=controller.signal.aborted?'CANCELLED':'INCOMPLETE';job.error=provider?.protect?.(e.message)??'Investigation stopped; no chain transaction was sent';try{await provider?.settleSprint?.({failed:true});}catch{}}finally{setRunning(false);}});return true;

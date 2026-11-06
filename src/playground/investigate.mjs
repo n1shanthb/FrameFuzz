@@ -6,7 +6,18 @@ import {AgentSession} from './session.mjs';
 import {SCOUT,MUTATION,VALIDATOR,CRITIC,PROPOSAL,validate} from './schemas.mjs';
 import {TOOLS,checkProposal,executeProposal,typedDescriptor,proposalKey,readTool} from './tools.mjs';
 import {discoverCommunityRegressions,arkivToolOutput,findOverlappingArkivCases,recordArkivUsage} from './arkiv-intelligence.mjs';
-export const INVESTIGATION_LIMITS={maxCalls:10,maxCostUSD:0.5,maxTotalTokens:60000,maxRevisionRounds:1,maxProposals:4,maxReplays:1,timeoutMs:180000};
+export const INVESTIGATION_LIMITS={maxCalls:10,maxCostUSD:0.5,maxTotalTokens:90000,maxRevisionRounds:1,maxProposals:4,maxReplays:1,timeoutMs:180000,estimatedFinishUSD:0.22,maxInputBytes:48000};
+/** Skip model repair when deterministic gates already prove the proposal cannot be executed as written. */
+export function isRepairableRejection(entry){
+  const effective=entry?.feasibility?.effective;
+  if(!['INVALID','CONDITIONAL','UNSUPPORTED'].includes(effective))return false;
+  const reason=entry?.feasibility?.deterministic?.reason??'';
+  if(/Original and mutation must differ/i.test(reason))return false;
+  if(/FUNCTION_NOT_IN_COMPILED_ABI|Target must exist in the actual compiled/i.test(reason)&&!/repairRequired/i.test(JSON.stringify(entry?.feasibility?.model??{}))){
+    // Still allow repair when the model marked repairRequired for a bad selector.
+  }
+  return true;
+}
 export function agentFacts(analysis){
  const facts={analysisId:analysis.analysisId,sourceDigest:analysis.sourceDigest,contractName:analysis.contractName,compiler:analysis.compiler,declaredRole:analysis.declaredRole,detectedRole:analysis.detectedRole,
   functions:analysis.functions,sourceFacts:analysis.sourceFacts.slice(0,24),capabilities:analysis.capabilities,missingPrerequisites:analysis.missingPrerequisites,tools:TOOLS,
@@ -127,15 +138,25 @@ export async function investigateContract(analysis,options={}){
   const scout=await ask('scout',analysis.profile?.id==='uniswap-v4-paymaster'?'Inspect the Uniswap v4 paymaster profile: StateView.getSlot0 dependency, stake vs unstaked external storage reads, historical public/alternative evidence, and any verified Arkiv community regressions already in your history. Cite fact IDs and entityKeys when used. Do not invent fresh admissions.':'Inspect this exact submitted contract and send cited opportunities/questions to Mutation. Use Arkiv summaries only when relevant; do not invent fixture matches. You can request source ranges, ABI facts, or arkiv_regressions if necessary.',SCOUT);
   if(scout.findings.some(f=>f.factIds.some(id=>!analysis.sourceFacts.some(a=>a.id===id))))throw Error('SCOUT_REFERENCE_MISMATCH');
   send(agents.scout.id,'mutation','SOURCE_BACKED_OPPORTUNITIES',{findings:scout.findings,opportunities:scout.opportunities,questions:scout.questions});
-  const mutation=await ask('mutation',analysis.profile?.id==='uniswap-v4-paymaster'?'Propose one or two source-grounded Uniswap paymaster tests using tools historical_evidence or uniswap_context with domain POLICY_PREDICTION. Cite StateView.getSlot0 / stake / public-vs-alt distinctions. Use distinct originalArgs/mutatedArgs labels (e.g. unstaked→staked). Do not claim fresh admission or swaps.':'Generate one or two distinct proposals tied to this analysisId and sourceDigest. Prefer encodable ABI_ENCODING mutations of real compiled functions (PASS when expected ACCEPT). Use domain ABI_TOOL_TEST with negativeObjective ABI_REJECTION only for deliberate encoder conformance. Do not claim require/revert or admission without the matching tool. Out-of-range ints in ABI_ENCODING are invalid.',MUTATION);
+  const mutation=await ask('mutation',analysis.profile?.id==='uniswap-v4-paymaster'?'Propose one or two source-grounded Uniswap paymaster tests using tools historical_evidence or uniswap_context with domain POLICY_PREDICTION. Cite StateView.getSlot0 / stake / public-vs-alt distinctions. Use distinct originalArgs/mutatedArgs labels (e.g. unstaked→staked). Do not claim fresh admission or swaps.':'Generate one or two distinct proposals tied to this analysisId and sourceDigest. Prefer encodable ABI_ENCODING mutations of real compiled functions (PASS when expected ACCEPT). Use domain ABI_TOOL_TEST with negativeObjective ABI_REJECTION only for deliberate encoder conformance. Do not claim require/revert or admission without the matching tool. Out-of-range ints in ABI_ENCODING are invalid. originalArgs and mutatedArgs MUST differ.',MUTATION);
   let entries=await validateBatch(addBatch(mutation));
-  const rejected=entries.find(e=>['INVALID','CONDITIONAL','UNSUPPORTED'].includes(e.feasibility.effective));
-  if(rejected){
-   revisionRounds++;const repair=await ask('mutation','Repair exactly one rejected proposal using the Validator and deterministic objections in your OWN retained history. Return exactly one proposal; preserve its id and source binding. A genuinely unsupported test may stay deferred. Do not invent execution evidence.',MUTATION);
-   if(repair.proposals.length!==1||repair.proposals[0].id!==rejected.proposal.id)throw Error('REPAIR_IDENTITY_OR_COUNT');
-   entries=entries.filter(e=>e!==rejected).concat(await validateBatch(addBatch(repair,rejected)));
-  }
+  // Execute READY ABI/local tools before optional repair so one oversized repair request cannot strand validated work.
   await execute(entries);
+  const rejected=entries.find(e=>isRepairableRejection(e));
+  const skippedRepair=entries.find(e=>['INVALID','CONDITIONAL','UNSUPPORTED'].includes(e.feasibility.effective)&&!isRepairableRejection(e));
+  if(skippedRepair)emit({stage:'REPAIR_SKIPPED',entryId:skippedRepair.entryId,reason:skippedRepair.feasibility.deterministic?.reason??'Unrepairable deterministic rejection'});
+  if(rejected){
+   try{
+    revisionRounds++;const repair=await ask('mutation','Repair exactly one rejected proposal using the Validator and deterministic objections in your OWN retained history. Return exactly one proposal; preserve its id and source binding. originalArgs and mutatedArgs MUST differ. A genuinely unsupported test may stay deferred. Do not invent execution evidence.',MUTATION);
+    if(repair.proposals.length!==1||repair.proposals[0].id!==rejected.proposal.id)throw Error('REPAIR_IDENTITY_OR_COUNT');
+    const repaired=await validateBatch(addBatch(repair,rejected));
+    entries=entries.filter(e=>e!==rejected).concat(repaired);
+    await execute(repaired);
+   }catch(repairError){
+    emit({stage:'REPAIR_FAILED',entryId:rejected.entryId,error:provider.protect(repairError.message)});
+    report.partialErrors=(report.partialErrors??[]).concat([provider.protect(repairError.message)]);
+   }
+  }
   send('workspace','critic','ALL_VALIDATION_DISPOSITIONS',report.workspace.proposals.map(e=>({entryId:e.entryId,proposal:e.proposal,feasibility:e.feasibility,state:e.state,outcome:e.outcome})));
   const critique=await ask('critic','Review actual observations and hypotheses in your own history. Compare with verified Arkiv historical claims when present, without treating them as current admission proof. Return uncertainty and unresolved questions. You may request one executed proposal ID replay and one bounded follow-up from Mutation. No behavioral/mempool verdicts from ABI or AST output alone.',CRITIC);report.critic=critique;
   if(critique.assessment&&report.arkivIntelligence.discovery?.cases?.length){

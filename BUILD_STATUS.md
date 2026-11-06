@@ -52,3 +52,6 @@ Observed real browser proof: normal server loaded `.env`; OpenRouter was configu
 
 ## Real-user acceptance readiness — 2026-11-07
 `LIVE_READ_ONLY` (+ optional `FRAMEFUZZ_SWARM=on`) enables Playground agents when OpenRouter is configured; blockers are explicit in `investigationReadiness`. Browser on :4190: QuotaVault READY; Arkiv `NO_APPLICABLE_QUERY` non-blocking (broadcasts 0); consent → Start enabled; key loaded without leak; budget $1.0000 remaining / spent $0; agent requests 0. Readiness tests 4/4. Prior suite 205/205. App left ready for operator-authorized Start only — no paid call or chain write from this checkpoint.
+
+## Incomplete-run budget completion fix — 2026-11-07
+Exact QuotaVault gate: `maxInputBytes` 24749>24000 mislabeled as run-budget exhaustion while sprint showed $0.8849 remaining. Fixed distinct gates, history/input budgets, execute-READY-before-repair, skip identical-arg repairs, Critic continuation, sprint PRIOR_IMPORT reconcile ($0.62201304 + $0.11505780 → spent $0.73707084 / remaining $0.26292916). `npm test` 214/214. No new paid calls or chain writes in this fix pass.

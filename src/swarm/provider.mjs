@@ -1,8 +1,15 @@
 import {createHash} from 'node:crypto';
 import {HYPOTHESIS_SCHEMA,validateHypothesis} from './hypothesis.mjs';
 export const DEFAULT_OPENROUTER_MODEL='anthropic/claude-sonnet-4.6';
-export const DEFAULT_LIMITS={maxCalls:6,maxTotalTokens:60000,maxCostUSD:0.50,maxOutputTokens:2000,maxInputBytes:24000,timeoutMs:45000};
-export const MAX_LIMITS={...DEFAULT_LIMITS,maxCalls:10,maxCostUSD:1,maxTotalTokens:120000};
+export const DEFAULT_LIMITS={maxCalls:6,maxTotalTokens:60000,maxCostUSD:0.50,maxOutputTokens:1600,maxInputBytes:48000,timeoutMs:45000};
+export const MAX_LIMITS={...DEFAULT_LIMITS,maxCalls:12,maxCostUSD:1,maxTotalTokens:120000,maxOutputTokens:4000,maxInputBytes:65536,timeoutMs:120000};
+export function describeBudgetGate(limits,{calls,tokens,costUSD,bytes,reserveTokens,reserveCost}){
+  if(bytes>limits.maxInputBytes)return `OpenRouter input too large before request: inputBytes ${bytes} > maxInputBytes ${limits.maxInputBytes}`;
+  if(calls>=limits.maxCalls)return `OpenRouter run call limit before request: calls ${calls} >= maxCalls ${limits.maxCalls}`;
+  if(tokens+reserveTokens>limits.maxTotalTokens)return `OpenRouter run token budget exhausted before request: tokens ${tokens} + reserve ${reserveTokens} > maxTotalTokens ${limits.maxTotalTokens}`;
+  if(costUSD+reserveCost>limits.maxCostUSD)return `OpenRouter run USD budget exhausted before request: costUSD ${costUSD.toFixed(6)} + reserve ${reserveCost.toFixed(6)} > maxCostUSD ${limits.maxCostUSD}`;
+  return null;
+}
 const digest=x=>createHash('sha256').update(x).digest('hex');
 const bounded=(n,min,max,name)=>{if(!Number.isFinite(n)||n<min||n>max)throw new Error('Invalid provider budget '+name);return n;};
 const modelName=env=>!env.OPENROUTER_MODEL||env.OPENROUTER_MODEL.toLowerCase()==='sonnet'?DEFAULT_OPENROUTER_MODEL:env.OPENROUTER_MODEL;
@@ -22,13 +29,18 @@ export class OpenRouterProvider {
  }
  protect(value){const raw=String(value);return (this.#key?raw.split(this.#key).join('[REDACTED]'):raw).replace(/sk-or-[\w-]+/g,'[REDACTED]');}
  async propose(messages){return this.structured(messages,{name:'framefuzz_hypothesis',schema:HYPOTHESIS_SCHEMA,validate:validateHypothesis});}
- quote(messages,schema){const input=JSON.stringify({messages,schema}),bytes=Buffer.byteLength(input);return {input,bytes,reserveTokens:bytes+1000+this.limits.maxOutputTokens,reserveCost:(bytes+1000)*5/1e6+this.limits.maxOutputTokens*25/1e6};}
+ quote(messages,schema){
+  const input=JSON.stringify({messages,schema}),bytes=Buffer.byteLength(input);
+  // Byte length overestimates tokens; reserve ~1 token / 4 bytes for input plus configured max output.
+  const approxInputTokens=Math.ceil(bytes/4)+250;
+  return {input,bytes,reserveTokens:approxInputTokens+this.limits.maxOutputTokens,reserveCost:approxInputTokens*5/1e6+this.limits.maxOutputTokens*25/1e6};
+ }
  async structured(messages,{name,schema,validate,onResponse,signal}){
   if(signal?.aborted)throw new Error('CANCELLED');
   if(!this.#key)throw new Error('OPENROUTER_API_KEY is not configured');
   const {input,bytes,reserveTokens,reserveCost}=this.quote(messages,schema);
-  // Conservative reservation with an enforced OpenRouter provider price ceiling ($/million tokens).
-  if(bytes>this.limits.maxInputBytes||this.calls>=this.limits.maxCalls||this.tokens+reserveTokens>this.limits.maxTotalTokens||this.costUSD+reserveCost>this.limits.maxCostUSD)throw new Error('OpenRouter run budget exhausted before request');
+  const gate=describeBudgetGate(this.limits,{calls:this.calls,tokens:this.tokens,costUSD:this.costUSD,bytes,reserveTokens,reserveCost});
+  if(gate)throw new Error(gate);
   this.calls++;this.tokens+=reserveTokens;this.costUSD+=reserveCost;
   const log={call:this.calls,role:name,provider:'OpenRouter',model:this.model,endpointHost:new URL(this.endpoint).host,promptDigest:digest(input),inputBytes:bytes,reservedTokens:reserveTokens,reservedCostUSD:reserveCost,state:'STARTED'};this.logs.push(log);
   const controller=new AbortController();let timer,abortListener;

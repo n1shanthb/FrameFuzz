@@ -45,5 +45,5 @@ test('injection content cannot authorize tools, provider failures do not simulat
  const failed=await investigateContract(a,{provider:byocTestProvider({failure:true}),authorizeProvider:true});assert.equal(failed.status,'INCOMPLETE');assert.equal(failed.workspace.proposals.length,0);
  const timed=await investigateContract(a,{provider:byocTestProvider({stall:true,timeoutMs:10}),authorizeProvider:true});assert.equal(timed.status,'INCOMPLETE');assert.match(timed.error,/timeout/);
  const c=new AbortController();setTimeout(()=>c.abort(),20);const cancelled=await investigateContract(a,{provider:byocTestProvider({stall:true}),authorizeProvider:true,signal:c.signal});assert.equal(cancelled.status,'CANCELLED');
- const p=byocTestProvider();p.limits.maxCalls=1;const budget=await investigateContract(a,{provider:p,authorizeProvider:true});assert.equal(budget.status,'INCOMPLETE');assert.match(budget.error,/budget/);assert.equal(budget.provider.calls,1);
+ const p=byocTestProvider();p.limits.maxCalls=1;const budget=await investigateContract(a,{provider:p,authorizeProvider:true});assert.equal(budget.status,'INCOMPLETE');assert.match(budget.error,/call limit|budget|input too large/i);assert.equal(budget.provider.calls,1);
 });
