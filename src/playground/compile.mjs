@@ -1,6 +1,6 @@
 import {spawn} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
-import {boundedJSON,keys,sha256} from '../analysis/model.mjs';
+import {boundedJSON,keys,sha256,contractInput} from '../analysis/model.mjs';
 export const COMPILE_LIMITS={sourceBytes:65536,abiBytes:32768,timeoutMs:8000,heapMiB:192,rssMiB:384,outputBytes:1048576,concurrency:2};
 let active=0;
 export function validateIntake(input){
@@ -9,6 +9,7 @@ export function validateIntake(input){
  if(input.contractName!==undefined&&!/^[A-Za-z_$][\w$]{0,100}$/.test(input.contractName))throw Error('Invalid contract selection');
  if(input.role!==undefined&&!['UNKNOWN','EXECUTION_TARGET','SENDER_VALIDATOR','PAYMASTER'].includes(input.role))throw Error('Unsupported declared role');
  if(input.abi!==undefined&&(!Array.isArray(input.abi)||input.abi.length>128||Buffer.byteLength(JSON.stringify(input.abi))>COMPILE_LIMITS.abiBytes))throw Error('ABI must be a bounded array');
+ if(input.abi!==undefined)contractInput({schema:'framefuzz.contract-input.v1',kind:'ABI',abi:input.abi});
  // Refuse obvious credential-bearing source before saving it or sending facts to a provider.
  if(/sk-or-[\w-]{12,}|-----BEGIN [\w ]*PRIVATE KEY|(?:private[_ ]?key|mnemonic|password)\s*[=:]\s*["']?[\da-f]{64}/i.test(input.source))throw Error('SECRET_LIKE_SOURCE: remove credential material before intake');
  return structuredClone(input);

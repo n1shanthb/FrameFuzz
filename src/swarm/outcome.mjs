@@ -5,7 +5,7 @@ export function classifyOutcome({expectedVerdict,observedVerdict=null,executionM
  const deferred={INVALID:'SKIPPED_INVALID',CONDITIONAL:'BLOCKED_PRECONDITION',UNSUPPORTED:'UNSUPPORTED',DUPLICATE:'SKIPPED_DUPLICATE'};
  if(deferred[feasibilityDecision])return {...base,observedVerdict:null,classification:deferred[feasibilityDecision]};
  if(executionMode==='POLICY_PREDICTION')return {...base,observedVerdict:null,classification:'PREDICTED'};
- if(!['OFFLINE_SIGNATURE_BINDING','LIVE_ADMISSION'].includes(executionMode))return {...base,observedVerdict:null,classification:'INCONCLUSIVE'};
+ if(!['OFFLINE_SIGNATURE_BINDING','OFFLINE_ABI_ENCODING','LIVE_ADMISSION'].includes(executionMode))return {...base,observedVerdict:null,classification:'INCONCLUSIVE'};
  if(!prerequisitesVerified||!['ACCEPT','REJECT'].includes(observedVerdict)||!['ACCEPT','REJECT'].includes(expectedVerdict))return {...base,classification:'INCONCLUSIVE'};
  const oracleMatch=expectedVerdict===observedVerdict,classification=expectedVerdict==='ACCEPT'?(oracleMatch?'PASS':'FAIL'):(oracleMatch?'XFAIL':'XPASS');
  return {...base,oracleMatch,classification,findingCandidate:!oracleMatch};

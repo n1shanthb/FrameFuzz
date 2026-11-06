@@ -1,0 +1,11 @@
+import {validateStructured} from '../swarm/agent-schema.mjs';
+const text={type:'string',minLength:1,maxLength:600},label={type:'string',minLength:1,maxLength:100},str={type:'string',maxLength:600};
+const en=(...v)=>({type:'string',enum:v}),list=(items,minItems=0,maxItems=8)=>({type:'array',items,minItems,maxItems}),obj=properties=>({type:'object',additionalProperties:false,required:Object.keys(properties),properties});
+export const PROPOSAL=obj({id:label,analysisId:label,sourceDigest:label,functionSignature:label,originalArgs:list(str,0,8),mutatedArgs:list(str,0,8),tool:en('abi_encode','structure_check','owned_crypto','gas_policy'),domain:en('ABI_ENCODING','SOURCE_STRUCTURE','GENERAL_BEHAVIOR','VALIDATOR_AUTHORIZATION','PUBLIC_ADMISSION','ALTERNATIVE_ADMISSION','EXECUTION_ACTION'),expectedVerdict:en('ACCEPT','REJECT','UNKNOWN'),negativeObjective:en('NONE','ABI_REJECTION','RUNTIME_REJECTION'),preconditions:list(en('FUNDING','NONCE','STAKE','DEPLOYMENT','SIGNATURE_SCOPE','FRAME_LAYOUT','CHAIN_CLIENT')),factIds:list(label,1,8),hypothesis:text,evidenceNeeded:text});
+const request=obj({tool:en('inspect_source','query_abi','capabilities','feasibility'),startLine:{type:'integer',minimum:1,maximum:20000},endLine:{type:'integer',minimum:1,maximum:20000},functionSignature:{type:'string',maxLength:100},proposalId:{type:'string',maxLength:100}});
+const common={summary:text,questions:list(text),toolRequests:list(request,0,2)};
+export const SCOUT=obj({...common,findings:list(obj({claim:text,factIds:list(label,1,8)}),0,8),opportunities:list(text,0,4)});
+export const MUTATION=obj({...common,proposals:list(PROPOSAL,1,2)});
+export const VALIDATOR=obj({...common,decisions:list(obj({proposalId:label,decision:en('EXECUTABLE','CONDITIONAL','INVALID','DUPLICATE','UNSUPPORTED'),reason:text,factIds:list(label,1,8),repairRequired:{type:'boolean'}}),1,2)});
+export const CRITIC=obj({...common,assessment:text,unresolved:list(text),replayIds:list(label,0,1),followUp:obj({requested:{type:'boolean'},proposalId:{type:'string',maxLength:100},instruction:{type:'string',maxLength:600}})});
+export const validate=(value,schema)=>validateStructured(value,schema);
