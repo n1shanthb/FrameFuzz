@@ -7,10 +7,11 @@ import {validateHypothesis} from './hypothesis.mjs';
 const stable = value => Array.isArray(value) ? value.map(stable) : value && typeof value==='object' ? Object.fromEntries(Object.keys(value).sort().map(k=>[k,stable(value[k])])) : value;
 export const EXECUTION_CLASS='OFFLINE_SIGNATURE_BINDING';
 const addr=n=>'0x'+n.toString(16).padStart(40,'0');
+export const OFFLINE_CONTEXT=Object.freeze({chainId:1337,payer:addr(200),target:addr(300),nonce:0,senders:Object.freeze({unsafe:addr(101),safe:addr(102)})});
 export async function executeMutation(mutation){
  assertSwarmEnabled();replayFrameMutation(mutation);const ownerAccount=privateKeyToAccount(generatePrivateKey()),results={};
  for(const [index,fixture]of ['unsafe','safe'].entries()){
-  const p=await prepareAuthorizationPair({fixture,ownerAccount,sender:addr(101+index),payer:addr(200),target:addr(300),nonce:0,mutation});
+  const p=await prepareAuthorizationPair({fixture,ownerAccount,sender:OFFLINE_CONTEXT.senders[fixture],payer:OFFLINE_CONTEXT.payer,target:OFFLINE_CONTEXT.target,nonce:OFFLINE_CONTEXT.nonce,mutation});
   results[fixture]={...p.invariants,authorizedComputedHash:p.authorized.computedHash,tamperedComputedHash:p.tampered.computedHash};
  }
  const semanticProperties=Object.fromEntries(Object.entries(results).map(([k,v])=>[k,Object.fromEntries(Object.entries(v).filter(([n])=>!n.endsWith('ComputedHash')))]));

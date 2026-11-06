@@ -1,0 +1,6 @@
+import {mkdir,writeFile} from 'node:fs/promises';
+import {adaptHistoricalGasCase,adaptOwnedExperiment,unsupportedContractExample} from '../src/analysis/fixtures.mjs';
+const gas=await adaptHistoricalGasCase(),owned=await adaptOwnedExperiment(),unsupported=await unsupportedContractExample();
+const report={schema:'framefuzz.foundation-demonstration.v1',gas:{test:gas.test,preview:gas.preview,historical:gas.historical},owned:{test:owned.test,result:owned.result},unsupported:unsupported.result};
+await mkdir('runs',{recursive:true});await writeFile('runs/foundation-fixtures.json',JSON.stringify(report,null,2)+'\n');
+console.log(JSON.stringify({output:'runs/foundation-fixtures.json',gas:{value:gas.test.modifiedInput.verificationGasLimit,prediction:gas.preview.classification,actualPreview:gas.preview.actual,historical:gas.historical.classification,outcomes:gas.historical.actual.paths.map(p=>[p.path,p.admission.status])},owned:{calldata:owned.test.modifiedInput.data,classification:owned.result.classification,properties:owned.result.actual.semanticProperties,hashes:owned.result.actual.canonicalHashes},unsupported:{classification:unsupported.result.classification,actual:unsupported.result.actual,prerequisites:unsupported.result.missingPrerequisites}},null,2));

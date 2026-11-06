@@ -13,7 +13,6 @@ npm ci
 npm test
 npm run verify
 npm run run:preview
-$env:FRAMEFUZZ_SWARM='on'
 node bin/framefuzz.mjs saved-demo --results runs/demo --port 4192
 ```
 
@@ -65,3 +64,7 @@ A new live campaign requires a healthy compatible gateway, valid funded/staked f
 **MIT**: [LICENSE](LICENSE). Imported upstream code retains technical attribution and notices in vendor/. AI assisted implementation, test design, documentation and execution support; the product also has genuine bounded Sonnet requests. Mocked/constructed/preview data is labelled separately from real historical receipts and fresh read-only verification.
 
 Read AGENTS.md, AUTHORITY.md, CURRENT_STATUS.md and UP_NEXT.md in this same repository when changing IDEs. Older status snapshots are preserved under docs/history/ and dated evidence, rather than treated as current capabilities. Public access, push, video and external submission confirmations remain pending human actions; no submission ID or video is claimed.
+
+## Internal contract-analysis foundation
+
+Versioned input/context and semantic-test adapters reuse the existing gas and owned-validator engines. See [foundation scope and executed fixtures](docs/CONTRACT_ANALYSIS_FOUNDATION.md) and [stability verification](docs/STABILITY_FOUNDATION_REPORT.md). This adds no Playground UI or arbitrary Solidity compiler. Saved transcript reading needs no execution opt-in; offline cryptographic execution still requires FRAMEFUZZ_SWARM=on.

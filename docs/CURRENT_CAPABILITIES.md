@@ -4,14 +4,13 @@ This is the current product status. Dated milestone reports and captures are his
 
 ## Offline without keys
 
-Seeded gas/storage mutation generation, unsigned previews, semantic-only replay, evidence exports, historical report inspection and the full local Node suite work without a wallet or devnet. Swarm is disabled by default. Opting in enables viewing the restored genuine Sonnet transcript and offline compilation/replay; saved-demo prohibits new provider requests even if a key happens to exist in the environment.
+Seeded gas/storage mutation generation, unsigned previews, semantic-only replay, evidence exports, historical report inspection and the full local Node suite work without a wallet or devnet. Swarm is disabled by default. Saved-demo permits restored genuine Sonnet transcript viewing without opting in; opting in enables offline compilation/replay; saved-demo prohibits new provider requests even if a key happens to exist in the environment.
 
 ```powershell
 npm ci
 npm test
 npm run verify
 npm run run:preview
-$env:FRAMEFUZZ_SWARM='on'
 node bin/framefuzz.mjs saved-demo --results runs/demo --port 4192
 ```
 
@@ -54,3 +53,7 @@ Node tests include real offline crypto/compiler work, mocked transports and cons
 After an actual full-suite pass, update TEST_CHECKPOINT.json with observed counts/date, run `node scripts/briefing-facts.mjs`, then `npm run verify`. Do not estimate counts from source files. Generated JavaScript checks tolerate checkout CRLF; historical capture digests always use original bytes.
 
 Public GitHub access, authorized push, video recording/upload, ETHGlobal submission and Uniswap feedback confirmation remain human actions. Pass2 anonymous repository/branch GETs returned404; that does not identify the repository's exact visibility setting. No video/submission ID is claimed. See DELIVERY_PASS2.md and DEMO_90_SECONDS.md. No public delivery or live write has been performed in this sprint.
+
+## Internal foundation checkpoint
+
+158 passing Node tests. src/analysis exposes versioned ContractInput/AnalysisContext/SemanticTest/AnalysisResult and prepare → generate → evaluate for existing gas-policy and owned offline crypto fixtures. Ordinary contracts return UNVERIFIED prerequisites. No Playground UI, arbitrary-source HTTP compilation or new live support. Exact scope: [foundation](CONTRACT_ANALYSIS_FOUNDATION.md); executed checks: [stability report](STABILITY_FOUNDATION_REPORT.md).

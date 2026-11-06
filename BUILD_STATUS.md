@@ -29,3 +29,6 @@ Implementation commits and final handoff checkpoint: inspect Git history. Stop b
 
 ## Stability checkpoint — 2026-11-06
 158/158 tests pass;69 modules verify; saved-demo browser checked with execution default off. Exact commands, results and limitations: docs/STABILITY_FOUNDATION_REPORT.md. No original evidence changes, paid calls or chain writes. Internal foundation checkpoint follows in Git history.
+
+## Internal foundation complete — 2026-11-06
+158/158 tests pass,0 fail/skip;69 modules verified. Actual three fixture results, full canonical hashes, input/context/spec/result schemas and dependency map: docs/CONTRACT_ANALYSIS_FOUNDATION.md. Commands/exit codes/browser distinction/safety: docs/STABILITY_FOUNDATION_REPORT.md. Gas preview actual=null; historical accepted/accepted; record(2,10) fresh offline unsafe=true safe=false; ordinary contract UNVERIFIED. No Playground UI or new live proof. Stop here pending explicit next instruction.
