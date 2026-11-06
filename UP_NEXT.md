@@ -1,4 +1,11 @@
-# Up next — after executed admission Step 2D
+# Up next — after admission Step 2E preparation
+
+1. STOP before all writes. Review `evidence/prepared/2026-11-07/step2e-approval-packet.json` (SHA-256 `cf22db5a447de2adb5017c7f5ade594783d0a5cb680fc7d0946dae81721f5476`); no approval has been granted.
+2. If approved later, refresh the volatile shared funding nonce (captured 149), 3-gwei cap, sender nonce 2/balance, predicted address, empty code and endpoint identities. Any drift requires a replacement packet.
+3. Execute setup strictly: one top-up, deployment with runtime-hash verification, stake with registry verification, then regenerate/revalidate the exact policy candidate if any prerequisite changed.
+4. Run canonical first. Only a confirmed `StorageReadNonSender` rejection with unchanged nonce/null receipt permits the same signed candidate to go to Skandha. No retry or concurrent submission.
+
+# Previous up next — after executed admission Step 2D
 
 1. Preserve the nonce-1 evidence and never resubmit candidate `0xc05703…ba510`.
 2. Do not interpret Skandha's nonce-race rejection as a policy difference; signature/structure passed and policy checks were skipped.

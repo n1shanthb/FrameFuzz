@@ -1,4 +1,8 @@
-# Current status — admission Step 2D executed corrected comparison
+# Current status — admission Step 2E policy-divergence preparation
+
+The rejection-first policy protocol is implemented with strict statuses and race gates. Minimum owned source is `ReserveReadingPaymaster.sol` digest `85a489…43ec`, freshly compiled to a source-bound artifact and expected runtime hash. Historical paymasters are now empty, so fresh deployment, 0.013 constructor funding and 0.01 stake are required. Existing deployer wallet has 0.000419592 and is short 0.024917785. Exact prepared hashes: deployment `0x04578a…98cd`, stake `0x6211e4…94e6`, policy candidate `0x2c91a1…b12d`. Current ethrex simulation is `SIMULATION_ONLY / REJECTED_PRECONDITION` because the predicted paymaster is not deployed. Approval packet SHA-256 `cf22db5a…f5476`. Focused tests 7/7; full suite 231/231. No writes or broadcasts. See `docs/ADMISSION_STEP2E.md`.
+
+# Previous status — admission Step 2D executed corrected comparison
 
 Corrected nonce-1 candidate `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510` was submitted once per path after explicit approval. Canonical ethrex accepted and included it in block `0x243f`; outer and both frame receipts succeeded. Skandha recorded admission ID 1593 but rejected during simulation with `Nonce mismatch: expected 2, got 1` after canonical advanced shared state. Classification: `REJECTED_NONCE_RACE` / `INCONCLUSIVE_SHARED_STATE_RACE`, not a policy discrepancy. Actual spend 0.000040204 test ETH; post-state balance 0.000419592, nonce 2. No retries. Evidence: `evidence/admission/2026-11-07/self-relay-corrected-comparison.json`.
 

@@ -1,0 +1,187 @@
+{
+  "schema": "framefuzz.policy-candidate.v1",
+  "classification": "OFFLINE_SIGNED_BLOCKED_SETUP",
+  "source": {
+    "path": "vendor/paymaster/ReserveReadingPaymaster.sol",
+    "sha256": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec",
+    "artifactPath": "artifacts/step2e/ReserveReadingPaymaster.json",
+    "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+    "settings": {
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      }
+    },
+    "creationBytecodeBytes": 2827,
+    "creationBytecodeHash": "0xd2196eebab678833a0c3477f0dcba198195623bf0d0fdeee65bca5cdf06f44f0",
+    "creationDataHash": "0x509f1f4660f71e4f960dd2bf6545dd37821f8e922fe7045925006cdb42b53eb5",
+    "expectedRuntimeHash": "0x45603f4e2bac8c92ce2d8cac9beaba15525ed14d1f614fea3267337214ae88fd",
+    "expectedRuntimeBytes": 936
+  },
+  "mutation": {
+    "family": "validation-storage-read",
+    "description": "ReserveReadingPaymaster PAYMENT VERIFY calldata 0x01 calls StateView.getSlot0(poolId)",
+    "calldata": "0x01"
+  },
+  "bindings": {
+    "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+    "stateViewCodeHash": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+    "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+    "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+    "paymaster": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+    "expectedPaymasterRuntimeHash": "0x45603f4e2bac8c92ce2d8cac9beaba15525ed14d1f614fea3267337214ae88fd"
+  },
+  "sender": "0xE3cfC223B49708B11B9bEdFf1C0B9711E1F0ddEE",
+  "payer": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+  "nonce": "0",
+  "hash": "0x2c91a12ddf22ebb870ed1672ff040600d52f3d02b0089c2d37b4da403d6ab12d",
+  "raw": "0x06f8be820539c1808094e3cfc223b49708b11b9bedff1c0b9711e1f0ddeef849ca010280c4827530808080de0101946d5bed568904290fca0b8d4e99bed2a7f9d44145c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84101dfd340aa3282e89529f76ca047a585e27dba392f6162993a2deb87de033c19871350fe83d14d0d43613804bc819208327248c0b7236c27b0350830d6dcc89734cb84b2d05e0084b2d05e0080c0c0",
+  "wire": {
+    "chainId": "0x539",
+    "nonceKeys": [
+      "0x0"
+    ],
+    "nonceSeq": "0x0",
+    "sender": "0xE3cfC223B49708B11B9bEdFf1C0B9711E1F0ddEE",
+    "frames": [
+      {
+        "mode": 1,
+        "flags": 2,
+        "target": null,
+        "limits": {
+          "execution": "0x7530",
+          "state": "0x0"
+        },
+        "value": "0x0",
+        "data": "0x"
+      },
+      {
+        "mode": 1,
+        "flags": 1,
+        "target": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+        "limits": {
+          "execution": "0xc350",
+          "state": "0x0"
+        },
+        "value": "0x0",
+        "data": "0x01"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+        "limits": {
+          "execution": "0xc350",
+          "state": "0x0"
+        },
+        "value": "0x0",
+        "data": "0x"
+      }
+    ],
+    "signatures": [
+      {
+        "scheme": 1,
+        "signer": "0x",
+        "msg": "0x",
+        "signature": "0x01dfd340aa3282e89529f76ca047a585e27dba392f6162993a2deb87de033c19871350fe83d14d0d43613804bc819208327248c0b7236c27b0350830d6dcc89734"
+      }
+    ],
+    "fees": {
+      "maxPriorityFeePerGas": "0xb2d05e00",
+      "maxFeePerGas": "0xb2d05e00",
+      "maxFeePerBlobGas": "0x0"
+    },
+    "blobVersionedHashes": [],
+    "recentRootReferences": []
+  },
+  "fee": {
+    "maxFeePerGasWei": "3000000000",
+    "maximumGasUnits": "500000",
+    "maximumSenderOrPayerSpendWei": "1500000000000000"
+  },
+  "requests": {
+    "canonical": {
+      "endpoint": "https://altmempool.forshtat.com",
+      "method": "eth_sendRawTransaction",
+      "params": [
+        "0x06f8be820539c1808094e3cfc223b49708b11b9bedff1c0b9711e1f0ddeef849ca010280c4827530808080de0101946d5bed568904290fca0b8d4e99bed2a7f9d44145c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84101dfd340aa3282e89529f76ca047a585e27dba392f6162993a2deb87de033c19871350fe83d14d0d43613804bc819208327248c0b7236c27b0350830d6dcc89734cb84b2d05e0084b2d05e0080c0c0"
+      ]
+    },
+    "alternative": {
+      "endpoint": "https://altmempool.forshtat.com/rpc/",
+      "method": "eth_sendFrameTransaction",
+      "params": [
+        {
+          "chainId": "0x539",
+          "nonceKeys": [
+            "0x0"
+          ],
+          "nonceSeq": "0x0",
+          "sender": "0xE3cfC223B49708B11B9bEdFf1C0B9711E1F0ddEE",
+          "frames": [
+            {
+              "mode": 1,
+              "flags": 2,
+              "target": null,
+              "limits": {
+                "execution": "0x7530",
+                "state": "0x0"
+              },
+              "value": "0x0",
+              "data": "0x"
+            },
+            {
+              "mode": 1,
+              "flags": 1,
+              "target": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+              "limits": {
+                "execution": "0xc350",
+                "state": "0x0"
+              },
+              "value": "0x0",
+              "data": "0x01"
+            },
+            {
+              "mode": 2,
+              "flags": 0,
+              "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+              "limits": {
+                "execution": "0xc350",
+                "state": "0x0"
+              },
+              "value": "0x0",
+              "data": "0x"
+            }
+          ],
+          "signatures": [
+            {
+              "scheme": 1,
+              "signer": "0x",
+              "msg": "0x",
+              "signature": "0x01dfd340aa3282e89529f76ca047a585e27dba392f6162993a2deb87de033c19871350fe83d14d0d43613804bc819208327248c0b7236c27b0350830d6dcc89734"
+            }
+          ],
+          "fees": {
+            "maxPriorityFeePerGas": "0xb2d05e00",
+            "maxFeePerGas": "0xb2d05e00",
+            "maxFeePerBlobGas": "0x0"
+          },
+          "blobVersionedHashes": [],
+          "recentRootReferences": []
+        }
+      ]
+    }
+  },
+  "predictions": {
+    "canonical": {
+      "status": "REJECTED_POLICY",
+      "rule": "StorageReadNonSender"
+    },
+    "alternative": {
+      "status": "ACCEPTED",
+      "precondition": "Paymaster runtime/stake/funding bindings verified"
+    }
+  },
+  "broadcasts": 0,
+  "writes": 0
+}

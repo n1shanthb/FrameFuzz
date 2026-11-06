@@ -1,4 +1,8 @@
-# Build status — executed admission Step 2D
+# Build status — admission Step 2E preparation
+
+Added a rejection-first policy comparator, strict evidence table statuses and race gates. Fresh solc artifact, simulated runtime binding, deterministic deployment/stake envelopes and a source-bound storage-read candidate are prepared offline. Current setup is blocked because historical paymasters are empty and the deployer needs a 0.024917785 top-up. Ethrex simulation is available but currently shows only missing-paymaster precondition failure. Focused policy/source/setup tests pass 7/7; full suite passes 231/231. No writes.
+
+# Previous build status — executed admission Step 2D
 
 Corrected routing was exercised live. Canonical accepted and successfully included nonce-1 hash `0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510`. Skandha produced a genuine explorer admission record but rejected simulation because canonical had advanced shared nonce to 2. Honest result: `INCONCLUSIVE_SHARED_STATE_RACE`, not a policy discrepancy. Both execution frames succeeded; actual spend was 0.000040204 test ETH. No retry.
 
