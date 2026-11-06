@@ -1,5 +1,5 @@
 import {esc} from './utils.js';
-const s={mode:'byoc',source:'',abi:'',role:'UNKNOWN',contractName:'',contracts:[],config:null,analysis:null,admission:null,job:null,report:null,timeline:[],phase:'IDLE',error:'',version:0,active:false,controller:null,filter:'all',replay:null,budget:null,arkivImport:null,arkivPublish:null,liveWallet:'',liveForeign:'',liveOwner:'',livePrepared:null,liveComparison:null};
+const s={mode:'byoc',source:'',abi:'',role:'UNKNOWN',contractName:'',contracts:[],config:null,analysis:null,admission:null,job:null,report:null,timeline:[],phase:'IDLE',error:'',version:0,active:false,controller:null,filter:'all',replay:null,budget:null,arkivImport:null,arkivPublish:null,liveWallet:'',liveForeign:'',liveOwner:'',livePrepared:null,liveComparison:null,liveJobId:null,savedRegression:null,scenarioKind:null};
 const $=id=>document.getElementById(id);
 async function request(route,body,signal){const res=await fetch('/api/playground/'+route,{...(body?{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{}),signal:signal??AbortSignal.timeout(20000)});const data=await res.json();if(!res.ok)throw Error(data.error??'Request failed');return data;}
 const isBusy=()=>['ANALYZING','INVESTIGATING','CANCELLING'].includes(s.phase);
@@ -44,55 +44,72 @@ function arkivIntelHtml(){
 }
 function liveTableHtml(){
  const rows=s.liveComparison?.table??[];
- if(!rows.length)return '<p class="muted">No live admission rows yet. Table fills only from fresh RPC responses after Run Live Comparison.</p>';
- return `<div class="table-wrap"><table class="data"><thead><tr><th>Mutation</th><th>Canonical</th><th>Alternative</th><th>Divergence</th><th>Inclusion</th><th>Evidence</th></tr></thead><tbody>
+ const claims=s.liveComparison?.claims;
+ if(!rows.length)return '<p class="muted">No live admission rows yet. Table fills only from fresh RPC responses after Run Live Comparison — never from prior evidence.</p>';
+ return `<div class="alert"><strong>Claims</strong> · ADMISSION_DIVERGENCE=${esc(String(claims?.ADMISSION_DIVERGENCE??rows[0]?.claims?.ADMISSION_DIVERGENCE??false))} · INCLUSION=${esc(String(claims?.INCLUSION??false))} · EXECUTION_SUCCESS=${esc(String(claims?.EXECUTION_SUCCESS??'NOT_OBSERVED'))}</div>
+ <div class="table-wrap"><table class="data"><thead><tr>
+  <th>Mutation</th><th>Public</th><th>Alternative</th><th>Policy divergence</th><th>Inclusion</th><th>Tx / binding / RPC</th>
+ </tr></thead><tbody>
  ${rows.map(row=>`<tr>
-  <td>${esc(row.mutation)}</td>
-  <td class="${/REJECTED_POLICY/.test(row.canonicalVerdict)?'cell-bad':/ACCEPTED/.test(row.canonicalVerdict)?'cell-ok':''}">${esc(row.canonicalVerdict)}</td>
-  <td class="${/ACCEPTED/.test(row.alternativeVerdict)?'cell-ok':/REJECTED/.test(row.alternativeVerdict)?'cell-bad':''}">${esc(row.alternativeVerdict)}</td>
-  <td>${esc(row.divergence)}</td>
-  <td>${esc(row.inclusion??'n/a')}</td>
-  <td class="mono tiny">hash ${esc(row.evidence?.hash??'')} · digest ${esc(String(row.evidence?.sourceDigest??'').slice(0,16))}… · sidecar ${esc(row.evidence?.sidecarAdmissionId??'n/a')} · ${esc(row.evidence?.rule??'')} · ${esc(row.evidence?.provenance??'')}</td>
+  <td>${esc(row.mutation)}<div class="tiny">${esc(row.evidence?.timestamp??'')}</div></td>
+  <td class="${/REJECTED_POLICY/.test(row.publicVerdict||row.canonicalVerdict)?'cell-bad':/ACCEPTED/.test(row.publicVerdict||row.canonicalVerdict)?'cell-ok':''}">${esc(row.publicVerdict||row.canonicalVerdict)}<div class="tiny">${esc(row.publicReason||row.evidence?.rule||'')}</div></td>
+  <td class="${/ACCEPTED/.test(row.alternativeVerdict)?'cell-ok':/REJECTED/.test(row.alternativeVerdict)?'cell-bad':''}">${esc(row.alternativeVerdict)}<div class="tiny">admission ${esc(row.admissionId??row.evidence?.sidecarAdmissionId??'n/a')}</div></td>
+  <td>${esc(row.divergence)}${row.policyDivergence?' · TRUE':''}</td>
+  <td>${esc(row.inclusionStatus??(row.inclusion?'MINED':'NOT_MINED'))}<div class="tiny">${esc(row.evidence?.laterMempoolOutcome??'')}</div></td>
+  <td class="mono tiny">hash ${esc(row.evidence?.transactionHash||row.evidence?.hash||'')}<br>digest ${esc(row.evidence?.sourceDigest||'')}<br>wallet ${esc(row.evidence?.wallet||'')}<br>provenance ${esc(row.evidence?.provenance||'')}</td>
  </tr>`).join('')}
- </tbody></table></div>`;
+ </tbody></table></div>
+ <details open><summary>Actual RPC response evidence</summary><pre class="details">${esc(JSON.stringify(rows[0]?.evidence?.rpc??{canonical:s.liveComparison?.canonical,alternative:s.liveComparison?.alternative},null,2))}</pre></details>`;
 }
-function admissionHtml(){const r=s.admission;if(s.mode!=='byoc')return '';if(!r)return '<section class="card"><h3>PUBLIC vs ALTERNATIVE ADMISSION</h3><p>Analyze the supported storage-access validator source to begin.</p></section>';
- const live=r.liveAdmission;
+function admissionHtml(){const r=s.admission;if(s.mode!=='byoc')return '';
  const liveCapable=s.analysis?.capabilities?.includes('LIVE_STORAGE_ACCESS_ADMISSION');
+ if(!r&&!liveCapable)return '<section class="card"><h3>PUBLIC vs ALTERNATIVE ADMISSION</h3><p>Load the supported storage-access scenario, Analyze, then prepare a fresh admission test.</p></section>';
+ const live=r?.liveAdmission;
+ const scen=s.config?.supportedScenario;
  return `<section class="card"><h3>PUBLIC vs ALTERNATIVE ADMISSION</h3>
- <p>Primary live output · provenance <strong>LIVE</strong> only · no historical rows.</p>
- <p>Detected frame role: ${esc(r.supportedFrameRole??s.analysis?.detectedRole?.role??'NONE')} · chain 1337 · readiness ${esc(live?.classification??r.classification)}</p>
- <p>Public: ${esc(r.publicEndpoint?.url??'')} · ${esc(r.publicEndpoint?.submissionMethod??'eth_sendRawTransaction')} · ${esc(live?.canonical?.clientVersion??r.publicEndpoint?.clientVersion??'')}</p>
- <p>Alternative: ${esc(r.alternativeEndpoint?.url??'')} · ${esc(r.alternativeEndpoint?.submissionMethod??'eth_sendFrameTransaction')} · ${esc(live?.alternative?.clientVersion??r.alternativeEndpoint?.clientVersion??'')}</p>
- ${liveCapable?`<p class="alert">Supported interface: storage-access ViolatingWallet. Runtime hash ${esc(s.analysis.runtimeBytecodeHash||'n/a')}. Arbitrary Solidity is not live-tested.</p>
+ <p><strong>Primary product result</strong> · provenance LIVE only · ABI cards are secondary.</p>
+ <p>Workflow: Paste/Load → Analyze → Prepare Admission Test → Run Live Comparison → Results → Save Regression.</p>
+ <p>Detected frame role: ${esc(s.analysis?.detectedRole?.role??'NONE')} · chain 1337 · readiness ${esc(live?.classification??r?.classification??'n/a')} · server ${esc(s.config?.liveAuthorized?'LIVE_AUTHORIZED':'not live-authorized')}</p>
+ ${liveCapable?`<p class="alert">${esc(scen?.kind||'SUPPORTED_SCENARIO_NOT_ARBITRARY_BYOC')}: ${esc(scen?.label||'workshop ViolatingWallet')}. Template runtime ${esc(s.analysis.runtimeBytecodeHash||'n/a')}. Binding uses immutable-slot mask against deployed code. Arbitrary Solidity is not live-tested.</p>
  <div class="grid-2">
   <label class="field">Deployed wallet<input id="liveWallet" value="${esc(s.liveWallet)}" placeholder="0x… ViolatingWallet"></label>
   <label class="field">Foreign target<input id="liveForeign" value="${esc(s.liveForeign)}" placeholder="0x… Foreign"></label>
   <label class="field">Owner address<input id="liveOwner" value="${esc(s.liveOwner)}" placeholder="0x… owner / signer"></label>
  </div>
  <div class="row" style="margin-top:10px">
+  <button class="btn btn-secondary" id="liveBindScenario" type="button">Bind supported fixtures</button>
   <button class="btn btn-secondary" id="liveRefresh" type="button">Refresh live readiness</button>
-  <button class="btn btn-secondary" id="livePrepare" type="button">Prepare fresh admission experiment</button>
-  <button class="btn btn-primary" id="liveRun" type="button" ${s.livePrepared?'':'disabled'}>Run Live Comparison</button>
+  <button class="btn btn-secondary" id="livePrepare" type="button">Prepare Admission Test</button>
+  <button class="btn btn-primary" id="liveRun" type="button" ${s.livePrepared&&s.config?.liveAuthorized?'':'disabled'}>Run Live Comparison</button>
+  <button class="btn btn-secondary" id="liveSaveRegression" type="button" ${s.liveComparison?.provenance==='LIVE'?'':'disabled'}>Save Regression</button>
  </div>
- <p class="muted">Protocol: ethrex first → require StorageReadNonSender + unchanged nonce → same signed bytes to Skandha. Operator server must use LIVE_AUTHORIZED; judges never hold the signing key.</p>
- ${live?`<details open><summary>Live blockers</summary><ul>${(live.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')||'<li>None</li>'}</ul></details>`:''}
- ${s.livePrepared?`<p class="mono tiny">Prepared hash ${esc(s.livePrepared.candidate.hash)} · nonce ${esc(s.livePrepared.candidate.nonce)} · wallet ${esc(s.livePrepared.candidate.wallet)}</p>`:''}
+ <p class="muted">Operator-only signing on LIVE_AUTHORIZED server. Judges never receive private keys. Protocol: ethrex first → StorageReadNonSender + unchanged nonce → same signed bytes to Skandha. No automatic retry. Inclusion checked separately.</p>
+ ${live?`<details ${live.blockers?.length?'open':''}><summary>Live blockers / stake / binding</summary>
+  <ul>${(live.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')||'<li>None</li>'}</ul>
+  <p class="mono tiny">deployment ${esc(live.deployment?.status)} · bound ${esc(live.deployment?.boundMode||live.deployment?.bound)} · stake ${esc(live.stake?.status)} · nonce ${esc(live.nonce)}</p>
+ </details>`:''}
+ ${s.livePrepared?`<div class="alert"><strong>Prepared candidate</strong><p class="mono tiny">hash ${esc(s.livePrepared.candidate.hash)} · nonce ${esc(s.livePrepared.candidate.nonce)} · wallet ${esc(s.livePrepared.candidate.wallet)} · digest ${esc(s.livePrepared.candidate.sourceDigest)}</p>
+  <p>Max fee exposure ≈ ${esc(s.livePrepared.approvalPacket?.maximumFeeExposureEth??'?')} ETH · writes: ${(s.livePrepared.approvalPacket?.writes||[]).map(esc).join(' → ')}</p></div>`:''}
  <h4 style="margin-top:16px">Live comparison table</h4>${liveTableHtml()}
- ${s.liveComparison?`<details open><summary>Raw live comparison</summary><pre class="details">${esc(JSON.stringify(s.liveComparison,null,2))}</pre></details>`:''}`
- :`<p class="muted">Paste examples/contracts/StorageAccessValidator.sol and select ViolatingWallet to enable the live storage-access path.</p>
- <details><summary>Generic readiness blockers</summary><ul>${(r.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')}</ul></details>`}
+ ${s.savedRegression?`<p class="tag ok">Saved ${esc(s.savedRegression.file)} · digest ${esc(s.savedRegression.contentDigest)} · Arkiv ${esc(s.savedRegression.arkivPublication?.status)}</p>`:''}
+ ${s.liveComparison?`<details><summary>Full LIVE comparison JSON</summary><pre class="details">${esc(JSON.stringify(s.liveComparison,null,2))}</pre></details>`:''}`
+ :`<p class="muted">Use <strong>Load supported scenario</strong>, then Analyze with contract ViolatingWallet.</p>
+ <details><summary>Generic readiness blockers</summary><ul>${(r?.blockers??[]).map(b=>`<li>${esc(b)}</li>`).join('')||'<li>Analyze first</li>'}</ul></details>`}
  </section>`;
 }
-function analysisHtml(){const a=s.analysis;if(!a)return '<p class="muted">Choose a mode, then analyze. BYOC uses pasted source. Uniswap loads pinned paymaster + historical admission evidence. Registry discovers Arkiv regressions without automatic writes.</p>';
- return `<p><strong>${esc(a.status)}</strong> · profile ${esc(a.profile?.id??'byoc')} · ${esc(a.compiler??'profile/source')} · digest ${esc(a.sourceDigest)}</p>${a.analysisId?`<p class="mono tiny">Analysis identity: ${esc(a.analysisId)}</p>`:''}
+function analysisHtml(){const a=s.analysis;
+ const primary=admissionHtml();
+ if(!a)return `${primary}<p class="muted" style="margin-top:12px">Choose a mode, then analyze. Live admission is the primary BYOC product path.</p>`;
+ return `${primary}
+ <details style="margin-top:16px"><summary>Compiler / ABI facts (secondary)</summary>
+ <p><strong>${esc(a.status)}</strong> · profile ${esc(a.profile?.id??'byoc')} · ${esc(a.compiler??'profile/source')} · digest ${esc(a.sourceDigest)}</p>${a.analysisId?`<p class="mono tiny">Analysis identity: ${esc(a.analysisId)}</p>`:''}
  <p>Role: ${esc(a.detectedRole?.role??'UNKNOWN')} (${esc(a.detectedRole?.basis??'No role evidence')}).</p>
  <p>Available: ${esc(a.capabilities?.join(', ')||'None')}. Missing: ${esc(a.missingPrerequisites?.join('; ')||'None listed')}.</p>
- ${a.profile?.historicalEvidence?`<p class="alert">Historical live capture ${esc(a.profile.historicalEvidence.capturedAt)} · report digest ${esc(a.profile.historicalEvidence.reportDigest)} · staked alt inclusion hash ${esc(a.profile.historicalEvidence.stakedCase?.alt?.inclusionHash||'n/a')}. This is not a fresh EIP-8141 run.</p>`:''}
- ${a.profile?.uniswapContext?`<p>StateView: ${esc(a.profile.uniswapContext.stateView)} · pool ${esc(a.profile.uniswapContext.poolId)} · interaction ${esc(a.profile.uniswapContext.interaction)}. No swap / USDC reimbursement claim.</p>`:''}
+ ${a.profile?.historicalEvidence?`<p class="alert">Historical live capture ${esc(a.profile.historicalEvidence.capturedAt)} · report digest ${esc(a.profile.historicalEvidence.reportDigest)}. This is not a fresh EIP-8141 run.</p>`:''}
  ${a.functions?`<p>${a.functions.length} ABI functions · ${(a.structure?.variables||[]).length} state vars · ${(a.structure?.events||[]).length} events · ${(a.structure?.externalCalls||[]).length} external call sites.</p><details><summary>Verified facts</summary><pre class="details">${esc(JSON.stringify({functions:a.functions,facts:a.sourceFacts,profile:a.profile},null,2))}</pre></details>`:''}
  ${a.diagnostics?.length?`<details ${a.status!=='READY'?'open':''}><summary>Diagnostics / profile notices</summary><pre class="details">${esc(JSON.stringify(a.diagnostics,null,2))}</pre></details>`:''}
- ${admissionHtml()}${arkivIntelHtml()}`;
+ </details>
+ ${arkivIntelHtml()}`;
 }
 function resultsHtml(){const r=s.report;if(!r)return `<p class="muted">${s.phase==='INVESTIGATING'?'Only actual agent requests and completed tool events appear below.':'No investigation result yet.'}</p>`;
  const entries=r.workspace.proposals.filter(e=>s.filter==='all'||s.filter==='executed'&&e.state==='EXECUTED'||s.filter==='negative'&&e.proposal.expectedVerdict==='REJECT'||s.filter==='unexpected'&&e.outcome?.findingCandidate||s.filter==='invalid'&&['INVALID','DUPLICATE','UNSUPPORTED'].includes(e.feasibility?.effective)||s.filter==='missing'&&e.feasibility?.effective==='CONDITIONAL');
@@ -122,9 +139,14 @@ function paint(){if(!s.active||!$('byocPanels'))return;
  $('liveWallet')?.addEventListener('change',e=>{s.liveWallet=e.target.value.trim();});
  $('liveForeign')?.addEventListener('change',e=>{s.liveForeign=e.target.value.trim();});
  $('liveOwner')?.addEventListener('change',e=>{s.liveOwner=e.target.value.trim();});
+ $('liveBindScenario')?.addEventListener('click',()=>{
+  const f=s.config?.supportedScenario?.fixtures;if(!f){s.error='Supported scenario fixtures unavailable';paint();return;}
+  s.liveWallet=f.wallet;s.liveForeign=f.foreign;s.liveOwner=f.owner;s.scenarioKind=s.config.supportedScenario.kind;s.error='';paint();
+ });
  $('liveRefresh')?.addEventListener('click',async()=>{try{s.liveWallet=$('liveWallet')?.value.trim()||s.liveWallet;s.liveForeign=$('liveForeign')?.value.trim()||s.liveForeign;s.liveOwner=$('liveOwner')?.value.trim()||s.liveOwner;await refreshLiveReadiness();s.error='';}catch(e){s.error=e.message;}paint();});
  $('livePrepare')?.addEventListener('click',async()=>{s.liveWallet=$('liveWallet')?.value.trim()||'';s.liveForeign=$('liveForeign')?.value.trim()||'';s.liveOwner=$('liveOwner')?.value.trim()||'';await prepareLive();});
  $('liveRun')?.addEventListener('click',()=>runLive());
+ $('liveSaveRegression')?.addEventListener('click',()=>saveRegression());
  document.querySelectorAll('[data-byoc-replay]').forEach(el=>el.addEventListener('click',async()=>{const version=s.version;el.disabled=true;try{const result=await request('replay',{id:s.job,entryId:el.dataset.byocReplay});if(version===s.version)s.replay=result;}catch(e){s.error=e.message;}if(version===s.version)paint();}));
  document.querySelectorAll('[data-arkiv-import]').forEach(el=>el.addEventListener('click',async()=>{const version=s.version;el.disabled=true;try{const result=await request('arkiv/import',{entityKey:el.dataset.arkivImport,analysisId:s.analysis?.analysisId});if(version===s.version){s.arkivImport=result;s.error='';}}catch(e){if(version===s.version)s.error=e.message;}if(version===s.version)paint();}));
  $('arkivPublishBtn')?.addEventListener('click',async()=>{
@@ -143,7 +165,7 @@ function paint(){if(!s.active||!$('byocPanels'))return;
  });
 }
 async function cancel(){s.controller?.abort();if(s.job&&s.phase==='INVESTIGATING'){s.phase='CANCELLING';try{await request('cancel',{id:s.job});}catch(e){s.error=e.message;}}else if(s.phase==='ANALYZING')s.phase='CANCELLED';paint();}
-function invalidate(){const oldJob=s.job;if(oldJob&&['INVESTIGATING','CANCELLING'].includes(s.phase))request('cancel',{id:oldJob}).catch(()=>{});s.controller?.abort();s.version++;s.analysis=null;s.admission=null;s.report=null;s.job=null;s.timeline=[];s.replay=null;s.arkivImport=null;s.arkivPublish=null;s.livePrepared=null;s.liveComparison=null;s.phase='IDLE';s.error='Context changed: previous conclusions invalidated.';if($('byocConsent'))$('byocConsent').checked=false;paint();}
+function invalidate(){const oldJob=s.job;if(oldJob&&['INVESTIGATING','CANCELLING'].includes(s.phase))request('cancel',{id:oldJob}).catch(()=>{});s.controller?.abort();s.version++;s.analysis=null;s.admission=null;s.report=null;s.job=null;s.timeline=[];s.replay=null;s.arkivImport=null;s.arkivPublish=null;s.livePrepared=null;s.liveComparison=null;s.liveJobId=null;s.savedRegression=null;s.phase='IDLE';s.error='Context changed: previous conclusions invalidated.';if($('byocConsent'))$('byocConsent').checked=false;paint();}
 async function refreshLiveReadiness(){
  if(!s.analysis?.analysisId)return;
  const q=new URLSearchParams({analysisId:s.analysis.analysisId});
@@ -151,21 +173,47 @@ async function refreshLiveReadiness(){
  const r=await request('admission-readiness?'+q.toString());s.admission=r;
 }
 async function prepareLive(){
- s.error='';paint();
+ s.error='';s.liveComparison=null;s.savedRegression=null;paint();
  try{
   const prepared=await request('live-prepare',{analysisId:s.analysis.analysisId,sourceDigest:s.analysis.sourceDigest,wallet:s.liveWallet,owner:s.liveOwner,foreign:s.liveForeign,verifyData:'0x01'});
-  s.livePrepared=prepared;s.phase='PREPARED';
+  s.livePrepared=prepared;s.liveJobId=prepared.id;s.phase='PREPARED';
  }catch(e){s.error=e.message;}
  paint();
 }
 async function runLive(){
  if(!s.livePrepared?.candidate?.hash){s.error='Prepare a fresh candidate first.';paint();return;}
- if(!confirm('Broadcast the exact prepared hash '+s.livePrepared.candidate.hash+' to ethrex first, then Skandha only after a policy rejection?'))return;
+ if(!s.config?.liveAuthorized){s.error='Operator server must run with --mode LIVE_AUTHORIZED.';paint();return;}
+ const pkt=s.livePrepared.approvalPacket||{};
+ const ok=confirm(`Approve bounded LIVE writes?\n\nHash: ${s.livePrepared.candidate.hash}\nNonce: ${s.livePrepared.candidate.nonce}\nMax fee exposure: ~${pkt.maximumFeeExposureEth??'?'} ETH\nOrder: ethrex first, then Skandha only after policy rejection.\nNo automatic retry. Inclusion is separate from admission.`);
+ if(!ok)return;
  s.phase='LIVE_COMPARING';s.error='';paint();
  try{
   const result=await request('live-run',{id:s.livePrepared.id,confirmHash:s.livePrepared.candidate.hash,authorizeWrites:true},AbortSignal.timeout(120000));
-  s.liveComparison=result.comparison;s.phase=result.state;s.livePrepared=null;
- }catch(e){s.error=e.message;s.phase='INCOMPLETE';}
+  if(result.comparison?.provenance!=='LIVE')throw Error('Refusing non-LIVE result');
+  s.liveComparison=result.comparison;s.phase=result.state;s.liveJobId=result.id;s.livePrepared=null;
+ }catch(e){s.error=e.message;s.phase='INCOMPLETE';s.livePrepared=null;}
+ paint();
+}
+async function saveRegression(){
+ if(s.liveComparison?.provenance!=='LIVE'){s.error='Save Regression requires a fresh LIVE comparison.';paint();return;}
+ try{
+  const saved=await request('save-regression',{id:s.liveJobId,analysisId:s.analysis?.analysisId,sourceDigest:s.analysis?.sourceDigest});
+  s.savedRegression=saved;s.error='';
+ }catch(e){s.error=e.message;}
+ paint();
+}
+async function loadSupportedScenario(){
+ try{
+  const scen=await request('supported-scenario');
+  const source=scen.source||'';
+  invalidate();
+  s.source=source;s.contractName=scen.contractName;s.role='SENDER_VALIDATOR';
+  s.liveWallet=scen.fixtures?.wallet||'';s.liveForeign=scen.fixtures?.foreign||'';s.liveOwner=scen.fixtures?.owner||'';
+  s.scenarioKind=scen.kind;
+  s.error='Supported scenario loaded — Analyze next. Reference evidence is not LIVE.';
+  if($('byocSource'))$('byocSource').value=s.source;
+  if($('byocRole'))$('byocRole').value='SENDER_VALIDATOR';
+ }catch(e){s.error=e.message;}
  paint();
 }
 async function analyze(){const version=++s.version;s.phase='ANALYZING';s.error='';s.controller=new AbortController();paint();try{
@@ -183,20 +231,22 @@ async function start(){if(!$('byocConsent')?.checked){s.error='Explicit consent 
   try{s.budget=await request('budget');}catch{}paint();
  }catch(e){if(version===s.version){s.error=e.message;s.phase='INCOMPLETE';paint();}}
 }
-export function renderPlayground(){return `<section class="card"><div class="eyebrow">Investigation playground</div><h1>Contract · Uniswap · Registry</h1><p class="summary">Analyze a contract and FrameFuzz automatically queries Arkiv for relevant community regressions. Agents cite verified cases; import stays unsigned; publish is operator-confirm only.</p>
+export function renderPlayground(){return `<section class="card"><div class="eyebrow">FrameFuzz product path</div><h1>Live admission · Contract · Registry</h1><p class="summary">Primary demo: paste the supported ViolatingWallet source, prepare a fresh signed candidate, run ethrex→Skandha comparison, and save a local regression. AI agents remain available but are optional for the live admission demo.</p>
  <div class="row" id="byocModes">${[['byoc','Bring Your Own Contract'],['uniswap-v4-paymaster','Uniswap Paymaster Admission'],['regression-registry','Regression Registry']].map(([id,label])=>`<button class="btn ${s.mode===id?'btn-primary':'btn-secondary'}" data-mode="${id}" type="button">${label}</button>`).join('')}</div>
  <p class="alert" id="byocModeHelp"></p><p class="muted" id="byocBudget">Budget…</p>
- <div id="byocSourceWrap"><label class="field">Solidity source<textarea id="byocSource" class="byoc-editor" spellcheck="false" placeholder="Paste StorageAccessValidator.sol (Foreign + ViolatingWallet)…">${esc(s.source)}</textarea></label><p class="muted">solc 0.8.28 · ≤64 KiB · HegotaSupport imports allowed only from local @forshtat/hegota-support · live path supports the labeled storage-access validator.</p>
+ <div id="byocSourceWrap"><div class="row" style="margin-bottom:8px"><button class="btn btn-secondary" id="loadSupportedScenario" type="button">Load supported scenario</button></div>
+ <label class="field">Solidity source<textarea id="byocSource" class="byoc-editor" spellcheck="false" placeholder="Paste StorageAccessValidator.sol (Foreign + ViolatingWallet)…">${esc(s.source)}</textarea></label><p class="muted">solc 0.8.28 · ≤64 KiB · HegotaSupport imports allowed only from local @forshtat/hegota-support · live path = labeled storage-access validator (supported scenario), not silent BYOC deploy.</p>
  <div class="grid-2"><label class="field">Optional ABI JSON<textarea id="byocAbi" class="byoc-abi" spellcheck="false">${esc(s.abi)}</textarea></label><div><label class="field">Contract name<select id="byocContract"><option value="">Auto-select</option></select></label><label class="field">Declared role<select id="byocRole">${['UNKNOWN','EXECUTION_TARGET','SENDER_VALIDATOR','PAYMASTER'].map(r=>`<option ${s.role===r?'selected':''}>${r}</option>`).join('')}</select></label></div></div></div>
  <div class="row"><button class="btn btn-primary" id="byocAnalyze">Detect / Analyze</button><button class="btn btn-secondary" id="byocCancel">Cancel</button></div><p id="byocStatus" role="status" aria-live="polite"></p><div id="byocAnalysis"></div>
  <hr><label class="row"><input type="checkbox" id="byocConsent"> Consent placeholder</label><p class="muted" id="byocConfig">Reading configuration…</p><button class="btn btn-primary" id="byocStart">Start Investigation</button></section><section class="card" id="byocPanels"></section>`;}
-function modeHelp(){return s.mode==='byoc'?'BYOC: compiler/ABI/AST tools for pasted source. Arkiv is queried only when EIP-8141/paymaster signals exist — generic ERC-20s will not inherit unrelated gas fixtures.':s.mode==='uniswap-v4-paymaster'?'Uniswap: StateView + historical public/alt evidence + automatic Arkiv discovery for storage/stake regressions. Predictions are not fresh admissions.':'Registry: discover both published suites, one-click unsigned import, operator one-click publish confirmation under the fee ceiling.';}
+function modeHelp(){return s.mode==='byoc'?'BYOC live product: Load supported ViolatingWallet scenario → Analyze → Prepare → Run Live Comparison → Save Regression. Agents optional; do not burn OpenRouter on ABI-only demos.':s.mode==='uniswap-v4-paymaster'?'Uniswap: StateView + historical public/alt evidence + Arkiv discovery. Predictions are not fresh admissions.':'Registry: discover published suites, unsigned import, operator publish confirmation under the fee ceiling.';}
 export function bindPlayground(){s.active=true;document.querySelectorAll('[data-mode]').forEach(btn=>btn.addEventListener('click',()=>{if(s.mode===btn.dataset.mode)return;s.mode=btn.dataset.mode;invalidate();document.querySelectorAll('[data-mode]').forEach(b=>b.className=`btn ${b.dataset.mode===s.mode?'btn-primary':'btn-secondary'}`);$('byocModeHelp').textContent=modeHelp();paint();}));
  $('byocModeHelp').textContent=modeHelp();
  $('byocSource')?.addEventListener('input',e=>{s.source=e.target.value;s.contractName='';s.contracts=[];invalidate();});
  $('byocAbi')?.addEventListener('input',e=>{s.abi=e.target.value;invalidate();});
  $('byocRole')?.addEventListener('change',e=>{s.role=e.target.value;invalidate();});
  $('byocContract')?.addEventListener('change',e=>{s.contractName=e.target.value;invalidate();});
+ $('loadSupportedScenario')?.addEventListener('click',loadSupportedScenario);
  $('byocAnalyze').addEventListener('click',analyze);$('byocStart').addEventListener('click',start);$('byocCancel').addEventListener('click',cancel);paint();
  request('config').then(c=>{s.config=c;s.budget=c.sprintBudget;if(s.active){
   const r=c.investigationReadiness;

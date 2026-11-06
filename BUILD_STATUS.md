@@ -91,3 +91,6 @@ Workshop ViolatingWallet+Foreign path bound into Playground as the only live pas
 
 ## Storage-access live divergence executed — 2026-11-07
 User approved packet `6c55073e…a6b4`. Faucet funded operator; deployed Foreign `0x6d5bed56…4145` + ViolatingWallet `0x6b7206fa…8199` (runtime bound via immutable-slot mask); staked 0.012/86400; rejection-first compare on `0xf69e0f4b…e31d` → ethrex `StorageReadNonSender` / Skandha ACCEPTED admission **1647** (`POLICY_DIVERGENCE`). Inclusion not mined (later explorer `dropped`). Evidence `evidence/live/2026-11-07/storage-access-live.json`. Focused tests 12/12. No OpenRouter.
+
+## Storage-access product finish — 2026-11-07
+Evidence verified (same identity, claims ADMISSION_DIVERGENCE=true / INCLUSION=false / EXECUTION_SUCCESS=NOT_OBSERVED). Playground primary path: Load supported scenario → Prepare → Run Live Comparison → Save Regression. Supported scenario labeled not arbitrary BYOC. Local Arkiv-ready descriptor prepared; publish blocked pending approval. Demo sequence in `docs/DEMO_STORAGE_ACCESS.md`. Focused tests 15/15. No broadcast/publish/OpenRouter/push.

@@ -128,7 +128,26 @@ export async function prepareLiveComparison({analysis,readiness,privateKey,walle
     sourceDigest:analysis.sourceDigest,analysisId:analysis.analysisId,
     mutation:'ViolatingWallet VERIFY data triggers FOREIGN.staticcall (StorageReadNonSender vs staked alt admit)',
   });
-  return {...candidate,readinessSnapshot:{stake:readiness.stake,codeHash:readiness.deployment.codeHash,canonicalHead:readiness.canonical.blockNumber,alternativeBootId:readiness.alternative.skandhaInfo?.bootId??null},notice:'Prepared only. Operator confirmation required before sequential live submission.'};
+  const maxFeePerGas=2_000_000_000n;
+  const maxGasUnits=500_000n;
+  const feeExposureWei=maxFeePerGas*maxGasUnits;
+  return {
+    ...candidate,
+    readinessSnapshot:{stake:readiness.stake,codeHash:readiness.deployment.codeHash,boundMode:readiness.deployment.boundMode??null,canonicalHead:readiness.canonical.blockNumber,alternativeBootId:readiness.alternative.skandhaInfo?.bootId??null,foreign:readiness.deployment.foreign??null},
+    approvalPacket:{
+      writes:['eth_sendRawTransaction(canonical)','eth_sendFrameTransaction(alternative) if policy-rejected'],
+      chainId:1337,
+      transactionHash:candidate.hash,
+      nonce:candidate.nonce,
+      wallet:candidate.wallet,
+      maxFeePerGasWei:String(maxFeePerGas),
+      maximumGasUnits:String(maxGasUnits),
+      maximumFeeExposureWei:String(feeExposureWei),
+      maximumFeeExposureEth:Number(feeExposureWei)/1e18,
+      note:'Same signed bytes on both paths. No automatic retry. Inclusion is checked separately and is not implied by admission.',
+    },
+    notice:'Prepared only. Operator confirmation required before sequential live submission.',
+  };
 }
 
 /** Execute rejection-first comparison. Caller must already hold explicit write authorization. */
@@ -155,35 +174,76 @@ export async function runLiveComparison({candidate,authorizeWrites=false}){
     readAlternativeReport:async hash=>rpc(EF_ALTERNATIVE_ENDPOINT,'skandha_explorer_getTransaction',[hash]),
   });
   let inclusion=null;
+  let laterMempoolOutcome=result.alternativeReport?.admission?.outcome??result.alternativeReport?.entry?.status??null;
   if(result.alternative.status==='ACCEPTED'){
     try{
       const receipt=await rpc(EF_CANONICAL_ENDPOINT,'eth_getTransactionReceipt',[candidate.hash]);
       let frameReceipt=null;
       try{frameReceipt=await rpc(EF_CANONICAL_ENDPOINT,'eth_getFrameTransactionReceipt',[candidate.hash]);}catch{}
       inclusion={receipt,frameReceipt,blockNumber:receipt?.blockNumber??null,gasUsed:receipt?.gasUsed??null,status:receipt?.status??null};
+      if(!receipt){
+        for(let i=0;i<3&&!inclusion.blockNumber;i++){
+          await new Promise(r=>setTimeout(r,2000));
+          const again=await rpc(EF_CANONICAL_ENDPOINT,'eth_getTransactionReceipt',[candidate.hash]);
+          if(again){inclusion={receipt:again,frameReceipt:null,blockNumber:again.blockNumber??null,gasUsed:again.gasUsed??null,status:again.status??null};break;}
+          try{
+            const report=await rpc(EF_ALTERNATIVE_ENDPOINT,'skandha_explorer_getTransaction',[candidate.hash]);
+            laterMempoolOutcome=report?.admission?.outcome??report?.entry?.status??laterMempoolOutcome;
+            if(laterMempoolOutcome==='dropped'||report?.entry?.status==='Cancelled')break;
+          }catch{}
+        }
+      }
     }catch(e){inclusion={error:clean(e)};}
   }
+  const admissionId=result.alternativeReport?.admission?.id??result.alternativeReport?.id??null;
+  const publicReason=result.canonical.message??result.canonical.error??null;
+  const inclusionStatus=inclusion?.blockNumber?'MINED'
+    :/dropped|Cancelled/i.test(String(laterMempoolOutcome??''))?'DROPPED'
+    :result.alternative.status==='ACCEPTED'?'ADMITTED_NOT_MINED'
+    :'NOT_OBSERVED';
+  const claims={
+    ADMISSION_DIVERGENCE:result.divergence==='POLICY_DIVERGENCE',
+    INCLUSION:Boolean(inclusion?.blockNumber),
+    EXECUTION_SUCCESS:'NOT_OBSERVED',
+  };
+  const capturedAt=new Date().toISOString();
   return {
     ...result,
     provenance:'LIVE',
-    observedAt:new Date().toISOString(),
+    observedAt:capturedAt,
     endpoints:{canonical:EF_CANONICAL_ENDPOINT,alternative:EF_ALTERNATIVE_ENDPOINT},
     inclusion,
+    inclusionStatus,
+    claims,
+    laterMempoolOutcome,
     table:[{
       mutation:candidate.mutation,
       canonicalVerdict:result.canonical.status,
+      publicVerdict:result.canonical.status,
+      publicReason,
       alternativeVerdict:result.alternative.status,
+      admissionId,
       divergence:result.divergence,
+      policyDivergence:claims.ADMISSION_DIVERGENCE,
       inclusion:inclusion?.blockNumber??null,
+      inclusionStatus,
+      claims,
       evidence:{
         hash:candidate.hash,
+        transactionHash:candidate.hash,
         sourceDigest:candidate.sourceDigest,
         wallet:candidate.wallet,
-        sidecarAdmissionId:result.alternativeReport?.admission?.id??result.alternativeReport?.id??null,
-        rule:result.canonical.message??result.canonical.error??null,
-        timestamp:new Date().toISOString(),
+        sidecarAdmissionId:admissionId,
+        rule:publicReason,
+        timestamp:capturedAt,
         gasPaid:inclusion?.gasUsed??null,
         provenance:'LIVE',
+        laterMempoolOutcome,
+        rpc:{
+          canonical:result.canonical,
+          alternative:result.alternative,
+          alternativeReportAdmission:result.alternativeReport?.admission??null,
+        },
       },
     }],
   };

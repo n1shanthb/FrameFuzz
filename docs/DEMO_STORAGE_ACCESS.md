@@ -1,0 +1,38 @@
+# Demo recording sequence — live StorageReadNonSender divergence
+
+Record a **new** Playground run. Do not show the reference hash `0xf69e0f4b…e31d` as if it were produced live in the video. That file is verification only.
+
+## Operator host (off-camera or cold open)
+
+```bash
+FRAMEFUZZ_OWNER_KEY=$FRAMEFUZZ_SENDER_KEY node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_AUTHORIZED --results runs --port 4190
+```
+
+Judges never receive the key. No OpenRouter spend required for this path.
+
+## On-camera flow (~3–5 min)
+
+1. Open Playground → **Bring Your Own Contract**.
+2. Click **Load supported scenario** (label: not arbitrary BYOC).
+3. Confirm source is `StorageAccessValidator.sol`, contract **ViolatingWallet**.
+4. **Detect / Analyze** → show SENDER_VALIDATOR + LIVE_STORAGE_ACCESS_ADMISSION.
+5. **Bind supported fixtures** (wallet / foreign / owner) → **Refresh live readiness** → READY_FOR_LIVE_COMPARISON (staked, runtime bound).
+6. **Prepare Admission Test** → show fresh hash + nonce + fee exposure (not the reference hash).
+7. **Run Live Comparison** → approve the bounded-write dialog.
+8. Table must show LIVE provenance:
+   - Public: REJECTED_POLICY / StorageReadNonSender
+   - Alternative: ACCEPTED + admission id
+   - Policy divergence TRUE
+   - Inclusion DROPPED or ADMITTED_NOT_MINED (do not claim mined/execution)
+9. **Save Regression** → local digest; state Arkiv awaits explicit approval.
+10. Optional: collapse ABI facts; keep four agent cards visible but do not Start Investigation.
+
+## Claims to speak aloud
+
+- ADMISSION_DIVERGENCE = true  
+- INCLUSION = false  
+- EXECUTION_SUCCESS = not observed  
+
+## If prepare/run fails
+
+Show the real error. Do not paste prior evidence into the LIVE table.

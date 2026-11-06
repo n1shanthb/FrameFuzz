@@ -15,9 +15,12 @@ import {createRegistry} from '../arkiv/registry.mjs';
 import {saveReport} from '../reports.mjs';
 import {admissionReadiness} from './admission.mjs';
 import {liveAdmissionReadiness,prepareLiveComparison,runLiveComparison} from './live-admission.mjs';
+import {SUPPORTED_STORAGE_ACCESS_SCENARIO,matchesSupportedScenario} from './supported-scenario.mjs';
+import {buildStorageAccessRegression,validateStorageAccessRegression} from './storage-access-regression.mjs';
 const UUID=/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i,HASH=/^[\da-f]{64}$/;
 const reportDigest=value=>{const text=JSON.stringify(value);if(Buffer.byteLength(text)>2*1024*1024)throw Error('REPORT_SIZE_LIMIT');return sha256(text);};
 const operatorConfigured=env=>/^0x[\da-fA-F]{64}$/.test(env?.ARKIV_PRIVATE_KEY||'');
+const liveOperatorKey=env=>/^0x[\da-fA-F]{64}$/.test(env?.FRAMEFUZZ_OWNER_KEY||'')||/^0x[\da-fA-F]{64}$/.test(env?.FRAMEFUZZ_SENDER_KEY||'');
 /** Playground live agents: LIVE_READ_ONLY/AUTHORIZED with OpenRouter, or legacy FRAMEFUZZ_SWARM=on. */
 export function playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider}={}){
   const blockers=[];
@@ -81,7 +84,13 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    const readiness=playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider});
    const byocPlan=planInvestigationBudget({profileId:'byoc',remainingUSD:budget.remainingUSD});
    const uniPlan=planInvestigationBudget({profileId:'uniswap-v4-paymaster',remainingUSD:budget.remainingUSD});
-   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId,reservedUSD:budget.reservedUSD},investigationBudget:{byoc:byocPlan,uniswap:uniPlan,minInvestigationUSD:MIN_INVESTIGATION_USD,layers:{providerAccount:'OpenRouter key limit is separate and is not FrameFuzz authorization',sprintAggregate:`FrameFuzz sprint ${budget.sprintId} cap $${SPRINT_BUDGET_USD}`,perRun:'Allocated at Start from remaining sprint budget'}},canStart:readiness.canStart&&byocPlan.blockers.length===0,investigationReadiness:{...readiness,canStart:readiness.canStart&&byocPlan.blockers.length===0,blockers:[...readiness.blockers,...byocPlan.blockers],notice:byocPlan.blockers[0]??readiness.notice},offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:false,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
+   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId,reservedUSD:budget.reservedUSD},investigationBudget:{byoc:byocPlan,uniswap:uniPlan,minInvestigationUSD:MIN_INVESTIGATION_USD,layers:{providerAccount:'OpenRouter key limit is separate and is not FrameFuzz authorization',sprintAggregate:`FrameFuzz sprint ${budget.sprintId} cap $${SPRINT_BUDGET_USD}`,perRun:'Allocated at Start from remaining sprint budget'}},canStart:readiness.canStart&&byocPlan.blockers.length===0,investigationReadiness:{...readiness,canStart:readiness.canStart&&byocPlan.blockers.length===0,blockers:[...readiness.blockers,...byocPlan.blockers],notice:byocPlan.blockers[0]??readiness.notice},offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:capabilityMode==='LIVE_AUTHORIZED'&&liveOperatorKey(env)&&!offlineDemo,liveAuthorized:capabilityMode==='LIVE_AUTHORIZED'&&!offlineDemo,liveOperatorKeyConfigured:liveOperatorKey(env),supportedScenario:SUPPORTED_STORAGE_ACCESS_SCENARIO,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
+  }
+  if(req.method==='GET'&&url.pathname==='/api/playground/supported-scenario'){
+   const {readFileSync}=await import('node:fs');
+   let source='';
+   try{source=readFileSync(new URL('../../'+SUPPORTED_STORAGE_ACCESS_SCENARIO.sourceFile,import.meta.url),'utf8');}catch{}
+   json(res,200,{...SUPPORTED_STORAGE_ACCESS_SCENARIO,source,broadcasts:0,notice:'Supported scenario source for Playground paste. Live path still requires Analyze + readiness + prepare + operator approval.'});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/budget'){json(res,200,await budgetStatus(resultDir));return true;}
   if(req.method==='GET'&&url.pathname==='/api/playground/admission-readiness'){
@@ -109,10 +118,13 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    const readiness=await liveAdmissionReadiness(cached.analysis,{wallet:input.wallet,foreign:input.foreign,owner:input.owner});
    const ownerKey=env.FRAMEFUZZ_OWNER_KEY||env.FRAMEFUZZ_SENDER_KEY;
    if(!ownerKey)throw new ApiError(409,'OWNER_KEY_MISSING','Configure FRAMEFUZZ_OWNER_KEY (devnet-only) on the operator server; judges never receive it');
+   if(!cached.analysis.capabilities?.includes('LIVE_STORAGE_ACCESS_ADMISSION')){
+     throw new ApiError(409,'UNSUPPORTED_SOURCE','Live comparison supports only the labeled storage-access ViolatingWallet interface');
+   }
    const candidate=await prepareLiveComparison({analysis:cached.analysis,readiness,privateKey:ownerKey,wallet:input.wallet,owner:input.owner,verifyData:input.verifyData??'0x01'});
    const id=randomUUID();
-   jobs.set(id,{state:'PREPARED',controller:new AbortController(),timeline:[],report:null,candidate,readiness});
-   json(res,200,{id,state:'PREPARED',candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest,requests:{public:{method:candidate.requests.public.method,endpoint:candidate.requests.public.endpoint},alternative:{method:candidate.requests.alternative.method,endpoint:candidate.requests.alternative.endpoint}}},readiness,broadcasts:0,notice:'Prepared only. Confirm with live-run after reviewing the exact fee/write packet.'});return true;
+   jobs.set(id,{state:'PREPARED',controller:new AbortController(),timeline:[],report:null,candidate,readiness,analysis:cached.analysis});
+   json(res,200,{id,state:'PREPARED',supportedScenario:matchesSupportedScenario(cached.analysis),scenarioKind:SUPPORTED_STORAGE_ACCESS_SCENARIO.kind,candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest,requests:{public:{method:candidate.requests.public.method,endpoint:candidate.requests.public.endpoint},alternative:{method:candidate.requests.alternative.method,endpoint:candidate.requests.alternative.endpoint}}},approvalPacket:candidate.approvalPacket,readiness,broadcasts:0,notice:'Prepared only. Confirm with live-run after reviewing the exact fee/write packet. Raw/wire bytes stay on the operator server.'});return true;
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/live-run'){
    if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot broadcast');
@@ -125,13 +137,38 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    if(getRunning())throw new ApiError(409,'BUSY','Another experiment is running');
    setRunning(true);job.state='RUNNING';
    try{
-    const comparison=await runLiveComparison({candidate:job.candidate,authorizeWrites:true});
+    // Consume prepared candidate so the same signed bytes cannot be rebroadcast via this job id.
+    const candidate=job.candidate;
+    delete job.candidate;
+    const comparison=await runLiveComparison({candidate,authorizeWrites:true});
+    if(comparison.provenance!=='LIVE')throw Error('Refusing non-LIVE provenance');
     job.report=comparison;job.state=comparison.divergence==='POLICY_DIVERGENCE'?'COMPLETE':comparison.canonical.status==='ACCEPTED'?'STOPPED_CANONICAL_ACCEPTED':'INCOMPLETE';
     await mkdir(directory,{recursive:true});
     await writeFile(path.join(directory,input.id+'-live.json'),JSON.stringify(comparison,null,2)+'\n',{flag:'wx'});
-    json(res,200,{id:input.id,state:job.state,comparison,table:comparison.table});return true;
+    json(res,200,{id:input.id,state:job.state,comparison,table:comparison.table,claims:comparison.claims,inclusionStatus:comparison.inclusionStatus,notice:'Table is from this RPC experiment only. Prior evidence is never relabeled LIVE.'});return true;
    }catch(e){job.state='INCOMPLETE';job.error=String(e.message??e);throw new ApiError(500,'LIVE_COMPARISON_FAILED',job.error);}
    finally{setRunning(false);}
+  }
+  if(req.method==='POST'&&url.pathname==='/api/playground/save-regression'){
+   const input=await readJsonObject(req,['id','comparison','analysisId','sourceDigest'],2*1024*1024);
+   let comparison=input.comparison??null;
+   let analysis=null;
+   if(input.id&&UUID.test(input.id)){
+     const job=jobs.get(input.id);
+     if(job?.report?.provenance==='LIVE'){comparison=job.report;analysis=job.analysis??null;}
+   }
+   if(!comparison||comparison.provenance!=='LIVE')throw new ApiError(409,'NO_LIVE_COMPARISON','Save Regression requires a fresh LIVE comparison from this session');
+   if(HASH.test(input.analysisId??'')){
+     const cached=analyses.get(input.analysisId);
+     if(cached&&(!input.sourceDigest||cached.analysis.sourceDigest===input.sourceDigest))analysis=cached.analysis;
+   }
+   const record=buildStorageAccessRegression({comparison,analysis});
+   validateStorageAccessRegression(record);
+   const regDir=path.join(resultDir,'regressions');
+   await mkdir(regDir,{recursive:true});
+   const file=path.join(regDir,`storage-access-${comparison.transactionIdentity.slice(2,10)}.json`);
+   await writeFile(file,JSON.stringify(record,null,2)+'\n',{flag:'wx'});
+   json(res,200,{saved:true,file:path.basename(file),contentDigest:record.contentDigest,arkivPublication:record.arkivPublication,claims:record.observed.claims,broadcasts:0,notice:'Local regression saved. Arkiv publish remains blocked until explicit approval.'});return true;
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/analyze'){
    const input=await readJsonObject(req,['source','abi','contractName','role','profile'],120000);
