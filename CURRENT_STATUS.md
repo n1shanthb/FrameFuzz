@@ -1,5 +1,13 @@
 # Current status — premium React UI + live admission product
 
+## Vercel ↔ OCI live lab wiring — 2026-11-07
+
+- `api/index.mjs` proxies `/api` to `FRAMEFUZZ_BACKEND_URL` when set; otherwise remains SAVED_DEMO.
+- Server supports `FRAMEFUZZ_ALLOW_PUBLIC_HOST=1`, `FRAMEFUZZ_BIND` / `--bind`, and `FRAMEFUZZ_CORS_ORIGINS` for the Vercel origin.
+- OCI deploy pack: `Dockerfile`, `deploy/oci/{README.md,env.example,framefuzz.service,cloud-init.yaml,push-env-from-local.ps1}`.
+- Blocker: no OCI CLI config / VM IP in this environment yet — cannot finish env push or set production `FRAMEFUZZ_BACKEND_URL` until an Always Free instance (SSH + TCP 4190) exists.
+- CORS tests: `node --test test/cors-origins.test.mjs` → 2/2 pass.
+
 ## Final shipping UI — 2026-11-07
 
 - React Playground and Comparisons now load the verified Uniswap record through `/api/playground/uniswap-captured` and label it `CAPTURED_LIVE_EVIDENCE`; no verdict is hardcoded into components and viewing it performs no transaction.

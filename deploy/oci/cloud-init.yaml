@@ -1,0 +1,42 @@
+#cloud-config
+# Oracle Linux / Ubuntu Always Free VM bootstrap for FrameFuzz live backend.
+package_update: true
+packages:
+  - git
+  - curl
+  - firewalld
+  - nodejs
+  - npm
+
+users:
+  - name: framefuzz
+    system: true
+    homedir: /opt/framefuzz
+    shell: /usr/sbin/nologin
+
+write_files:
+  - path: /etc/framefuzz/framefuzz.env
+    permissions: '0600'
+    owner: root:root
+    content: |
+      FRAMEFUZZ_ALLOW_PUBLIC_HOST=1
+      FRAMEFUZZ_BIND=0.0.0.0
+      FRAMEFUZZ_MODE=LIVE_AUTHORIZED
+      FRAMEFUZZ_ALLOW_CHAIN=1337
+      FRAMEFUZZ_CORS_ORIGINS=https://frame-fuzz.vercel.app
+      FRAMEFUZZ_RPC=https://altmempool.forshtat.com/rpc
+      FRAMEFUZZ_PUBLIC_RPC=https://altmempool.forshtat.com
+      FRAMEFUZZ_ALT_RPC=https://altmempool.forshtat.com/rpc/
+      FRAMEFUZZ_OWNER_KEY=REPLACE_ME
+      FRAMEFUZZ_SENDER_KEY=REPLACE_ME
+
+runcmd:
+  - mkdir -p /opt/framefuzz /var/lib/framefuzz/runs /etc/framefuzz
+  - git clone https://github.com/n1shanthb/FrameFuzz.git /opt/framefuzz || true
+  - cd /opt/framefuzz && git checkout main && npm ci && npm run ui:install && npm run ui:build
+  - chown -R framefuzz:framefuzz /opt/framefuzz /var/lib/framefuzz
+  - cp /opt/framefuzz/deploy/oci/framefuzz.service /etc/systemd/system/framefuzz.service
+  - systemctl daemon-reload
+  - systemctl enable --now framefuzz
+  - firewall-cmd --permanent --add-port=4190/tcp || true
+  - firewall-cmd --reload || true

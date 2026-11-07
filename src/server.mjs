@@ -29,6 +29,31 @@ function json(res, status, value) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
   res.end(JSON.stringify(value));
 }
+function corsOrigins(env = process.env) {
+  return String(env.FRAMEFUZZ_CORS_ORIGINS ?? '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+}
+function originAllowed(req, env = process.env) {
+  const origin = req.headers.origin;
+  if (!origin) return true; // same-origin navigations / server-side proxies
+  let originHost;
+  try { originHost = new URL(origin).host; } catch { return false; }
+  const requestHost = new URL(`http://${req.headers.host ?? ''}`).host;
+  if (originHost === requestHost) return true;
+  return corsOrigins(env).some((allowed) => {
+    try { return new URL(allowed).host === originHost || allowed === origin; } catch { return allowed === origin; }
+  });
+}
+function applyCors(req, res, env = process.env) {
+  const origin = req.headers.origin;
+  if (!origin || !originAllowed(req, env)) return;
+  res.setHeader('access-control-allow-origin', origin);
+  res.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS');
+  res.setHeader('access-control-allow-headers', 'content-type');
+  res.setHeader('vary', 'origin');
+}
 async function serveFile(res, root, rel) {
   if (!rel || rel.includes('..') || path.isAbsolute(rel)) return false;
   const file = path.resolve(root, rel);
@@ -84,7 +109,13 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
       if (!allowPublicHost && !['127.0.0.1', 'localhost', '[::1]'].includes(requestHost)) {
         return json(res, 403, { error: 'Localhost Host header required' });
       }
-      if(req.method==='POST'&&req.headers.origin){let valid=false;try{valid=new URL(req.headers.origin).host===req.headers.host;}catch{}if(!valid)return json(res,403,{error:'Invalid Origin',code:'INVALID_ORIGIN'});}
+      applyCors(req, res, swarmEnvironment);
+      if (req.method === 'OPTIONS') {
+        res.writeHead(originAllowed(req, swarmEnvironment) ? 204 : 403);
+        res.end();
+        return;
+      }
+      if(req.method==='POST'&&!originAllowed(req,swarmEnvironment))return json(res,403,{error:'Invalid Origin',code:'INVALID_ORIGIN'});
       if(await swarmRoutes(req,res,route))return;
       if(await playgroundRoutes(req,res,route))return;
       if (req.method === 'GET' && route.pathname === '/') {
@@ -126,7 +157,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         json(res,200,await readDeadline(()=>(communityRegistry??createRegistry()).fetch(key),apiReadTimeoutMs));
       } else if(req.method==='POST'&&route.pathname==='/api/community/import'){
         if(offlineDemo)return json(res,503,{error:'Live Arkiv import is disabled in offline mode; use the saved imported PREVIEW or generate unsigned local mutations'});
-        if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'Invalid Origin'});
+        if(!originAllowed(req,swarmEnvironment))return json(res,403,{error:'Invalid Origin'});
         const selection=await readJsonObject(req,['key'],1024);
         if(!/^0x[\da-f]{64}$/i.test(selection.key??''))throw new ApiError(400,'INVALID_ENTITY_KEY','Entity key must be32-byte hex');
         if(selection.submit||Object.keys(selection).some(k=>k!=='key'))return json(res,400,{error:'Community cases support preview only; no submission or overrides'});
@@ -159,7 +190,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         res.end(content);
       } else if(req.method==='POST'&&route.pathname==='/api/mutate'){
         if(running)return json(res,409,{error:'A test run is already executing'});
-        if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)return json(res,403,{error:'Invalid Origin'});
+        if(!originAllowed(req,swarmEnvironment))return json(res,403,{error:'Invalid Origin'});
         running=true;
         try{
           const selection=await readJsonObject(req,['suite','seed','count','submit','preview']);
@@ -177,9 +208,7 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
         // Local-only dev server, no general network access, and explicit flag to submit.
         if (!enabled) return json(res, 409, { error: 'Submissions are disabled. Configure RPC endpoints, --allow-chain, and --submit.' });
         if (running) return json(res, 409, { error: 'A test run is already executing' });
-        const origin = req.headers.origin;
-        const host = req.headers.host;
-        if (origin && new URL(origin).host !== host) return json(res, 403, { error: 'Invalid Origin' });
+        if (!originAllowed(req, swarmEnvironment)) return json(res, 403, { error: 'Invalid Origin' });
         running = true;
         try {
           const selection=await readJsonObject(req,['scenario','caseId','mutationFamily']);

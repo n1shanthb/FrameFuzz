@@ -19,11 +19,17 @@
 2. Paste explorer/evidence links for `0xf69e0f4b…` and Uniswap `0x72a82645…` into portal EF text.
 3. Confirm README lists all Arkiv writer addresses judges should query.
 
+## P0 — OCI live backend (in progress)
+
+1. Create Oracle Always Free VM; open TCP **4190** (+22). Follow `deploy/oci/README.md`.
+2. Install FrameFuzz + `/etc/framefuzz/framefuzz.env` (or `pwsh deploy/oci/push-env-from-local.ps1 -RemoteHost <IP>`).
+3. Set Vercel production `FRAMEFUZZ_BACKEND_URL=http://<IP>:4190` and redeploy; confirm `/api/readiness` is `LIVE_AUTHORIZED` with `x-framefuzz-proxy: oci-backend`.
+
 ## P2 — polish
 
 1. Triage Node failures (236/239): StorageAccessValidator compile bind; dashboard preview; supported scenario digest bind.
 2. Optional: one-click Uniswap Playground live wiring (evidence already LIVE via scripts).
-3. Optional public host (Render/Railway).
+3. Optional TLS / domain in front of OCI (Caddy/nginx) instead of raw `:4190`.
 
 ## Do not start without explicit approval
 
