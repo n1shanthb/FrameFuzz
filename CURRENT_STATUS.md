@@ -10,7 +10,7 @@
 ## Submission & sponsor audit — 2026-11-07
 
 - Judge package written under `docs/submission/*` and `docs/sponsors/*`; `arkiv/swarm.md` declares Swarm storage **NOT IMPLEMENTED**.
-- README rewritten for ETHGlobal judges; FEEDBACK.md remains **form NOT SUBMITTED**.
+- README rewritten for ETHGlobal judges; Uniswap feedback form **SUBMITTED** (2026-11-07).
 - Verified evidence in-tree: storage-access `0xf69e0f4b…` (admit 1647 → DROPPED); Uniswap `0x72a82645…` LIVE; Arkiv entity `0xf1089c05…` / tx `0x007bd10f…`.
 - GitHub origin anonymous HEAD → **404** (public access not verified). `npm test` → **236/239** pass.
 - No broadcast, deploy, fund, push, OpenRouter spend, or external form submit in this pass.

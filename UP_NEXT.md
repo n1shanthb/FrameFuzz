@@ -4,7 +4,7 @@
 
 1. Start `LIVE_AUTHORIZED`, load **Uniswap proof**, Analyze, and Prepare a NEW candidate. Review the new hash/run ID and request separate operator approval before clicking Run; no new chain write is authorized by this shipping pass.
 2. Record captured evidence first, then the fresh prepare/review flow. Never present `0x72a82645…` as newly executed.
-3. Push only with user authorization, make GitHub public, verify anonymous access, upload the demo, submit the Uniswap feedback form, and complete ETHGlobal portal fields/check three prizes.
+3. Push only with user authorization, make GitHub public, verify anonymous access, upload the demo, and complete ETHGlobal portal fields/check three prizes. Uniswap feedback form already submitted 2026-11-07.
 
 ## P0 — human ETHGlobal submission (deadline 09:00 IST 7 Nov 2026)
 
@@ -15,7 +15,7 @@
 
 ## P1 — sponsor eligibility
 
-1. Submit https://developers.uniswap.org/hackathon-feedback linking public `FEEDBACK.md`; then mark FEEDBACK.md as submitted.
+1. Verify public `FEEDBACK.md` URL after GitHub is public (form already submitted 2026-11-07).
 2. Paste explorer/evidence links for `0xf69e0f4b…` and Uniswap `0x72a82645…` into portal EF text.
 3. Confirm README lists all Arkiv writer addresses judges should query.
 

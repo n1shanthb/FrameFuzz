@@ -27,7 +27,7 @@ Build on or integrate any part of the Uniswap stack (API, AMM v2/v3/v4, CCA, hoo
 |---|---|---|
 | U1 Public OSS repo | Origin `https://github.com/n1shanthb/ethglobalmumbai.git` (MIT) | **NEEDS VERIFICATION** — anonymous HTTP HEAD returned 404 at audit time |
 | U2 FEEDBACK.md | [`FEEDBACK.md`](../../FEEDBACK.md) | COMPLETE |
-| U3 Form submitted | Human action | **MISSING / NOT SUBMITTED** |
+| U3 Form submitted | Human-confirmed 2026-11-07 | **COMPLETE** |
 | U4 README pointers | README + this doc + CONTRACT_ADDRESSES | COMPLETE in docs; keep README links current |
 | Meaningful integration | Validation-time `StateView.getSlot0(poolId)` inside paymaster PAYMENT VERIFY | LIVE evidence |
 | Swaps / LP / USDC | — | **NOT CLAIMED** |
@@ -118,7 +118,7 @@ Uniswap policy divergence candidate `0x72a82645…` with validation-time StateVi
 
 - Earlier PREPARED packets under `evidence/prepared/` (superseded by final LIVE file when present)
 - **No** swap, LP, initialized pool price, or USDC reimbursement claims
-- Form submission not done
+- Form submitted 2026-11-07; public GitHub URL for FEEDBACK.md still needs verification
 
 ## 18. Limitations
 
@@ -130,6 +130,6 @@ Show Solidity getSlot0 line → evidence comparison panel → emphasize tooling 
 
 ## 20. Required external submission
 
-1. Ensure public GitHub  
-2. Submit https://developers.uniswap.org/hackathon-feedback with link to public `FEEDBACK.md`  
-3. Keep status in FEEDBACK.md as **NOT SUBMITTED** until human confirms
+1. Ensure public GitHub so judges can open `FEEDBACK.md`  
+2. Feedback form: **SUBMITTED** 2026-11-07 (https://developers.uniswap.org/hackathon-feedback)  
+3. Keep FEEDBACK.md status as SUBMITTED; re-submit only if Uniswap asks for an update

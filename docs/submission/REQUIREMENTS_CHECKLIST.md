@@ -60,7 +60,7 @@ Status legend: `COMPLETE` · `NEEDS VERIFICATION` · `MISSING` · `NOT APPLICABL
 | Meaningful Uniswap developer tooling use | COMPLETE | StateView in paymaster validation |
 | Public repo with integration | NEEDS VERIFICATION | Same as GitHub publicity |
 | `FEEDBACK.md` in repo | COMPLETE | Root FEEDBACK.md |
-| External feedback form submitted | MISSING | Manual; do not claim until confirmed |
+| External feedback form submitted | COMPLETE | Human-confirmed 2026-11-07; keep public FEEDBACK.md URL reachable |
 | Claiming swaps / LP / USDC payback | NOT APPLICABLE | Not claimed without evidence |
 
 ## D. Arkiv — Build on Arkiv

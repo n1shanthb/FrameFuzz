@@ -68,7 +68,7 @@ The earlier generic storage-access hash `0xf69e0f4b…` remains useful captured 
 | [docs/sponsors/UNISWAP.md](docs/sponsors/UNISWAP.md) | Uniswap StateView evidence map |
 | [docs/sponsors/ARKIV.md](docs/sponsors/ARKIV.md) | Arkiv write/read evidence map |
 | [docs/sponsors/SWARM.md](docs/sponsors/SWARM.md) | Swarm bonus — not eligible yet |
-| [FEEDBACK.md](FEEDBACK.md) | Uniswap DX feedback (**form not submitted**) |
+| [FEEDBACK.md](FEEDBACK.md) | Uniswap DX feedback (**form submitted** 2026-11-07) |
 | [arkiv/swarm.md](arkiv/swarm.md) | Required Swarm status file |
 
 Recommended partner prizes (≤3): **EF Frame Transaction Alternative Mempool**, **Uniswap Foundation**, **Arkiv Build on Arkiv**. Do **not** select Arkiv+Swarm until Bee exists.
