@@ -1,0 +1,21 @@
+[Unit]
+Description=FrameFuzz LIVE admission backend
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=framefuzz
+Group=framefuzz
+WorkingDirectory=/opt/framefuzz
+EnvironmentFile=/etc/framefuzz/framefuzz.env
+Environment=FRAMEFUZZ_ALLOW_PUBLIC_HOST=1
+Environment=FRAMEFUZZ_BIND=0.0.0.0
+ExecStart=/usr/bin/node bin/framefuzz.mjs serve --mode LIVE_AUTHORIZED --results /var/lib/framefuzz/runs --port 4190 --bind 0.0.0.0 --allow-chain 1337
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

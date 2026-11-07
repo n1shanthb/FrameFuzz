@@ -123,6 +123,12 @@ async function main() {
     if((command==='saved-demo'||options.offline)&&options.submit)throw new Error('Offline saved demonstration cannot enable submission');
     const demo=command==='saved-demo'?await prepareSavedDemo(resultDir):null;
     const port = numericArg(options.port, 4177);
+    const bind = options.bind
+      ?? process.env.FRAMEFUZZ_BIND
+      ?? (process.env.FRAMEFUZZ_ALLOW_PUBLIC_HOST === '1' ? '0.0.0.0' : '127.0.0.1');
+    if (bind !== '127.0.0.1' && process.env.FRAMEFUZZ_ALLOW_PUBLIC_HOST !== '1') {
+      throw new Error('Non-loopback bind requires FRAMEFUZZ_ALLOW_PUBLIC_HOST=1');
+    }
     const server = createDashboardServer({
       resultDir, casesLocation: options.cases ?? 'examples/cases',
       rpcUrl: options.rpc ?? process.env.FRAMEFUZZ_RPC,
@@ -133,7 +139,7 @@ async function main() {
       submit: Boolean(options.submit), receiptWaitMs: numericArg(options['receipt-wait-ms'], 0),
       offlineDemo:command==='saved-demo'||Boolean(options.offline),defaultRun:demo?.defaultRun,capabilityMode:options.mode,
     });
-    server.listen(port, '127.0.0.1', () => console.log(`FrameFuzz dashboard: http://127.0.0.1:${port}\nLive submission: ${options.submit ? 'enabled with chain guard' : 'DISABLED'}`));
+    server.listen(port, bind, () => console.log(`FrameFuzz dashboard: http://${bind === '0.0.0.0' ? '0.0.0.0' : '127.0.0.1'}:${port}\nLive submission: ${options.submit ? 'enabled with chain guard' : 'DISABLED'}`));
   } else if (command === 'mock-demo') {
     console.log(JSON.stringify(await runMockDemo(resultDir), null, 2));
   } else if (command === 'demo') {
