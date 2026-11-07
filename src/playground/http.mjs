@@ -8,7 +8,7 @@ import {analyzeContract,COMPILE_LIMITS} from './compile.mjs';
 import {investigateContract,INVESTIGATION_LIMITS} from './investigate.mjs';
 import {TOOLS,replayDescriptor} from './tools.mjs';
 import {PROFILES,loadUniswapProfileAnalysis} from './profiles.mjs';
-import {budgetStatus,attachSprintBudget,planInvestigationBudget,SPRINT_BUDGET_USD,MIN_INVESTIGATION_USD} from './budget.mjs';
+import {budgetStatus,SPRINT_BUDGET_USD} from './budget.mjs';
 import {discoverCommunityRegressions,buildPublishConfirmation,ENTITY} from './arkiv-intelligence.mjs';
 import {arkivClients,ARKIV_CHAIN_ID} from '../arkiv/client.mjs';
 import {createRegistry} from '../arkiv/registry.mjs';
@@ -83,9 +83,7 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
   if(req.method==='GET'&&url.pathname==='/api/playground/config'){
    const provider=openRouterStatus(env),budget=await budgetStatus(resultDir);
    const readiness=playgroundInvestigationReadiness({offlineDemo,env,providerFactory,capabilityMode,provider});
-   const byocPlan=planInvestigationBudget({profileId:'byoc',remainingUSD:budget.remainingUSD});
-   const uniPlan=planInvestigationBudget({profileId:'uniswap-v4-paymaster',remainingUSD:budget.remainingUSD});
-   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId,reservedUSD:budget.reservedUSD},investigationBudget:{byoc:byocPlan,uniswap:uniPlan,minInvestigationUSD:MIN_INVESTIGATION_USD,layers:{providerAccount:'OpenRouter key limit is separate and is not FrameFuzz authorization',sprintAggregate:`FrameFuzz sprint ${budget.sprintId} cap $${SPRINT_BUDGET_USD}`,perRun:'Allocated at Start from remaining sprint budget'}},canStart:readiness.canStart&&byocPlan.blockers.length===0,investigationReadiness:{...readiness,canStart:readiness.canStart&&byocPlan.blockers.length===0,blockers:[...readiness.blockers,...byocPlan.blockers],notice:byocPlan.blockers[0]??readiness.notice},offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:capabilityMode==='LIVE_AUTHORIZED'&&liveOperatorKey(env)&&!offlineDemo,liveAuthorized:capabilityMode==='LIVE_AUTHORIZED'&&!offlineDemo,liveOperatorKeyConfigured:liveOperatorKey(env),supportedScenario:SUPPORTED_STORAGE_ACCESS_SCENARIO,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
+   json(res,200,{compiler:'solc 0.8.28',compileLimits:COMPILE_LIMITS,investigationLimits:INVESTIGATION_LIMITS,tools:TOOLS,profiles:PROFILES,sprintBudget:{capUSD:SPRINT_BUDGET_USD,spentUSD:budget.spentUSD,remainingUSD:budget.remainingUSD,sprintId:budget.sprintId,reservedUSD:budget.reservedUSD,legacy:true},investigationBudget:{mode:'PER_RUN_PROVIDER_SAFETY',notice:'The legacy sprint credit ledger no longer blocks investigations. OpenRouter account billing and per-run call/token safety controls still apply.'},canStart:readiness.canStart,investigationReadiness:readiness,offlineDemo,model:provider.model,transport:providerFactory?'MOCK_LLM_TRANSPORT — NO PAID MODEL':'OpenRouter',writesEnabled:false,arkivWritesEnabled:false,arkivOperatorConfigured:operatorConfigured(env)&&!offlineDemo,chainBroadcastEnabled:capabilityMode==='LIVE_AUTHORIZED'&&liveOperatorKey(env)&&!offlineDemo,liveAuthorized:capabilityMode==='LIVE_AUTHORIZED'&&!offlineDemo,liveOperatorKeyConfigured:liveOperatorKey(env),supportedScenario:SUPPORTED_STORAGE_ACCESS_SCENARIO,arkivChainId:ARKIV_CHAIN_ID,capabilityMode:capabilityMode??null});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/supported-scenario'){
    const {readFileSync}=await import('node:fs');
@@ -219,23 +217,18 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    if(getRunning())throw new ApiError(409,'BUSY','An experiment is already running');
    if(jobs.size>=10){const old=[...jobs].find(([,j])=>j.state!=='RUNNING');if(old)jobs.delete(old[0]);else throw new ApiError(429,'JOB_LIMIT','Investigation capacity reached');}
    const profileId=cached.analysis.profile?.id??'byoc';
-   const sprint=await budgetStatus(resultDir);
-   const plan=planInvestigationBudget({profileId,requestedUSD:input.budgetUSD,remainingUSD:sprint.remainingUSD,allowBelowMinimum:Boolean(providerFactory)});
-   if(!providerFactory&&plan.blockers.length)throw new ApiError(409,'SPRINT_BUDGET_TOO_LOW',plan.blockers[0]);
-   if(!providerFactory&&!plan.canComplete)throw new ApiError(409,'INVESTIGATION_BUDGET_INSUFFICIENT',`Allocated $${plan.allocatedUSD.toFixed(4)} is below estimated finish $${plan.estimatedFinishUSD}; sprint remaining $${sprint.remainingUSD.toFixed(4)}`);
-   const maxUSD=Math.max(plan.allocatedUSD,providerFactory?0.01:plan.allocatedUSD);
-   const id=randomUUID(),controller=new AbortController(),job={state:'RUNNING',controller,timeline:[],report:null,budget:{sprintRemainingBefore:sprint.remainingUSD,...plan}};jobs.set(id,job);setRunning(true);json(res,202,{id,state:job.state,sourceDigest:input.sourceDigest,transport:providerFactory?'MOCK_LLM_TRANSPORT':'OPENROUTER',budgetUSD:maxUSD,estimatedFinishUSD:plan.estimatedFinishUSD,sprintRemainingUSD:sprint.remainingUSD,profileId});
+   const maxUSD=providerFactory?0.01:0.50;
+   const id=randomUUID(),controller=new AbortController(),job={state:'RUNNING',controller,timeline:[],report:null,budget:{mode:'PER_RUN_PROVIDER_SAFETY',maxCalls:10,maxCostUSD:maxUSD}};jobs.set(id,job);setRunning(true);json(res,202,{id,state:job.state,sourceDigest:input.sourceDigest,transport:providerFactory?'MOCK_LLM_TRANSPORT':'OPENROUTER',providerSafety:{maxCalls:10,maxCostUSD:maxUSD},profileId});
    setImmediate(async()=>{let provider;try{
-    provider=providerFactory?providerFactory():attachSprintBudget(new OpenRouterProvider({env,limits:{maxCalls:10,maxCostUSD:maxUSD,maxTotalTokens:90000,maxOutputTokens:1600,maxInputBytes:48000}}),resultDir,profileId+':'+id,{maxUSD});
+    provider=providerFactory?providerFactory():new OpenRouterProvider({env,limits:{maxCalls:10,maxCostUSD:maxUSD,maxTotalTokens:90000,maxOutputTokens:1600,maxInputBytes:48000}});
     const report=await investigateContract(cached.analysis,{
      id,provider,authorizeProvider:true,signal:controller.signal,onEvent:e=>job.timeline.push(e),
      arkivDiscovery:cached.analysis.arkivDiscovery,
      arkivRegistryFactory,arkivSavedLookup,
     });
     report.profileId=profileId;report.budget=job.budget;report.contentDigest=reportDigest(report);job.report=report;job.state=report.status;
-    await provider.settleSprint?.({failed:report.status!=='COMPLETE'});
     await mkdir(directory,{recursive:true});await writeFile(path.join(directory,id+'.json'),JSON.stringify(report,null,2)+'\n',{flag:'wx'});
-   }catch(e){job.state=controller.signal.aborted?'CANCELLED':'INCOMPLETE';job.error=provider?.protect?.(e.message)??'Investigation stopped; no chain transaction was sent';try{await provider?.settleSprint?.({failed:true});}catch{}}finally{setRunning(false);}});return true;
+   }catch(e){job.state=controller.signal.aborted?'CANCELLED':'INCOMPLETE';job.error=provider?.protect?.(e.message)??'Investigation stopped; no chain transaction was sent';}finally{setRunning(false);}});return true;
   }
   if(req.method==='GET'&&url.pathname==='/api/playground/job'){
    const job=await load(url.searchParams.get('id'));json(res,200,{state:job.state,timeline:job.timeline,report:job.report,error:job.error});return true;

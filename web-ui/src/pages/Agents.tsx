@@ -52,8 +52,9 @@ export function AgentsPage() {
         </Grid>
         <Grid size={{ xs: 12, md: 4 }}>
           <Paper sx={{ p: 2 }}>
-            <Typography variant="body2">Sprint remaining</Typography>
-            <Typography variant="h3">${Number(pgConfig?.sprintBudget?.remainingUSD ?? 0).toFixed(4)}</Typography>
+            <Typography variant="body2">Provider safety</Typography>
+            <Typography variant="h3">Per run</Typography>
+            <Typography variant="body2">No legacy sprint-credit gate</Typography>
           </Paper>
         </Grid>
       </Grid>
