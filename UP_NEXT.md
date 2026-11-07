@@ -1,5 +1,11 @@
 # Up next
 
+## P0 — record and submit
+
+1. Start `LIVE_AUTHORIZED`, load **Uniswap proof**, Analyze, and Prepare a NEW candidate. Review the new hash/run ID and request separate operator approval before clicking Run; no new chain write is authorized by this shipping pass.
+2. Record captured evidence first, then the fresh prepare/review flow. Never present `0x72a82645…` as newly executed.
+3. Push only with user authorization, make GitHub public, verify anonymous access, upload the demo, submit the Uniswap feedback form, and complete ETHGlobal portal fields/check three prizes.
+
 ## P0 — human ETHGlobal submission (deadline 09:00 IST 7 Nov 2026)
 
 1. Make GitHub public; verify anonymous clone/browse (audit saw 404).

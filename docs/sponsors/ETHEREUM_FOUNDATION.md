@@ -36,6 +36,12 @@ EIP-8141 frame transactions bring native account abstraction; the public mempool
 | Flexible state-access class | StorageReadNonSender divergence; Uniswap StateView paymaster path | LIVE |
 | Do not over-claim inclusion | storage-access demo explicitly DROPPED after admit | Documented |
 
+### Why this is unusually strong alt-mempool proof
+
+FrameFuzz does not merely show that Skandha accepted *a* transaction. It preserves one signed type-`0x06` identity across both routes, captures the canonical rule rejection, records Skandha's rule-by-rule report, and then keeps admission separate from its successful on-chain receipt. That makes the project useful as infrastructure: wallet, bundler, and paymaster developers can diagnose whether a failure is encoding, funding, nonce state, transport, canonical policy, alternative policy, or execution.
+
+The Uniswap candidate `0x72a82645…` is the primary judge proof: canonical ethrex rejected `StorageReadNonSender`; Skandha admission **2065** passed every reported check and included the same hash; the outer receipt and all three frame receipts succeeded.
+
 ## 6. Technical architecture
 
 ```text
@@ -117,7 +123,7 @@ Full tables: [CONTRACT_ADDRESSES.md](../submission/CONTRACT_ADDRESSES.md)
 
 ## 13. Tests
 
-Node suite covers admission, gateway policy wrappers, reserve deployment, playground paths. Observed **2026-11-07**: 236 pass / 3 fail of 239. See [GAP_MATRIX.md](../submission/GAP_MATRIX.md).
+Node suite covers admission, gateway policy wrappers, reserve deployment, playground paths. Observed **2026-11-07**: 236 pass / 3 fail of 239. See [UP_NEXT.md](../../UP_NEXT.md) for triage items.
 
 ## 14. Browser / UI
 

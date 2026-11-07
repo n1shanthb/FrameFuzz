@@ -43,16 +43,17 @@ Frame transactions add validation-time rules (storage access, verification gas, 
 
 **Admission ≠ inclusion ≠ successful frame execution.**
 
-### Flagship LIVE policy divergence
+### Flagship LIVE Uniswap policy divergence
 
 | | |
 |---|---|
-| Transaction | [`0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d`](evidence/live/2026-11-07/storage-access-live.json) |
+| Transaction | [`0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067`](evidence/live/2026-11-07/uniswap-policy-divergence-final.json) |
 | Canonical | `REJECTED_POLICY` — `StorageReadNonSender` |
-| Alternative | `ACCEPTED` — Skandha admission ID **1647** |
-| Later status | **DROPPED** (no inclusion claim) |
+| Alternative | `ACCEPTED_AND_INCLUDED` — Skandha admission ID **2065** |
+| Inclusion | Outer receipt `0x1`; **3/3 frame receipts successful** |
+| Integration | `ReserveReadingPaymaster` PAYMENT VERIFY → Uniswap v4 `StateView.getSlot0(poolId)` |
 
-Self-funded inclusion hashes `0xd4d6123f…` and `0xc05703ac…` prove canonical inclusion paths; they are **not** a clean dual-path policy difference. Uniswap-path candidate `0x72a82645…` is a separate LIVE StateView divergence (see sponsor docs).
+The earlier generic storage-access hash `0xf69e0f4b…` remains useful captured evidence (Skandha admission 1647, later dropped), but the Uniswap candidate above is the primary product proof because it combines source/runtime binding, real protocol-state access, policy divergence, alternative admission, and successful frame execution.
 
 ## Judge / sponsor docs
 
@@ -63,7 +64,6 @@ Self-funded inclusion hashes `0xd4d6123f…` and `0xc05703ac…` prove canonical
 | [docs/submission/PROOF_INDEX.md](docs/submission/PROOF_INDEX.md) | Claim → proof map |
 | [docs/submission/CONTRACT_ADDRESSES.md](docs/submission/CONTRACT_ADDRESSES.md) | Addresses & txs |
 | [docs/submission/DEMO_RUNBOOK.md](docs/submission/DEMO_RUNBOOK.md) | Live demo script |
-| [docs/submission/GAP_MATRIX.md](docs/submission/GAP_MATRIX.md) | Missing P0/P1/P2 actions |
 | [docs/sponsors/ETHEREUM_FOUNDATION.md](docs/sponsors/ETHEREUM_FOUNDATION.md) | EF alt mempool evidence map |
 | [docs/sponsors/UNISWAP.md](docs/sponsors/UNISWAP.md) | Uniswap StateView evidence map |
 | [docs/sponsors/ARKIV.md](docs/sponsors/ARKIV.md) | Arkiv write/read evidence map |

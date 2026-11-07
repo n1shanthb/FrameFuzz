@@ -1,12 +1,12 @@
 # Uniswap developer feedback — FrameFuzz
 
-Status: prepared from actual implementation and devnet evidence. **The human feedback form has not been submitted.**
+Status: prepared from actual implementation and final devnet evidence. **The human feedback form has not been submitted.**
 
 ## What we built and actually used
 
 FrameFuzz tests whether Uniswap-aware paymaster validation is compatible with public and alternative EIP-8141 admission policies. `vendor/paymaster/ReserveReadingPaymaster.sol:33` calls `IStateView(STATE_VIEW).getSlot0(POOL_ID)` when VERIFY calldata starts with `0x01`. This is actual contract execution, not an unused SDK import. The tested purpose is pool-state access during validation; no token reimbursement or swap settlement is claimed.
 
-The devnet StateView is `0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB`; its `poolManager()` returns `0x6bF9Aa9c04fd001385742d61f6818C3236429848`. Both runtime hashes are pinned in `examples/live/devnet.json` and checked before live storage campaigns. Pool ID: `0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648`. Current slot0 is all zero, so this run demonstrates a real read of an uninitialized pool's storage, not price discovery from an active pool. Historical admitted staked validation and receipts remain separate from the current generated campaign.
+The devnet StateView is `0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB`; its `poolManager()` returns `0x6bF9Aa9c04fd001385742d61f6818C3236429848`. Both runtime hashes are pinned in `examples/live/devnet.json` and checked before live storage campaigns. Pool ID: `0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648`. Current slot0 is all zero, so this run demonstrates a real read of an uninitialized pool's storage, not price discovery from an active pool. The final candidate `0x72a82645…` was rejected by canonical ethrex with `StorageReadNonSender`, accepted by Skandha as admission 2065, included, and completed all three frames successfully.
 
 ## Helpful parts
 
@@ -18,7 +18,7 @@ The [StateView guide](https://developers.uniswap.org/docs/protocols/v4/guides/st
 - **Uninitialized pool semantics:** a well-formed four-word zero response is not an initialized pool or a usable price. Add a prominent initialization check (`sqrtPriceX96 != 0`) to read examples, while distinguishing successful data access from trading readiness. FrameFuzz initially guarded against zero state, then corrected the guard because the regression tests storage policy rather than trading.
 - **Devnet deployment identity:** standard deployment lists do not establish provenance for workshop chain1337. Provide a reproducible devnet manifest with source commits, chain IDs, constructor links, runtime hashes and StateView→PoolManager binding, or explicitly explain how to verify custom deployments. We added both code-hash and manager-binding checks rather than trusting an address alone.
 - **Validation versus execution:** successful `eth_call` does not prove the read is admissible in a verification frame. An integration guide should distinguish ordinary read simulation, public admission restrictions, stake-dependent alternative admission and eventual inclusion. This helps wallets avoid promising sponsorship for transactions the public path will refuse.
-- **Actionable infrastructure errors:** this generated campaign's alternative storage validation passed for the staked payer, but the sidecar could not persist accepted candidates because its disk was full. This is devnet infrastructure friction, not a Uniswap contract defect. Examples should teach users to separate validation reports from gateway storage failures and inclusion receipts.
+- **Actionable precondition errors:** the final campaign first reached a payer-funding precondition because Skandha retained the included stake transaction's maximum liability. After the paymaster was funded through a constructor force-send (its fallback rejects ordinary value transfers), the same candidate was admitted and included. This is devnet/account-abstraction setup friction, not a Uniswap contract defect. Examples should teach users to separate funding, admission policy, and inclusion receipts.
 
 The highest-impact addition for this use case would be a small AA/paymaster StateView example with an access trace, explicit initialization caveat and stake-aware admission expectations. We did not measure a reliable time-to-first-integration and do not invent a duration or support rating.
 

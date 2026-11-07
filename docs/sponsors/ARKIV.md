@@ -124,6 +124,10 @@ node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GA
 # or open UI Arkiv page against LIVE_READ_ONLY serve
 ```
 
+### Why Arkiv is product infrastructure, not log storage
+
+Local JSON is excellent immutable evidence but poor shared discovery: another developer must know the repository, branch, filename, and trust context. Arkiv gives each regression a wallet owner, searchable semantic fields, an integrity digest, and an expiry. FrameFuzz uses those properties to let developers discover relevant admission cases across projects, inspect provenance, and import only the unsigned semantic fixture for a safe preview. GitHub remains the home for large raw receipts; Arkiv is the shared, queryable coordination layer that makes those regressions reusable.
+
 Publish requires approval packet + `ARKIV_PRIVATE_KEY` / access key — do not run without authorization.
 
 ## 16. Verified LIVE

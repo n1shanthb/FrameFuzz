@@ -1,5 +1,12 @@
 # Current status — premium React UI + live admission product
 
+## Final shipping UI — 2026-11-07
+
+- React Playground and Comparisons now load the verified Uniswap record through `/api/playground/uniswap-captured` and label it `CAPTURED_LIVE_EVIDENCE`; no verdict is hardcoded into components and viewing it performs no transaction.
+- Operator-only `/api/playground/uniswap-prepare` verifies the exact editor source SHA-256, deployed paymaster runtime, stake, balance/nonce, StateView/PoolManager hashes and binding, then creates a new run ID and independently signed candidate with zero broadcasts. Existing confirmation/run orchestration remains the only write gate.
+- Production UI build passes. Focused shipping/admission suite: 13/13. Full default-concurrency suite registered 241 tests but the constrained host produced widespread localhost fetch/startup failures; do not claim a clean full suite from that run.
+- Main submission, EF, Uniswap, Arkiv, feedback, proof/address, and demo docs now lead with the final Uniswap divergence. Swarm Bee remains explicitly not implemented.
+
 ## Submission & sponsor audit — 2026-11-07
 
 - Judge package written under `docs/submission/*` and `docs/sponsors/*`; `arkiv/swarm.md` declares Swarm storage **NOT IMPLEMENTED**.
@@ -7,7 +14,7 @@
 - Verified evidence in-tree: storage-access `0xf69e0f4b…` (admit 1647 → DROPPED); Uniswap `0x72a82645…` LIVE; Arkiv entity `0xf1089c05…` / tx `0x007bd10f…`.
 - GitHub origin anonymous HEAD → **404** (public access not verified). `npm test` → **236/239** pass.
 - No broadcast, deploy, fund, push, OpenRouter spend, or external form submit in this pass.
-- Next: human portal P0 actions in `UP_NEXT.md` / `docs/submission/GAP_MATRIX.md`.
+- Next: human portal P0 actions in `UP_NEXT.md`.
 
 ## Final Uniswap admission — 2026-11-07
 

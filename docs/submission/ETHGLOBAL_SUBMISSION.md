@@ -43,17 +43,17 @@ FrameFuzz is a **local-first EIP-8141 admission comparison lab**:
 
 A single hash that is **policy-rejected** on canonical and **admitted** on alternative is a developer-visible bug class: tooling that only talks to one gateway will mis-train intuition. FrameFuzz’s primary EF deliverable is that **same-transaction dual-path comparison** with retained raw responses.
 
-Flagship LIVE divergence (storage-access ViolatingWallet path):
+Flagship LIVE divergence (Uniswap v4 StateView paymaster path):
 
 | Field | Value |
 |---|---|
-| Transaction | `0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d` |
+| Transaction | `0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067` |
 | Canonical | `REJECTED_POLICY` — `StorageReadNonSender` |
-| Alternative | `ACCEPTED` — Skandha admission ID **1647** |
-| Later mempool | `DROPPED` |
-| Evidence | [`evidence/live/2026-11-07/storage-access-live.json`](../../evidence/live/2026-11-07/storage-access-live.json) |
+| Alternative | `ACCEPTED_AND_INCLUDED` — Skandha admission ID **2065** |
+| Execution | Outer receipt `0x1`; all 3 frame receipts `0x1` |
+| Evidence | [`evidence/live/2026-11-07/uniswap-policy-divergence-final.json`](../../evidence/live/2026-11-07/uniswap-policy-divergence-final.json) |
 
-**Do not claim inclusion or successful frame execution for this hash.**
+This proves a validation-time `StateView.getSlot0` read, not a swap, LP action, or USDC reimbursement.
 
 Separate self-funded inclusion hashes (`0xd4d6123f…`, `0xc05703ac…`) prove canonical execution/inclusion paths, **not** a clean dual-path policy difference. See [PROOF_INDEX.md](./PROOF_INDEX.md).
 

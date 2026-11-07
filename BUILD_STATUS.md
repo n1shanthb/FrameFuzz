@@ -113,3 +113,15 @@ Migrated dashboard to Vite + React 18 + TypeScript + MUI + Lucide (`web-ui/` →
 - `node --test test/step2e-policy.test.mjs test/live-admission.test.mjs test/storage-access-product.test.mjs test/uniswap-state.test.mjs` — 11/11 pass.
 - Full `npm test` completed 239 tests but reported 215 pass / 24 fail, dominated by localhost `fetch failed` server-start failures plus one compiler timeout in this constrained run. This is not a clean full-suite pass and is recorded honestly; the focused admission/source-binding tests pass.
 - No blockchain write, Arkiv write, paid model call or Git push occurred.
+## Final shipping pass — captured Uniswap evidence + fresh UI preparation
+
+- Added backend-verified captured evidence projection and exact supported-source route.
+- Added source-bound fresh Uniswap preparation: new UUID/hash, runtime/stake/funding/nonce and Uniswap binding checks, zero broadcasts, operator-only confirmation gate.
+- React Playground shows captured evidence separately from fresh preparation; Comparisons includes the captured record and detail view.
+- Updated README, main submission, EF/Uniswap/Arkiv sponsor docs, and FEEDBACK.md with the final verified proof and honest limitations.
+- `node --test test/uniswap-shipping.test.mjs test/step2e-policy.test.mjs test/live-admission.test.mjs test/storage-access-product.test.mjs` → 13/13 pass.
+- `npm run ui:build` → PASS (TypeScript + Vite; bundle-size warning only).
+- LIVE_READ_ONLY smoke on port 4195: captured-evidence API 200, exact-source API 200, `/comparisons` SPA 200.
+- Read-only current-chain preparation produced a fresh in-memory run/hash with paymaster nonce 9, sufficient balance, valid 0.01 stake, and writes/broadcasts 0. That candidate was intentionally not persisted or submitted.
+- `npm test` → 241 registered / 214 pass / 27 fail on this constrained default-concurrency run, dominated by localhost fetch/startup failures and compiler timeouts; not represented as product regressions or a green suite.
+- No chain write, funding, staking, Arkiv write, paid LLM call, external submission, or Git push in this shipping pass.

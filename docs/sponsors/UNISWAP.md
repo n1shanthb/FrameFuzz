@@ -42,6 +42,12 @@ That external storage access is exactly what canonical ethrex can reject as `Sto
 
 **Why this matters:** wallet/paymaster authors may gate sponsorship on pool state. Ordinary `eth_call` success does not imply public mempool admission. FrameFuzz makes that gap visible.
 
+### Developer value
+
+Uniswap v4's singleton architecture makes protocol-state reads composable, but account-abstraction validation adds a second compatibility surface beyond Solidity correctness. FrameFuzz turns that hidden surface into a reproducible test: exact source digest → compiler artifact → deployed paymaster runtime → StateView/PoolManager binding → PAYMENT-frame trace → canonical and alternative verdicts → inclusion receipts. This helps teams decide whether a pool-aware sponsorship policy will work before users depend on it.
+
+The result is deliberately narrower—and more credible—than a swap demo. It proves that a real Uniswap v4 state dependency participates in paymaster verification and that admission policy can decide whether the transaction reaches execution at all.
+
 ## 7–8. Repository files
 
 | Path | What it does |
@@ -66,7 +72,7 @@ Source digest (Step 2E): `85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de696
 - Solidity: `getSlot0` call site in `ReserveReadingPaymaster.sol` (VERIFY/`0x01` path — see FEEDBACK.md line reference)
 - JS: Uniswap state adapter exports used by preflight/live scripts
 - Live compare uses shared `comparePolicyCandidate` path
-- UI: Playground currently productizes ViolatingWallet live button; Uniswap path evidenced via scripts/evidence (see CURRENT_STATUS caveat on single-button wiring)
+- UI: Playground loads exact ReserveReadingPaymaster source, verifies its digest, displays captured evidence, prepares a fresh independently signed candidate after live runtime/stake/balance checks, and gates broadcast behind operator confirmation
 
 ## 10. Addresses (chain 1337)
 
