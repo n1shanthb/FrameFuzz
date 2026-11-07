@@ -23,14 +23,16 @@ test('uint8 256 is SKIPPED_INVALID unless explicit ABI_TOOL_TEST',async()=>{
  assert.equal(out.outcome.evmExecuted,false);
  assert.equal(executeProposal(byocProposal(facts),a).outcome.classification,'PASS');
 });
-test('Uniswap profile loads StateView context and historical provenance without claiming fresh admission',async()=>{
+test('Uniswap profile loads StateView context and captured evidence while fresh admission stays gated',async()=>{
  const a=await loadUniswapProfileAnalysis();
  assert.equal(a.status,'READY');assert.equal(a.profile.id,'uniswap-v4-paymaster');
  assert.equal(a.profile.uniswapContext.interaction,'StateView.getSlot0(bytes32)');
  assert.match(a.source,/getSlot0/);
- assert.equal(a.profile.historicalEvidence.classification,'HISTORICAL_LIVE_CAPTURE');
- assert.match(a.profile.historicalEvidence.stakedCase.alt.inclusionHash,/^0xbb9143eb/);
- assert.ok(a.capabilities.includes('HISTORICAL_ADMISSION_EVIDENCE'));
+ assert.equal(a.profile.historicalEvidence.classification,'CAPTURED_LIVE_EVIDENCE');
+ assert.equal(a.profile.historicalEvidence.flagship.transactionIdentity,'0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067');
+ assert.equal(a.profile.historicalEvidence.flagship.alternative.admissionId,2065);
+ assert.ok(a.capabilities.includes('CAPTURED_LIVE_EVIDENCE'));
+ assert.ok(a.capabilities.includes('LIVE_UNISWAP_ADMISSION_PREPARE'));
  assert.ok(!a.capabilities.includes('FRESH_ADMISSION'));
 });
 test('sprint budget ledger reserves, settles and blocks overspend across restarts',async()=>{

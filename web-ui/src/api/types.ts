@@ -171,6 +171,24 @@ export interface LiveComparison {
   endpoints?: { canonical?: string; alternative?: string };
 }
 
+export interface CapturedUniswapEvidence {
+  id: string;
+  provenance: 'CAPTURED_LIVE_EVIDENCE';
+  capturedAt?: string;
+  chainId: number;
+  transactionIdentity: string;
+  mutation?: string;
+  canonical: { status: string; rule?: string; raw?: { message?: string } };
+  alternative: { status: string; admissionId?: number; report?: { admission?: { checks?: Array<{ rule?: string; verdict?: string }> } } };
+  inclusion: { status?: string; receipt?: { status?: string; blockNumber?: string; gasUsed?: string; frameReceipts?: Array<{ status?: string; gasUsed?: string }> } };
+  claims?: ComparisonRow['claims'];
+  frameSummary: { successful: number; total: number };
+  source?: { sha256?: string; compiler?: string; settings?: unknown };
+  bindings?: { paymaster?: string; stateView?: string; poolId?: string };
+  evidencePath?: string;
+  notice?: string;
+}
+
 export interface RunSummary {
   id: string;
   source?: string;

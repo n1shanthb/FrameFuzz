@@ -17,6 +17,7 @@ import {admissionReadiness} from './admission.mjs';
 import {liveAdmissionReadiness,prepareLiveComparison,runLiveComparison} from './live-admission.mjs';
 import {SUPPORTED_STORAGE_ACCESS_SCENARIO,matchesSupportedScenario} from './supported-scenario.mjs';
 import {buildStorageAccessRegression,validateStorageAccessRegression} from './storage-access-regression.mjs';
+import {loadCapturedUniswapEvidence,prepareFreshUniswapComparison,uniswapSource,UNISWAP_SOURCE_SHA256} from './uniswap-live.mjs';
 const UUID=/^[\da-f]{8}-[\da-f]{4}-[\da-f]{4}-[\da-f]{4}-[\da-f]{12}$/i,HASH=/^[\da-f]{64}$/;
 const reportDigest=value=>{const text=JSON.stringify(value);if(Buffer.byteLength(text)>2*1024*1024)throw Error('REPORT_SIZE_LIMIT');return sha256(text);};
 const operatorConfigured=env=>/^0x[\da-fA-F]{64}$/.test(env?.ARKIV_PRIVATE_KEY||'');
@@ -92,6 +93,12 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    try{source=readFileSync(new URL('../../'+SUPPORTED_STORAGE_ACCESS_SCENARIO.sourceFile,import.meta.url),'utf8');}catch{}
    json(res,200,{...SUPPORTED_STORAGE_ACCESS_SCENARIO,source,broadcasts:0,notice:'Supported scenario source for Playground paste. Live path still requires Analyze + readiness + prepare + operator approval.'});return true;
   }
+  if(req.method==='GET'&&url.pathname==='/api/playground/uniswap-source'){
+   json(res,200,{source:await uniswapSource(),contractName:'ReserveReadingPaymaster',role:'PAYMASTER',profile:'uniswap-v4-paymaster',sourceDigest:UNISWAP_SOURCE_SHA256,notice:'Exact supported source. Analyze verifies the editor digest; no fixture substitution.'});return true;
+  }
+  if(req.method==='GET'&&url.pathname==='/api/playground/uniswap-captured'){
+   json(res,200,await loadCapturedUniswapEvidence());return true;
+  }
   if(req.method==='GET'&&url.pathname==='/api/playground/budget'){json(res,200,await budgetStatus(resultDir));return true;}
   if(req.method==='GET'&&url.pathname==='/api/playground/admission-readiness'){
    const id=url.searchParams.get('analysisId');
@@ -125,6 +132,17 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    const id=randomUUID();
    jobs.set(id,{state:'PREPARED',controller:new AbortController(),timeline:[],report:null,candidate,readiness,analysis:cached.analysis});
    json(res,200,{id,state:'PREPARED',supportedScenario:matchesSupportedScenario(cached.analysis),scenarioKind:SUPPORTED_STORAGE_ACCESS_SCENARIO.kind,candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest,requests:{public:{method:candidate.requests.public.method,endpoint:candidate.requests.public.endpoint},alternative:{method:candidate.requests.alternative.method,endpoint:candidate.requests.alternative.endpoint}}},approvalPacket:candidate.approvalPacket,readiness,broadcasts:0,notice:'Prepared only. Confirm with live-run after reviewing the exact fee/write packet. Raw/wire bytes stay on the operator server.'});return true;
+  }
+  if(req.method==='POST'&&url.pathname==='/api/playground/uniswap-prepare'){
+   if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot prepare a fresh signed candidate');
+   if(capabilityMode!=='LIVE_AUTHORIZED'||!liveOperatorKey(env))throw new ApiError(403,'OPERATOR_ONLY','Fresh preparation requires LIVE_AUTHORIZED and an operator key on the server');
+   const input=await readJsonObject(req,['analysisId','sourceDigest','source'],120000);
+   const cached=analyses.get(input.analysisId);
+   if(!cached||cached.analysis.profile?.id!=='uniswap-v4-paymaster'||cached.analysis.sourceDigest!==input.sourceDigest||Date.now()-cached.at>600000)throw new ApiError(409,'STALE_ANALYSIS','Analyze the exact supported Uniswap source again');
+   if(input.sourceDigest!==UNISWAP_SOURCE_SHA256)throw new ApiError(409,'SOURCE_DIGEST_MISMATCH','Editor source does not match the supported ReserveReadingPaymaster');
+   let candidate;try{candidate=await prepareFreshUniswapComparison({source:input.source});}catch(e){throw new ApiError(409,'UNISWAP_NOT_READY',e.message);}
+   const id=candidate.runId;jobs.set(id,{state:'PREPARED',controller:new AbortController(),timeline:[],report:null,candidate,readiness:candidate.readiness,analysis:cached.analysis,scenario:'uniswap-v4-paymaster'});
+   json(res,200,{id,state:'PREPARED',scenarioKind:'SOURCE_BOUND_UNISWAP_PAYMASTER',candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest},approvalPacket:candidate.approvalPacket,readiness:candidate.readiness,broadcasts:0,notice:'Fresh candidate prepared and signed in memory. Nothing broadcast. A separate operator confirmation is required to run.'});return true;
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/live-run'){
    if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot broadcast');
@@ -177,7 +195,10 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
    const c=new AbortController(),abort=()=>{if(!res.writableEnded)c.abort();};res.once('close',abort);
    try{
     let analysis;
-    if(input.profile==='uniswap-v4-paymaster')analysis=await loadUniswapProfileAnalysis();
+    if(input.profile==='uniswap-v4-paymaster'){
+     analysis=await loadUniswapProfileAnalysis();
+     if(typeof input.source!=='string'||sha256(input.source)!==analysis.sourceDigest)throw Error(`SOURCE_DIGEST_MISMATCH expected ${analysis.sourceDigest}`);
+    }
     else if(input.profile==='regression-registry'){const sourceDigest=digest({profile:'regression-registry'});analysis={status:'READY',analysisId:digest({profile:'regression-registry',v:1}),sourceDigest,source:'',contractName:'RegressionRegistry',compiler:null,functions:[],sourceFacts:[{id:'registry',kind:'meta',file:'src/arkiv/registry.mjs',startLine:1,endLine:1,sourceDigest,claim:'Arkiv Rabdi publish/query/import uses explicit submit and funded writer'}],capabilities:['ARKIV_MANIFEST','UNSIGNED_IMPORT','COMMUNITY_DISCOVERY'],missingPrerequisites:['EXPLICIT_PUBLISH_CONFIRMATION','FUNDED_ARKIV_WRITER'],diagnostics:[],structure:{functions:[],variables:[],events:[],guards:[],externalCalls:[]},declaredRole:'UNKNOWN',detectedRole:{role:'UNKNOWN',basis:'Registry workflow'},contracts:[],limitations:['No automatic Arkiv write'],profile:{id:'regression-registry',title:'Regression Registry',summary:PROFILES[2].summary}};}
     else{const {profile,...intake}=input;analysis=await analyzeContract(intake,{signal:c.signal});}
     if(analysis.status==='READY'){

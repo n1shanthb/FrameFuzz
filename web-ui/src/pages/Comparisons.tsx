@@ -18,6 +18,7 @@ import { Mono, shortHash } from '../components/Mono';
 import { EmptyState } from '../components/EmptyState';
 import { api } from '../api/client';
 import { GitCompareArrows } from 'lucide-react';
+import type { CapturedUniswapEvidence } from '../api/types';
 
 function kind(source?: string) {
   if (/LIVE_RPC|LIVE\b/i.test(source || '')) return 'LIVE';
@@ -35,9 +36,10 @@ export function ComparisonsPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    api.runs().then(async (d) => {
+    Promise.all([api.runs(),api.playground.uniswapCaptured()]).then(async ([d,captured]) => {
       const list = ((d as { runs?: Array<{ id: string }> }).runs || []) as Array<{ id: string }>;
-      setRuns(list as unknown as Array<Record<string, unknown>>);
+      const c=captured as CapturedUniswapEvidence;
+      setRuns([{id:c.id,source:c.provenance,capturedAt:c.capturedAt,totals:{cases:1,matched:1,unexpected:0},captured:c},...(list as unknown as Array<Record<string, unknown>>)]);
     }).catch((e) => setError(e.message));
   }, []);
 
@@ -45,7 +47,7 @@ export function ComparisonsPage() {
 
   async function openRun(id: string) {
     try {
-      const data = await api.run(id) as Record<string, unknown>;
+      const summary=runs.find(r=>r.id===id);const data=summary?.captured?summary.captured as Record<string,unknown>:await api.run(id) as Record<string, unknown>;
       setSelected(data);
       setDetail(data);
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
@@ -91,11 +93,9 @@ export function ComparisonsPage() {
       <Drawer anchor="right" open={Boolean(detail)} onClose={() => setDetail(null)} PaperProps={{ sx: { width: { xs: '100%', sm: 520 } } }}>
         {detail && (
           <Box sx={{ p: 2.5 }}>
-            <Typography variant="h3" sx={{ mb: 1 }}>Run detail</Typography>
+            <Typography variant="h3" sx={{ mb: 1 }}>{detail.provenance==='CAPTURED_LIVE_EVIDENCE'?'Captured Uniswap divergence':'Run detail'}</Typography>
             <StatusChip value={kind(String(detail.source || ''))} />
-            <Typography variant="body2" sx={{ mt: 2 }}>Export</Typography>
-            <Button href={api.exportUrl(String(selected?.id || detail.id), 'json')} sx={{ mr: 1 }}>JSON</Button>
-            <Button href={api.exportUrl(String(selected?.id || detail.id), 'markdown')}>Markdown</Button>
+            {detail.provenance==='CAPTURED_LIVE_EVIDENCE'?<><Alert severity="info" sx={{mt:2}}>Previously completed LIVE evidence. This view does not execute the transaction.</Alert><Box sx={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:1.5,mt:2}}><Paper variant="outlined" sx={{p:1.5}}><Typography variant="overline">Canonical</Typography><StatusChip value={String((detail.canonical as {status?:string})?.status)}/><Typography variant="body2">{String((detail.canonical as {rule?:string})?.rule)}</Typography></Paper><Paper variant="outlined" sx={{p:1.5}}><Typography variant="overline">Alternative</Typography><StatusChip value={String((detail.alternative as {status?:string})?.status)}/><Typography variant="body2">Admission {String((detail.alternative as {admissionId?:number})?.admissionId)}</Typography></Paper></Box><Typography variant="body2" sx={{mt:2}}>Transaction</Typography><Mono copy>{String(detail.transactionIdentity)}</Mono><Typography variant="body2" sx={{mt:1}}>Frame execution {String((detail.frameSummary as {successful?:number})?.successful)}/{String((detail.frameSummary as {total?:number})?.total)} successful</Typography></>:<><Typography variant="body2" sx={{ mt: 2 }}>Export</Typography><Button href={api.exportUrl(String(selected?.id || detail.id), 'json')} sx={{ mr: 1 }}>JSON</Button><Button href={api.exportUrl(String(selected?.id || detail.id), 'markdown')}>Markdown</Button></>}
             <Box component="pre" sx={{ mt: 2, fontSize: 11, whiteSpace: 'pre-wrap', fontFamily: 'JetBrains Mono, monospace' }}>
               {JSON.stringify({ id: detail.id, source: detail.source, totals: detail.totals, capturedAt: detail.capturedAt }, null, 2)}
             </Box>
