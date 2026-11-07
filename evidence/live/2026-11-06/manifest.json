@@ -1,0 +1,13 @@
+{
+  "schema": "framefuzz.evidence-manifest.v1",
+  "source": "LIVE_RPC_SUBMISSION",
+  "generatedAt": "2026-11-05T22:04:27.052Z",
+  "report": "2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+  "dashboardReport": "2026-11-05T22-04-27-905Z-LIVE_RPC_SUBMISSION-f3b1fac0.json",
+  "originalReports": [
+    "runs/2026-11-05T21-55-29-464Z-LIVE_RPC_SUBMISSION-5cff1031.json",
+    "runs/2026-11-05T22-02-36-899Z-LIVE_RPC_SUBMISSION-9501fa3a.json",
+    "runs/2026-11-05T21-58-24-164Z-LIVE_RPC_SUBMISSION-7c3f3ead.json",
+    "runs/2026-11-05T21-58-26-702Z-LIVE_RPC_SUBMISSION-b5a7dbfc.json"
+  ]
+}

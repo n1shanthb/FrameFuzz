@@ -1,0 +1,27 @@
+{
+  "schema": "framefuzz.mutation-evidence-manifest.v1",
+  "dateIST": "2026-11-06",
+  "liveReport": "2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.json",
+  "liveMarkdown": "2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.md",
+  "liveReplay": "2026-11-05T22-41-59-129Z-LIVE_RPC_SUBMISSION-947a7e01.replay.json",
+  "originalCapture": "2026-11-05T22-40-18-236Z-LIVE_RPC_SUBMISSION-aa854431.json",
+  "storagePreview": "2026-11-05T22-43-59-653Z-PREVIEW_GENERATED---NO-RPC-OR-SIGNING-2a3c5943.json",
+  "storagePreviewReplay": "2026-11-05T22-43-59-653Z-PREVIEW_GENERATED---NO-RPC-OR-SIGNING-2a3c5943.replay.json",
+  "generator": {
+    "generatorVersion": "framefuzz.semantic.v1",
+    "suite": "verification-gas",
+    "seed": 42,
+    "count": 7,
+    "selectedVariant": null,
+    "definitionDigest": "afe6bd463d911412a31110e193f799371c71d0538825f9ff97733e65d4a7baab",
+    "ruleModelVersion": "forshtat-1337-observed-2026-11-06.v1"
+  },
+  "liveVariants": 7,
+  "liveSubmissions": 14,
+  "matchingDecisions": 14,
+  "unexpected": 0,
+  "admittedIncludedSuccess": 8,
+  "expectedRejections": 6,
+  "historicalEvidenceUnchanged": "evidence/live/2026-11-06/",
+  "command": "node bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --submit --allow-chain 1337 --receipt-wait-ms 1000 --results runs"
+}

@@ -1,0 +1,36 @@
+{
+  "checkedAt": "2026-11-06T01:46:02.332Z",
+  "literalPrivateKeyFindings": [],
+  "historicalEvidenceDiff": "",
+  "requiredSponsorDocs": [
+    {
+      "file": "arkiv/schema.md",
+      "exists": true
+    },
+    {
+      "file": "arkiv/friction.md",
+      "exists": true
+    },
+    {
+      "file": "arkiv/reach.md",
+      "exists": true
+    },
+    {
+      "file": "arkiv/why-arkiv.md",
+      "exists": true
+    },
+    {
+      "file": "arkiv/how-you-use-arkiv.md",
+      "exists": true
+    }
+  ],
+  "tests": {
+    "passed": 71,
+    "failed": 0
+  },
+  "currentArkivPreview": {
+    "entityKey": "0x6779cf38a4398eb90da94b11885e691b84a6bb09dda59974cf5b8f1a21db773e",
+    "submissions": 0
+  },
+  "note": "Static scan checks literal key assignments, not a cryptographic guarantee. Existing legitimate dependency/workshop attribution remains. No additional EIP-8141 broadcasts during polish."
+}

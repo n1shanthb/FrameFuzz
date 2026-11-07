@@ -1,0 +1,202 @@
+{
+  "schema": "framefuzz.admission-comparison.v1",
+  "classification": "LIVE",
+  "capturedAt": "2026-11-06T21:45:09.867Z",
+  "preflight": {
+    "observedAt": "2026-11-06T21:45:02.180Z",
+    "chainId": {
+      "public": 1337,
+      "alternative": 1337
+    },
+    "client": {
+      "public": "skandha/v4.1.1-",
+      "alternative": "ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383/x86_64-unknown-linux-gnu/rustc-v1.93.1"
+    },
+    "sender": {
+      "address": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+      "balanceWei": "500000000000000",
+      "pendingNonce": "0",
+      "code": "0x"
+    },
+    "gasPriceWei": "4976654",
+    "candidate": {
+      "transactionHash": "0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226",
+      "rawIdentity": "0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226",
+      "nonceSeq": "0",
+      "maxFeePerGasWei": "2000000000",
+      "gasUpperBound": "103254",
+      "maximumSenderSpendWei": "206508000000000"
+    },
+    "priorReceipt": {
+      "canonical": null,
+      "frame": "METHOD_UNSUPPORTED"
+    },
+    "status": "READY"
+  },
+  "ordering": "PUBLIC_INITIATED_THEN_ALTERNATIVE_IMMEDIATELY_WITHOUT_AWAIT",
+  "requests": {
+    "public": {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 11,
+        "method": "eth_sendRawTransaction",
+        "params": [
+          "0x06f89e820539c1808094366e6203603c39eec1e75b3be6f078911447f235eaca010380c4827530808080de028094366e6203603c39eec1e75b3be6f078911447f235c482c350808080f848f846018080b841009540add9d6c64da297b86a442c55d0e8c49bb64b47e66aa047dc343c397a76fb55fc26b81d69d6f79c42a5d826b7d0f8495a19c1e1fea2d9765c4cc371f67a3dcb8477359400847735940080c0c0"
+        ]
+      },
+      "startedAt": "2026-11-06T21:45:02.180Z",
+      "completedAt": "2026-11-06T21:45:03.710Z",
+      "httpStatus": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 11,
+        "result": "0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226"
+      }
+    },
+    "alternative": {
+      "endpoint": "https://altmempool.forshtat.com",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 12,
+        "method": "eth_sendFrameTransaction",
+        "params": [
+          {
+            "chainId": "0x539",
+            "nonceKeys": [
+              "0x0"
+            ],
+            "nonceSeq": "0x0",
+            "sender": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+            "frames": [
+              {
+                "mode": 1,
+                "flags": 3,
+                "target": null,
+                "limits": {
+                  "execution": "0x7530",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x"
+              },
+              {
+                "mode": 2,
+                "flags": 0,
+                "target": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+                "limits": {
+                  "execution": "0xc350",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x"
+              }
+            ],
+            "signatures": [
+              {
+                "scheme": 1,
+                "signer": "0x",
+                "msg": "0x",
+                "signature": "0x009540add9d6c64da297b86a442c55d0e8c49bb64b47e66aa047dc343c397a76fb55fc26b81d69d6f79c42a5d826b7d0f8495a19c1e1fea2d9765c4cc371f67a3d"
+              }
+            ],
+            "fees": {
+              "maxPriorityFeePerGas": "0x77359400",
+              "maxFeePerGas": "0x77359400",
+              "maxFeePerBlobGas": "0x0"
+            },
+            "blobVersionedHashes": [],
+            "recentRootReferences": []
+          }
+        ]
+      },
+      "startedAt": "2026-11-06T21:45:02.180Z",
+      "completedAt": "2026-11-06T21:45:02.439Z",
+      "httpStatus": 200,
+      "response": {
+        "error": {
+          "code": -32601,
+          "message": "Method not found: eth_sendFrameTransaction"
+        },
+        "id": 12,
+        "jsonrpc": "2.0"
+      }
+    }
+  },
+  "receipts": {
+    "canonical": {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 15,
+        "method": "eth_getTransactionReceipt",
+        "params": [
+          "0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226"
+        ]
+      },
+      "startedAt": "2026-11-06T21:45:09.615Z",
+      "completedAt": "2026-11-06T21:45:09.867Z",
+      "httpStatus": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 15,
+        "result": {
+          "blockHash": "0x2ff19e0d85452779a904b1bf1a5fa71d73132c0ae6e1b53d92309a2eb54f8df6",
+          "blockNumber": "0x23c1",
+          "contractAddress": null,
+          "cumulativeGasUsed": "0xc818c9",
+          "effectiveGasPrice": "0x77359400",
+          "frameReceipts": [
+            {
+              "gasUsed": "0x64",
+              "logs": [],
+              "stateGasUsed": "0x0",
+              "status": "0x1"
+            },
+            {
+              "gasUsed": "0x64",
+              "logs": [],
+              "stateGasUsed": "0x0",
+              "status": "0x1"
+            }
+          ],
+          "from": "0x366e6203603c39eec1e75b3be6f078911447f235",
+          "gasUsed": "0x4e86",
+          "logs": [],
+          "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "payer": "0x366e6203603c39eec1e75b3be6f078911447f235",
+          "status": "0x1",
+          "to": "0x366e6203603c39eec1e75b3be6f078911447f235",
+          "transactionHash": "0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226",
+          "transactionIndex": "0x3",
+          "type": "0x6"
+        }
+      }
+    },
+    "frame": {
+      "skipped": "METHOD_UNSUPPORTED"
+    }
+  },
+  "retryCount": 0,
+  "transactionIdentity": "0xd4d6123f6b142acccb5cf6c302877fe7a1ed499bd3bfb0263c70763febbba226",
+  "classification": {
+    "publicAdmission": "ACCEPTED",
+    "alternativeAdmission": "UNOBSERVED_METHOD_UNSUPPORTED",
+    "canonicalInclusion": "INCLUDED_SUCCESS",
+    "execution": "SUCCESS_BOTH_FRAMES"
+  },
+  "postState": {
+    "observedHead": 9157,
+    "senderBalanceWei": "459796000000000",
+    "senderPendingNonce": "1",
+    "senderCode": "0x",
+    "actualGasUsed": "20102",
+    "effectiveGasPriceWei": "2000000000",
+    "actualSenderExpenditureWei": "40204000000000"
+  },
+  "notes": [
+    "A duplicate, already-known or timeout response is preserved as inconclusive path evidence.",
+    "Admission responses and inclusion receipts are separate observations.",
+    "No deployment or additional funding was performed."
+  ]
+}

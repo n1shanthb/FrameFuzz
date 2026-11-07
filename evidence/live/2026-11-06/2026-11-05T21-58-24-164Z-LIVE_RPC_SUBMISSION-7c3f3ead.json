@@ -1,0 +1,293 @@
+{
+  "schema": "framefuzz.evidence.v1",
+  "generatedAt": "2026-11-05T21:56:20.048Z",
+  "source": "LIVE_RPC_SUBMISSION",
+  "chainId": 1337,
+  "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+  "submissions": 2,
+  "receiptNote": "Admission hash is not confirmation of execution. Inspect each receipt.state separately.",
+  "results": [
+    {
+      "id": "staked-baseline-50000",
+      "family": "uniswap-v4-paymaster",
+      "category": "Staked Uniswap pool read",
+      "description": "Fresh independently signed transactions using the supplied PoC sponsors and official workshop codec",
+      "mutation": null,
+      "ruleProvenance": {
+        "status": "SOURCE_REVIEWED_DEPLOYMENT_PARTIAL",
+        "workshopCommit": "bcfe02a196ca97b6fb0d1044db9d0b4c673831fc",
+        "sidecarSourceReviewed": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "deployedSidecarCommit": null,
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "source": "Supplied framefuzz-poc.zip fast_gate_rerun.ts and PAYMASTER_FEASIBILITY.md; live code/stake/balance checked",
+        "note": "Execution client commit verified by web3_clientVersion. Sidecar v4.1.1 exposes an empty commit; exact source/deployment equivalence is not attested."
+      },
+      "reproduction": null,
+      "sourceFile": "E:\\ethglobalmumbai\\examples\\live\\staked.mjs",
+      "notes": "",
+      "paths": [
+        {
+          "id": "public",
+          "method": "eth_sendRawTransaction",
+          "expected": "rejected",
+          "expectedRule": "StorageReadNonSender",
+          "expectedErrorClass": null,
+          "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+          "receipt": {
+            "state": "not_checked"
+          },
+          "fingerprint": "4f96bed468cdeb2f",
+          "replay": {
+            "method": "eth_sendRawTransaction",
+            "params": [
+              "0x06f8be820539c180809418e6c9937c42cac6ef8f770092c62c928e2fe89af849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84101838c74bcf55302950e5e5976bd3ba9ad194636b9e7d224c4e4dac7767138464a254237d29cd294cca2148793428682433e8986ae01c80a35eb01a0517ca71252cb8477359400847735940080c0c0"
+            ],
+            "signedRaw": "0x06f8be820539c180809418e6c9937c42cac6ef8f770092c62c928e2fe89af849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84101838c74bcf55302950e5e5976bd3ba9ad194636b9e7d224c4e4dac7767138464a254237d29cd294cca2148793428682433e8986ae01c80a35eb01a0517ca71252cb8477359400847735940080c0c0",
+            "metadata": {
+              "adapter": "workshop-hegota-0.0.1",
+              "sender": "0x18e6c9937c42cac6ef8f770092c62c928e2fe89a",
+              "nonce": "0",
+              "chainId": 1337,
+              "caseId": "staked-baseline-50000",
+              "pathId": "public",
+              "mode": "LIVE",
+              "transaction": {
+                "hash": "0x98404ebac440ec9ee2d82110fa8452ce72c0d8678b14bff08d70fa16ab44c91a",
+                "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                "payerBalance": "137416766000000000",
+                "senderBalance": "0",
+                "verificationGas": 50000,
+                "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+              }
+            },
+            "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+          },
+          "observed": {
+            "status": "rejected",
+            "errorClass": "admission_policy",
+            "code": -32000,
+            "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+            "data": null
+          },
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0x18e6c9937c42cac6ef8f770092c62c928e2fe89a",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "staked-baseline-50000",
+            "pathId": "public",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0x98404ebac440ec9ee2d82110fa8452ce72c0d8678b14bff08d70fa16ab44c91a",
+              "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+              "payerBalance": "137416766000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+            }
+          },
+          "comparison": {
+            "verdict": "EXPECTED_REJECT",
+            "reason": "Observed expected rejected decision."
+          }
+        },
+        {
+          "id": "alt",
+          "method": "eth_sendFrameTransaction",
+          "expected": "accepted",
+          "expectedRule": null,
+          "expectedErrorClass": null,
+          "rpc": "https://altmempool.forshtat.com/[redacted-path]",
+          "receipt": {
+            "state": "included_success",
+            "blockNumber": "0x63863",
+            "transactionHash": "0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c",
+            "status": "0x1",
+            "gasUsed": "0x9aab",
+            "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "frameReceipts": [
+              {
+                "gasUsed": "0x64",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              },
+              {
+                "gasUsed": "0x4aea",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              },
+              {
+                "gasUsed": "0xbb8",
+                "logs": [],
+                "stateGasUsed": "0x0",
+                "status": "0x1"
+              }
+            ],
+            "raw": {
+              "blockHash": "0x71b7892d19c3cf096f904819f326c00ad23a5a17c5e1ce9813688c36179f300c",
+              "blockNumber": "0x63863",
+              "contractAddress": null,
+              "cumulativeGasUsed": "0x3ba31",
+              "effectiveGasPrice": "0x77359400",
+              "frameReceipts": [
+                {
+                  "gasUsed": "0x64",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                },
+                {
+                  "gasUsed": "0x4aea",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                },
+                {
+                  "gasUsed": "0xbb8",
+                  "logs": [],
+                  "stateGasUsed": "0x0",
+                  "status": "0x1"
+                }
+              ],
+              "from": "0x5ce69d7761f2c3cfd1e6635afcc0b54ecbfec394",
+              "gasUsed": "0x9aab",
+              "logs": [],
+              "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+              "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+              "status": "0x1",
+              "to": "0x5ce69d7761f2c3cfd1e6635afcc0b54ecbfec394",
+              "transactionHash": "0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c",
+              "transactionIndex": "0x3",
+              "type": "0x6"
+            }
+          },
+          "fingerprint": "f0fd5d2236fe6ceb",
+          "replay": {
+            "method": "eth_sendFrameTransaction",
+            "params": [
+              {
+                "chainId": "0x539",
+                "nonceKeys": [
+                  "0x0"
+                ],
+                "nonceSeq": "0x0",
+                "sender": "0x5ce69d7761f2c3cfd1e6635afcc0b54ecbfec394",
+                "frames": [
+                  {
+                    "mode": 1,
+                    "flags": 2,
+                    "target": null,
+                    "limits": {
+                      "execution": "0x7530",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  },
+                  {
+                    "mode": 1,
+                    "flags": 1,
+                    "target": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x01"
+                  },
+                  {
+                    "mode": 2,
+                    "flags": 0,
+                    "target": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+                    "limits": {
+                      "execution": "0xc350",
+                      "state": "0x0"
+                    },
+                    "value": "0x0",
+                    "data": "0x"
+                  }
+                ],
+                "signatures": [
+                  {
+                    "scheme": 1,
+                    "signer": "0x",
+                    "msg": "0x",
+                    "signature": "0x00a46bf1dc1ea5204868bc0d1d580536fb24b6f0eaee82681be539b4c73bcf36bb37d506996eed1f0b467f049843280f81e8da6081bbe322703f71ab94b4e30d93"
+                  }
+                ],
+                "fees": {
+                  "maxPriorityFeePerGas": "0x77359400",
+                  "maxFeePerGas": "0x77359400",
+                  "maxFeePerBlobGas": "0x0"
+                },
+                "blobVersionedHashes": [],
+                "recentRootReferences": []
+              }
+            ],
+            "signedRaw": "0x06f8be820539c18080945ce69d7761f2c3cfd1e6635afcc0b54ecbfec394f849ca010280c4827530808080de010194552e75d45ee70f09ff69f465ddc4264e6ee31396c482c350808001de0280948943545177806ed17b9f23f0a21ee5948ecaa776c482c350808080f848f846018080b84100a46bf1dc1ea5204868bc0d1d580536fb24b6f0eaee82681be539b4c73bcf36bb37d506996eed1f0b467f049843280f81e8da6081bbe322703f71ab94b4e30d93cb8477359400847735940080c0c0",
+            "metadata": {
+              "adapter": "workshop-hegota-0.0.1",
+              "sender": "0x5ce69d7761f2c3cfd1e6635afcc0b54ecbfec394",
+              "nonce": "0",
+              "chainId": 1337,
+              "caseId": "staked-baseline-50000",
+              "pathId": "alt",
+              "mode": "LIVE",
+              "transaction": {
+                "hash": "0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c",
+                "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+                "payerBalance": "137416766000000000",
+                "senderBalance": "0",
+                "verificationGas": 50000,
+                "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+                "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+              }
+            },
+            "warning": "Signed bytes may be stale. Rebuild with fresh account/state; do not automatically rebroadcast."
+          },
+          "observed": {
+            "status": "accepted",
+            "hash": "0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c",
+            "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+          },
+          "metadata": {
+            "adapter": "workshop-hegota-0.0.1",
+            "sender": "0x5ce69d7761f2c3cfd1e6635afcc0b54ecbfec394",
+            "nonce": "0",
+            "chainId": 1337,
+            "caseId": "staked-baseline-50000",
+            "pathId": "alt",
+            "mode": "LIVE",
+            "transaction": {
+              "hash": "0xbb9143eb2964bdc4de9d59f15404baf14f59465f0ac0f5d5903dfa0173741b6c",
+              "payer": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+              "payerBalance": "137416766000000000",
+              "senderBalance": "0",
+              "verificationGas": 50000,
+              "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+              "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648"
+            }
+          },
+          "comparison": {
+            "verdict": "EXPECTED_ACCEPT",
+            "reason": "Observed expected accepted decision."
+          }
+        }
+      ],
+      "verdict": "MATCH"
+    }
+  ],
+  "totals": {
+    "cases": 1,
+    "matched": 1,
+    "unexpected": 0,
+    "inconclusive": 0,
+    "transportFailures": 0
+  },
+  "refreshedAt": "2026-11-05T21:58:23.371Z",
+  "derivedFrom": "2026-11-05T21-56-20-051Z-LIVE_RPC_SUBMISSION-a4bcdfbb.json"
+}

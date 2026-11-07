@@ -26,10 +26,10 @@ const cases=[
   {id:'baseline',paths:[{id:'alt',method:'eth_sendFrameTransaction',params:['0xcafe'],expected:'accepted'}]},
   {id:'storage-rejection',paths:[{id:'alt',method:'eth_sendFrameTransaction',params:['0xdead'],expected:'rejected',expectedRule:'StorageReadNonSender'}]},
 ];
-test('live RPC admissions and rejects produce evidence without claiming execution',async()=>{
+test('mock RPC admissions and rejects produce evidence without claiming real execution',async()=>{
   await withMockRpc(async(url,calls)=>{
-    const out=await runSuite(cases,{rpcUrl:url,allowChainId:1337,submit:true});
-    assert.equal(out.source,'LIVE_RPC_SUBMISSION');
+    const out=await runSuite(cases,{rpcUrl:url,allowChainId:1337,submit:true,evidenceSource:'MOCK'});
+    assert.match(out.source,/MOCK/);
     assert.equal(out.totals.matched,2);
     assert.equal(out.results[0].paths[0].receipt.state,'not_checked');
     assert.equal(out.results[0].paths[0].observed.status,'accepted');

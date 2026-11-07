@@ -1,0 +1,87 @@
+{
+  "schema": "framefuzz.storage-access-regression.v1",
+  "suite": "storage-access-validator",
+  "ruleId": "StorageReadNonSender",
+  "mutation": {
+    "id": "violating-wallet-foreign-staticcall",
+    "description": "ViolatingWallet VERIFY data triggers FOREIGN.staticcall (StorageReadNonSender vs staked alt admit)",
+    "verifyData": "0x01"
+  },
+  "source": {
+    "digest": "05e4454685fa6755f0d691a382a47b8a2f941458ea075d58e823c75e2e1f6959",
+    "contractName": "ViolatingWallet",
+    "companion": "Foreign",
+    "compiler": "0.8.28+commit.7893614a.Emscripten.clang",
+    "runtimeBytecodeTemplateHash": "0xa0b282997f1eacc54f302d398988e4cae8124b9fc8fd0ca3c2e2f21d326ec1ea",
+    "file": "examples/contracts/StorageAccessValidator.sol",
+    "kind": "SUPPORTED_SCENARIO_NOT_ARBITRARY_BYOC"
+  },
+  "deployments": {
+    "wallet": "0x6b7206fa6fc5fe541061bdedf2c6a2bbf4cf8199",
+    "foreign": "0x6d5bed568904290fca0b8d4e99bed2a7f9d44145",
+    "owner": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+    "binding": "IMMUTABLE_SLOTS",
+    "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+    "stakeWei": "12000000000000000",
+    "unstakeDelaySec": 86400
+  },
+  "observed": {
+    "transactionHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+    "capturedAt": "2026-11-06T22:31:23.717Z",
+    "public": {
+      "verdict": "REJECTED_POLICY",
+      "rule": "StorageReadNonSender",
+      "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+      "errorClass": "admission_policy"
+    },
+    "alternative": {
+      "verdict": "ACCEPTED",
+      "admissionId": 1647,
+      "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+    },
+    "divergence": "POLICY_DIVERGENCE",
+    "inclusionStatus": "DROPPED",
+    "claims": {
+      "ADMISSION_DIVERGENCE": true,
+      "INCLUSION": false,
+      "EXECUTION_SUCCESS": "NOT_OBSERVED"
+    },
+    "endpoints": {
+      "canonical": "https://altmempool.forshtat.com",
+      "alternative": "https://altmempool.forshtat.com/rpc/"
+    },
+    "rpcEvidence": {
+      "canonical": {
+        "status": "REJECTED_POLICY",
+        "errorClass": "admission_policy",
+        "code": -32000,
+        "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+        "data": null
+      },
+      "alternative": {
+        "status": "ACCEPTED",
+        "hash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+        "message": "Submission RPC returned a transaction hash; inclusion NOT implied."
+      },
+      "alternativeAdmissionId": 1647,
+      "inclusion": null,
+      "laterMempoolOutcome": "dropped"
+    }
+  },
+  "prerequisites": {
+    "chainId": 1337,
+    "stakeRequired": true,
+    "stakeWei": "12000000000000000",
+    "unstakeDelaySec": 86400,
+    "sourceDigestMustMatch": "05e4454685fa6755f0d691a382a47b8a2f941458ea075d58e823c75e2e1f6959"
+  },
+  "arkivPublication": {
+    "status": "AWAITING_EXPLICIT_USER_APPROVAL",
+    "targetSchema": "framefuzz.regression.v1",
+    "note": "Existing Arkiv framefuzz.regression.v1 expects mutation-reproduction suites (uniswap-storage / verification-gas). This observation descriptor is saved locally first; map/publish only after explicit approval.",
+    "broadcasts": 0
+  },
+  "provenance": "LIVE",
+  "writes": 0,
+  "contentDigest": "dae7dee038cfd7cc4529d5131f82a595840aa3608d3661a8b179f42ffcbe2bf2"
+}

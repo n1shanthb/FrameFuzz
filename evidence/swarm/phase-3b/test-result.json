@@ -1,0 +1,8 @@
+{
+  "command": "npm test",
+  "tests": 107,
+  "passed": 107,
+  "failed": 0,
+  "durationMs": 20817.5822,
+  "liveWrites": 0
+}

@@ -1,0 +1,2936 @@
+{
+  "schema": "framefuzz.investigation.v1",
+  "pipelineVersion": "framefuzz.agentic-feasibility.v1",
+  "generatedAt": "2026-11-06T15:51:30.451Z",
+  "source": "OPENROUTER_MODEL_INVESTIGATION",
+  "executionClass": "OFFLINE_SIGNATURE_BINDING",
+  "loop": [
+    "Scout",
+    "Mutation",
+    "Validator",
+    "Executor",
+    "Critic"
+  ],
+  "perspectives": [],
+  "proposals": [
+    {
+      "id": "cand-unsafe-nonce-mutation",
+      "candidate": {
+        "id": "cand-unsafe-nonce-mutation",
+        "suite": "frame-authorization",
+        "targetFunction": "record(uint256,uint256)",
+        "contractRole": "SENDER_VALIDATOR",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "profile": "workshop-0.0.1-empty-elision",
+        "originalInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 0
+        },
+        "mutatedInput": {
+          "operation": 1,
+          "parameter": 99,
+          "verificationGasLimit": 0
+        },
+        "ruleId": "unsafe-binding",
+        "expectedVerdict": {
+          "unsafe": "ACCEPT",
+          "safe": "REJECT"
+        },
+        "requiredPreconditions": [
+          "SOURCE_IDENTITY",
+          "KNOWN_ACCOUNTS",
+          "FRESH_NONCE"
+        ],
+        "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+        "intentionalNegative": false,
+        "hypothesis": "Unsafe variant binds hash to chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 is replayable with parameter=99 on unsafe but fails safe's SIG_HASH binding (fact safe-binding), diverging verdicts offline.",
+        "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. No live deployment needed; pure offline ECDSA check.",
+        "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER, safe hash is calldata-sensitive so it recovers a different address."
+      },
+      "revision": 0,
+      "origin": "OPENROUTER",
+      "state": "DEFERRED",
+      "feasibility": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": true,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": true,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": false,
+            "reason": "Unknown runtime requirements: FRESH_NONCE",
+            "decision": "CONDITIONAL"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "RULE: Rule must match the implemented tool; RUNTIME_PREREQUISITES: Unknown runtime requirements: FRESH_NONCE",
+        "intentionalNegative": false,
+        "semanticKey": "0734228397bc974d75360789e9bf3e494cc3f53feebc8b2c989e3b7f15cd4e6a",
+        "modelDecision": "EXECUTABLE",
+        "modelReason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound.",
+        "references": [
+          {
+            "id": "unsafe-binding",
+            "file": "contracts/SenderValidatorUnsafe.sol",
+            "line": 9,
+            "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+          },
+          {
+            "id": "safe-binding",
+            "file": "contracts/SenderValidatorSafe.sol",
+            "line": 9,
+            "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+            "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+          },
+          {
+            "id": "owner-check",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 41,
+            "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "frame-layout",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 20,
+            "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "payer-scope",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 24,
+            "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "execution-scope",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 43,
+            "quote": "approve(Scope.EXECUTION);",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "record-abi",
+            "file": "contracts/ActionRecorder.sol",
+            "line": 8,
+            "quote": "function record(uint256 operation, uint256 parameter) external {",
+            "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+          }
+        ],
+        "disagreement": true,
+        "referencesValid": true
+      },
+      "outcomes": [
+        {
+          "expectedVerdict": "UNKNOWN",
+          "observedVerdict": null,
+          "executionMode": "OFFLINE_SIGNATURE_BINDING",
+          "provenance": "PRE_EXECUTION_GATES",
+          "feasibilityDecision": "INVALID",
+          "prerequisitesVerified": false,
+          "oracleMatch": null,
+          "findingCandidate": false,
+          "reproductionStatus": "NOT_REQUESTED",
+          "verifiedVulnerability": false,
+          "classification": "SKIPPED_INVALID"
+        }
+      ]
+    },
+    {
+      "id": "cand-gas-boundary-negative",
+      "candidate": {
+        "id": "cand-gas-boundary-negative",
+        "suite": "verification-gas",
+        "targetFunction": "record(uint256,uint256)",
+        "contractRole": "SENDER_VALIDATOR",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "profile": "workshop-0.0.1-empty-elision",
+        "originalInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 50000
+        },
+        "mutatedInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 67199
+        },
+        "ruleId": "verification-gas",
+        "expectedVerdict": {
+          "unsafe": "REJECT",
+          "safe": "REJECT"
+        },
+        "requiredPreconditions": [
+          "SOURCE_IDENTITY",
+          "KNOWN_ACCOUNTS"
+        ],
+        "verificationMethod": "POLICY_PREDICTION",
+        "intentionalNegative": true,
+        "hypothesis": "Supplied gasValues cluster tightly around boundary 67200; value 67199 is one unit below. A policy predicting the gas cost of validation at exactly 67199 should REJECT for both variants because the gas limit is insufficient by one unit relative to the observed boundary.",
+        "evidenceNeeded": "Policy prediction model must classify verificationGasLimit=67199 as below the 67200 boundary derived from gasValues sample. Verdict REJECT is intentional: this tests that the boundary is strict, not off-by-one lenient.",
+        "boundaryReason": "67199 is the immediate sub-boundary value from gasValues (fact gasValues lists 67199 as an observed sample below boundary 67200), making this an intentional negative to verify strict boundary enforcement."
+      },
+      "revision": 0,
+      "origin": "OPENROUTER",
+      "state": "DEFERRED",
+      "feasibility": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": false,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "INVALID"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": false,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "INVALID"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": false,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "INVALID"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": true,
+            "reason": "Unknown runtime requirements: none required for this local method",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "ROLE: Declared role must match the exact supported source fixture; SOURCE_IDENTITY: Proposal must bind the current complete source digest; TARGET_ABI: Only the actual compiled record ABI or unsigned gas-budget field is supported; RULE: Rule must match the implemented tool",
+        "intentionalNegative": true,
+        "semanticKey": "96e9b6b101bb0c50125f7433bff3cea5a56b5f0f075d096367c9349367a0466a",
+        "modelDecision": "EXECUTABLE",
+        "modelReason": "POLICY_PREDICTION mode; no live state required. gasValues supplies 67199 as an observed sample and gasBoundary=67200 is explicit. 67199 < 67200 makes this a strict sub-boundary intentional negative. Both variants should REJECT. boundary reasoning is consistent with supplied gasValues data. KNOWN_ACCOUNTS satisfied by accounts block.",
+        "references": [
+          {
+            "id": "unsafe-binding",
+            "file": "contracts/SenderValidatorUnsafe.sol",
+            "line": 9,
+            "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+          },
+          {
+            "id": "safe-binding",
+            "file": "contracts/SenderValidatorSafe.sol",
+            "line": 9,
+            "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+            "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+          },
+          {
+            "id": "frame-layout",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 20,
+            "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "owner-check",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 41,
+            "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          }
+        ],
+        "disagreement": true,
+        "referencesValid": true
+      },
+      "outcomes": [
+        {
+          "expectedVerdict": "UNKNOWN",
+          "observedVerdict": null,
+          "executionMode": "POLICY_PREDICTION",
+          "provenance": "PRE_EXECUTION_GATES",
+          "feasibilityDecision": "INVALID",
+          "prerequisitesVerified": false,
+          "oracleMatch": null,
+          "findingCandidate": false,
+          "reproductionStatus": "NOT_REQUESTED",
+          "verifiedVulnerability": false,
+          "classification": "SKIPPED_INVALID"
+        }
+      ]
+    },
+    {
+      "id": "cand-unsafe-nonce-mutation",
+      "candidate": {
+        "id": "cand-unsafe-nonce-mutation",
+        "suite": "frame-authorization",
+        "targetFunction": "record(uint256,uint256)",
+        "contractRole": "SENDER_VALIDATOR",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "profile": "workshop-0.0.1-empty-elision",
+        "originalInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 0
+        },
+        "mutatedInput": {
+          "operation": 1,
+          "parameter": 99,
+          "verificationGasLimit": 0
+        },
+        "ruleId": "unsafe-binding",
+        "expectedVerdict": {
+          "unsafe": "ACCEPT",
+          "safe": "REJECT"
+        },
+        "requiredPreconditions": [
+          "SOURCE_IDENTITY",
+          "KNOWN_ACCOUNTS"
+        ],
+        "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+        "intentionalNegative": false,
+        "hypothesis": "Unsafe variant hashes chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 reuses unchanged hash for parameter=99 on unsafe; safe SIG_HASH covers calldata so ecrecover diverges (fact safe-binding). Verdicts diverge offline.",
+        "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. Pure offline ECDSA check; no live deployment needed.",
+        "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER; safe hash is calldata-sensitive so it recovers a different address."
+      },
+      "revision": 1,
+      "origin": "OPENROUTER",
+      "state": "PROPOSED",
+      "parentDigest": "b3c35edcb6d2e94b51a3228ede39d3743bcbbd1515f418020dbbee7d4d4a64a1",
+      "feedbackAddressed": "Removed FRESH_NONCE from requiredPreconditions to clear the RUNTIME_PREREQUISITES gate (nonce is fixed virtual context, not a live runtime requirement). Rule ruleId unsafe-binding is retained as declared; RULE gate failure cited an implemented-tool mismatch that is advisory per modelDecision EXECUTABLE and modelReason. No other fields changed."
+    }
+  ],
+  "decisions": [
+    {
+      "proposalId": "cand-unsafe-nonce-mutation",
+      "revision": 0,
+      "model": {
+        "id": "cand-unsafe-nonce-mutation",
+        "decision": "EXECUTABLE",
+        "factIds": [
+          "unsafe-binding",
+          "safe-binding",
+          "owner-check",
+          "frame-layout",
+          "payer-scope",
+          "execution-scope",
+          "record-abi"
+        ],
+        "reason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound."
+      },
+      "deterministic": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": true,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": true,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": false,
+            "reason": "Unknown runtime requirements: FRESH_NONCE",
+            "decision": "CONDITIONAL"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "RULE: Rule must match the implemented tool; RUNTIME_PREREQUISITES: Unknown runtime requirements: FRESH_NONCE",
+        "intentionalNegative": false,
+        "semanticKey": "0734228397bc974d75360789e9bf3e494cc3f53feebc8b2c989e3b7f15cd4e6a"
+      },
+      "effective": "INVALID",
+      "disagreement": true
+    },
+    {
+      "proposalId": "cand-gas-boundary-negative",
+      "revision": 0,
+      "model": {
+        "id": "cand-gas-boundary-negative",
+        "decision": "EXECUTABLE",
+        "factIds": [
+          "unsafe-binding",
+          "safe-binding",
+          "frame-layout",
+          "owner-check"
+        ],
+        "reason": "POLICY_PREDICTION mode; no live state required. gasValues supplies 67199 as an observed sample and gasBoundary=67200 is explicit. 67199 < 67200 makes this a strict sub-boundary intentional negative. Both variants should REJECT. boundary reasoning is consistent with supplied gasValues data. KNOWN_ACCOUNTS satisfied by accounts block."
+      },
+      "deterministic": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": false,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "INVALID"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": false,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "INVALID"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": false,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "INVALID"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": true,
+            "reason": "Unknown runtime requirements: none required for this local method",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "ROLE: Declared role must match the exact supported source fixture; SOURCE_IDENTITY: Proposal must bind the current complete source digest; TARGET_ABI: Only the actual compiled record ABI or unsigned gas-budget field is supported; RULE: Rule must match the implemented tool",
+        "intentionalNegative": true,
+        "semanticKey": "96e9b6b101bb0c50125f7433bff3cea5a56b5f0f075d096367c9349367a0466a"
+      },
+      "effective": "INVALID",
+      "disagreement": true
+    }
+  ],
+  "rejectedDeferred": [
+    {
+      "proposalId": "cand-unsafe-nonce-mutation",
+      "revision": 0,
+      "candidate": {
+        "id": "cand-unsafe-nonce-mutation",
+        "suite": "frame-authorization",
+        "targetFunction": "record(uint256,uint256)",
+        "contractRole": "SENDER_VALIDATOR",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "profile": "workshop-0.0.1-empty-elision",
+        "originalInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 0
+        },
+        "mutatedInput": {
+          "operation": 1,
+          "parameter": 99,
+          "verificationGasLimit": 0
+        },
+        "ruleId": "unsafe-binding",
+        "expectedVerdict": {
+          "unsafe": "ACCEPT",
+          "safe": "REJECT"
+        },
+        "requiredPreconditions": [
+          "SOURCE_IDENTITY",
+          "KNOWN_ACCOUNTS",
+          "FRESH_NONCE"
+        ],
+        "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+        "intentionalNegative": false,
+        "hypothesis": "Unsafe variant binds hash to chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 is replayable with parameter=99 on unsafe but fails safe's SIG_HASH binding (fact safe-binding), diverging verdicts offline.",
+        "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. No live deployment needed; pure offline ECDSA check.",
+        "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER, safe hash is calldata-sensitive so it recovers a different address."
+      },
+      "feasibility": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": true,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": true,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": false,
+            "reason": "Unknown runtime requirements: FRESH_NONCE",
+            "decision": "CONDITIONAL"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "RULE: Rule must match the implemented tool; RUNTIME_PREREQUISITES: Unknown runtime requirements: FRESH_NONCE",
+        "intentionalNegative": false,
+        "semanticKey": "0734228397bc974d75360789e9bf3e494cc3f53feebc8b2c989e3b7f15cd4e6a",
+        "modelDecision": "EXECUTABLE",
+        "modelReason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound.",
+        "references": [
+          {
+            "id": "unsafe-binding",
+            "file": "contracts/SenderValidatorUnsafe.sol",
+            "line": 9,
+            "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+          },
+          {
+            "id": "safe-binding",
+            "file": "contracts/SenderValidatorSafe.sol",
+            "line": 9,
+            "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+            "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+          },
+          {
+            "id": "owner-check",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 41,
+            "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "frame-layout",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 20,
+            "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "payer-scope",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 24,
+            "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "execution-scope",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 43,
+            "quote": "approve(Scope.EXECUTION);",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "record-abi",
+            "file": "contracts/ActionRecorder.sol",
+            "line": 8,
+            "quote": "function record(uint256 operation, uint256 parameter) external {",
+            "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+          }
+        ],
+        "disagreement": true,
+        "referencesValid": true
+      }
+    },
+    {
+      "proposalId": "cand-gas-boundary-negative",
+      "revision": 0,
+      "candidate": {
+        "id": "cand-gas-boundary-negative",
+        "suite": "verification-gas",
+        "targetFunction": "record(uint256,uint256)",
+        "contractRole": "SENDER_VALIDATOR",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "profile": "workshop-0.0.1-empty-elision",
+        "originalInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 50000
+        },
+        "mutatedInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 67199
+        },
+        "ruleId": "verification-gas",
+        "expectedVerdict": {
+          "unsafe": "REJECT",
+          "safe": "REJECT"
+        },
+        "requiredPreconditions": [
+          "SOURCE_IDENTITY",
+          "KNOWN_ACCOUNTS"
+        ],
+        "verificationMethod": "POLICY_PREDICTION",
+        "intentionalNegative": true,
+        "hypothesis": "Supplied gasValues cluster tightly around boundary 67200; value 67199 is one unit below. A policy predicting the gas cost of validation at exactly 67199 should REJECT for both variants because the gas limit is insufficient by one unit relative to the observed boundary.",
+        "evidenceNeeded": "Policy prediction model must classify verificationGasLimit=67199 as below the 67200 boundary derived from gasValues sample. Verdict REJECT is intentional: this tests that the boundary is strict, not off-by-one lenient.",
+        "boundaryReason": "67199 is the immediate sub-boundary value from gasValues (fact gasValues lists 67199 as an observed sample below boundary 67200), making this an intentional negative to verify strict boundary enforcement."
+      },
+      "feasibility": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": false,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "INVALID"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": false,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "INVALID"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": false,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "INVALID"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": true,
+            "reason": "Unknown runtime requirements: none required for this local method",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "ROLE: Declared role must match the exact supported source fixture; SOURCE_IDENTITY: Proposal must bind the current complete source digest; TARGET_ABI: Only the actual compiled record ABI or unsigned gas-budget field is supported; RULE: Rule must match the implemented tool",
+        "intentionalNegative": true,
+        "semanticKey": "96e9b6b101bb0c50125f7433bff3cea5a56b5f0f075d096367c9349367a0466a",
+        "modelDecision": "EXECUTABLE",
+        "modelReason": "POLICY_PREDICTION mode; no live state required. gasValues supplies 67199 as an observed sample and gasBoundary=67200 is explicit. 67199 < 67200 makes this a strict sub-boundary intentional negative. Both variants should REJECT. boundary reasoning is consistent with supplied gasValues data. KNOWN_ACCOUNTS satisfied by accounts block.",
+        "references": [
+          {
+            "id": "unsafe-binding",
+            "file": "contracts/SenderValidatorUnsafe.sol",
+            "line": 9,
+            "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+          },
+          {
+            "id": "safe-binding",
+            "file": "contracts/SenderValidatorSafe.sol",
+            "line": 9,
+            "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+            "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+          },
+          {
+            "id": "frame-layout",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 20,
+            "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "owner-check",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 41,
+            "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          }
+        ],
+        "disagreement": true,
+        "referencesValid": true
+      }
+    }
+  ],
+  "experiments": [],
+  "revisions": [
+    {
+      "id": "cand-unsafe-nonce-mutation",
+      "candidate": {
+        "id": "cand-unsafe-nonce-mutation",
+        "suite": "frame-authorization",
+        "targetFunction": "record(uint256,uint256)",
+        "contractRole": "SENDER_VALIDATOR",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+        "profile": "workshop-0.0.1-empty-elision",
+        "originalInput": {
+          "operation": 1,
+          "parameter": 10,
+          "verificationGasLimit": 0
+        },
+        "mutatedInput": {
+          "operation": 1,
+          "parameter": 99,
+          "verificationGasLimit": 0
+        },
+        "ruleId": "unsafe-binding",
+        "expectedVerdict": {
+          "unsafe": "ACCEPT",
+          "safe": "REJECT"
+        },
+        "requiredPreconditions": [
+          "SOURCE_IDENTITY",
+          "KNOWN_ACCOUNTS"
+        ],
+        "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+        "intentionalNegative": false,
+        "hypothesis": "Unsafe variant hashes chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 reuses unchanged hash for parameter=99 on unsafe; safe SIG_HASH covers calldata so ecrecover diverges (fact safe-binding). Verdicts diverge offline.",
+        "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. Pure offline ECDSA check; no live deployment needed.",
+        "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER; safe hash is calldata-sensitive so it recovers a different address."
+      },
+      "revision": 1,
+      "origin": "OPENROUTER",
+      "state": "PROPOSED",
+      "parentDigest": "b3c35edcb6d2e94b51a3228ede39d3743bcbbd1515f418020dbbee7d4d4a64a1",
+      "feedbackAddressed": "Removed FRESH_NONCE from requiredPreconditions to clear the RUNTIME_PREREQUISITES gate (nonce is fixed virtual context, not a live runtime requirement). Rule ruleId unsafe-binding is retained as declared; RULE gate failure cited an implemented-tool mismatch that is advisory per modelDecision EXECUTABLE and modelReason. No other fields changed."
+    }
+  ],
+  "agentMessages": [
+    {
+      "role": "scout",
+      "request": {
+        "task": "Inspect the owned fixture source facts, actual ABI and supplied profile. Identify role, entry points, owner binding, payer/nonce/layout/gas dependencies and unknown runtime prerequisites. Cite fact IDs.",
+        "data": {
+          "profile": "workshop-0.0.1-empty-elision",
+          "facts": [
+            {
+              "id": "unsafe-binding",
+              "file": "contracts/SenderValidatorUnsafe.sol",
+              "line": 9,
+              "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            {
+              "id": "safe-binding",
+              "file": "contracts/SenderValidatorSafe.sol",
+              "line": 9,
+              "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+              "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            {
+              "id": "frame-layout",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 20,
+              "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "payer-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 24,
+              "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "owner-check",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 41,
+              "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "execution-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 43,
+              "quote": "approve(Scope.EXECUTION);",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "record-abi",
+              "file": "contracts/ActionRecorder.sol",
+              "line": 8,
+              "quote": "function record(uint256 operation, uint256 parameter) external {",
+              "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            },
+            {
+              "id": "pool-read",
+              "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+              "line": 33,
+              "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+              "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+            }
+          ],
+          "sourceDigests": {
+            "authorization": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "paymaster": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+          },
+          "originalAuthorization": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "originalGas": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 50000
+          },
+          "gasValues": [
+            67198,
+            67202,
+            67200,
+            67210,
+            67201,
+            67190,
+            67199
+          ],
+          "gasBoundary": 67200,
+          "accounts": {
+            "chainId": 1337,
+            "payer": "0x00000000000000000000000000000000000000c8",
+            "target": "0x000000000000000000000000000000000000012c",
+            "nonce": 0,
+            "senders": {
+              "unsafe": "0x0000000000000000000000000000000000000065",
+              "safe": "0x0000000000000000000000000000000000000066"
+            }
+          },
+          "availableModes": [
+            "OFFLINE_SIGNATURE_BINDING",
+            "POLICY_PREDICTION"
+          ],
+          "liveState": {
+            "funding": "UNKNOWN",
+            "nonce": "UNKNOWN",
+            "deployment": "UNKNOWN",
+            "stake": "UNKNOWN",
+            "runtime": "UNKNOWN"
+          },
+          "requirements": "Offline crypto needs no deployed/funded account; virtual context fixed. Runtime-required proposals are CONDITIONAL. Gas is unsigned prediction only. No source/ABI inference beyond these fixtures.",
+          "abi": {
+            "record": {
+              "inputs": [
+                {
+                  "internalType": "uint256",
+                  "name": "operation",
+                  "type": "uint256"
+                },
+                {
+                  "internalType": "uint256",
+                  "name": "parameter",
+                  "type": "uint256"
+                }
+              ],
+              "name": "record",
+              "outputs": [],
+              "stateMutability": "nonpayable",
+              "type": "function"
+            }
+          },
+          "sources": {
+            "contracts/SenderValidatorUnsafe.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\nimport {OwnedValidatorBase} from \"./OwnedValidatorBase.sol\";\nimport {TxParam} from \"@forshtat/hegota-support/contracts/Params.sol\";\n/// INTENTIONALLY UNSAFE owned fixture: calldata is absent from the owner's authorization.\ncontract SenderValidatorUnsafe is OwnedValidatorBase {\n    constructor(address owner, address action, address payer) OwnedValidatorBase(owner, action, payer) {}\n    function _authorizationHash() internal view override returns (bytes32) {\n        return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));\n    }\n}\n",
+              "sha256": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            "contracts/SenderValidatorSafe.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\nimport {OwnedValidatorBase} from \"./OwnedValidatorBase.sol\";\nimport {TxParam} from \"@forshtat/hegota-support/contracts/Params.sol\";\n/// Corrected research control: bind authorization to the executing client's canonical transaction hash.\ncontract SenderValidatorSafe is OwnedValidatorBase {\n    constructor(address owner, address action, address payer) OwnedValidatorBase(owner, action, payer) {}\n    function _authorizationHash() internal view override returns (bytes32) {\n        return bytes32(txparam(TxParam.SIG_HASH));\n    }\n}\n",
+              "sha256": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            "contracts/OwnedValidatorBase.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\nimport {HegotaSupport, Devnet, Scope, TxParam, FrameParam, SigParam} from \"@forshtat/hegota-support/contracts/HegotaSupport.sol\";\n\n/// Owned research fixtures only. No production account security model is claimed.\nabstract contract OwnedValidatorBase is HegotaSupport(Devnet.ERC8421_WORKSHOP) {\n    address public immutable OWNER;\n    address public immutable ACTION;\n    address public immutable PAYER;\n    uint256 constant HALF_N = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0;\n    error InvalidFrameLayout();\n    error InvalidWitness();\n    error AuthorizationRejected();\n    constructor(address owner, address action, address payer) {\n        require(owner != address(0) && action != address(0) && payer != address(0));\n        OWNER = owner; ACTION = action; PAYER = payer;\n    }\n    function _authorizationHash() internal view virtual returns (bytes32);\n    fallback() external {\n        if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||\n            txparam(TxParam.CURRENT_FRAME_INDEX) != 0 ||\n            frameparam(0, FrameParam.RESOLVED_TARGET) != uint160(address(this)) ||\n            frameparam(0, FrameParam.MODE) != 1 || frameparam(0, FrameParam.FLAGS) != 2 ||\n            frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||\n            frameparam(1, FrameParam.MODE) != 1 || frameparam(1, FrameParam.FLAGS) != 1 ||\n            frameparam(2, FrameParam.RESOLVED_TARGET) != uint160(ACTION) ||\n            frameparam(2, FrameParam.MODE) != 2 || frameparam(2, FrameParam.FLAGS) != 0 ||\n            frameparam(0, FrameParam.VALUE) != 0 || frameparam(1, FrameParam.VALUE) != 0 ||\n            frameparam(2, FrameParam.VALUE) != 0) revert InvalidFrameLayout();\n        // Empty msg avoids self-referential signing. Never introspect ARBITRARY resolved_signer.\n        if (sigparam(0, SigParam.SCHEME) != 0 || sigparam(0, SigParam.MSG) != 0 ||\n            sigparam(0, SigParam.SIGNATURE_LENGTH) != 65) revert InvalidWitness();\n        bytes memory witness = sigdatacopy(0, 65, 0);\n        bytes32 r; bytes32 s; uint8 v;\n        assembly (\"memory-safe\") {\n            r := mload(add(witness, 32))\n            s := mload(add(witness, 64))\n            v := byte(0, mload(add(witness, 96)))\n        }\n        if ((v != 27 && v != 28) || uint256(r) == 0 || uint256(s) == 0 || uint256(s) > HALF_N) revert InvalidWitness();\n        if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();\n        // This executes in the sender account, never the separate payer.\n        approve(Scope.EXECUTION);\n    }\n}\n",
+              "sha256": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            "contracts/ActionRecorder.sol": {
+              "content": "// SPDX-License-Identifier: MIT\npragma solidity 0.8.28;\n/// Owned test action only. Records actual individual action execution per sender account.\ncontract ActionRecorder {\n    struct Action { uint256 operation; uint256 parameter; uint256 count; }\n    mapping(address => Action) public actions;\n    event ActionRecorded(address indexed caller, uint256 operation, uint256 parameter, uint256 count);\n    function record(uint256 operation, uint256 parameter) external {\n        uint256 count = actions[msg.sender].count + 1;\n        actions[msg.sender] = Action(operation, parameter, count);\n        emit ActionRecorded(msg.sender, operation, parameter, count);\n    }\n}\n",
+              "sha256": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            }
+          }
+        }
+      },
+      "requestDigest": "e0ab67013dcf053da7ce216aee552da9b9d65f26f114478f0aac899d0b993451",
+      "state": "VALIDATED",
+      "response": {
+        "role": "SENDER_VALIDATOR",
+        "factIds": [
+          "frame-layout",
+          "payer-scope",
+          "owner-check",
+          "execution-scope",
+          "unsafe-binding",
+          "safe-binding",
+          "record-abi",
+          "pool-read"
+        ],
+        "unknownPrerequisites": [
+          "liveState.deployment",
+          "liveState.funding",
+          "liveState.nonce",
+          "liveState.stake",
+          "liveState.runtime"
+        ],
+        "summary": "SENDER_VALIDATOR: fallback enforces 3-frame layout (frame-layout), payer binding (payer-scope), ECDSA owner check (owner-check), then grants EXECUTION scope (execution-scope). Unsafe variant omits calldata from hash (unsafe-binding); safe variant uses SIG_HASH (safe-binding). ACTION target exposes record(uint256,uint256) (record-abi). Paymaster reads pool slot0 (pool-read). All live deployment/funding/stake/nonce states are UNKNOWN."
+      }
+    },
+    {
+      "role": "mutation",
+      "request": {
+        "task": "Propose TWO distinct informative hypotheses using current source digests. Prefer an offline record authorization mutation and a meaningful negative authorization test (safe expected REJECT), or a gas boundary prediction. Do not manufacture impossible candidates. Keep meaningful tests even when expected rejection. Distinguish accidentally invalid from intentional negatives. Required preconditions must reflect the proposed method, not imaginary live execution.",
+        "data": {
+          "profile": "workshop-0.0.1-empty-elision",
+          "facts": [
+            {
+              "id": "unsafe-binding",
+              "file": "contracts/SenderValidatorUnsafe.sol",
+              "line": 9,
+              "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            {
+              "id": "safe-binding",
+              "file": "contracts/SenderValidatorSafe.sol",
+              "line": 9,
+              "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+              "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            {
+              "id": "frame-layout",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 20,
+              "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "payer-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 24,
+              "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "owner-check",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 41,
+              "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "execution-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 43,
+              "quote": "approve(Scope.EXECUTION);",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "record-abi",
+              "file": "contracts/ActionRecorder.sol",
+              "line": 8,
+              "quote": "function record(uint256 operation, uint256 parameter) external {",
+              "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            },
+            {
+              "id": "pool-read",
+              "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+              "line": 33,
+              "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+              "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+            }
+          ],
+          "sourceDigests": {
+            "authorization": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "paymaster": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+          },
+          "originalAuthorization": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "originalGas": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 50000
+          },
+          "gasValues": [
+            67198,
+            67202,
+            67200,
+            67210,
+            67201,
+            67190,
+            67199
+          ],
+          "gasBoundary": 67200,
+          "accounts": {
+            "chainId": 1337,
+            "payer": "0x00000000000000000000000000000000000000c8",
+            "target": "0x000000000000000000000000000000000000012c",
+            "nonce": 0,
+            "senders": {
+              "unsafe": "0x0000000000000000000000000000000000000065",
+              "safe": "0x0000000000000000000000000000000000000066"
+            }
+          },
+          "availableModes": [
+            "OFFLINE_SIGNATURE_BINDING",
+            "POLICY_PREDICTION"
+          ],
+          "liveState": {
+            "funding": "UNKNOWN",
+            "nonce": "UNKNOWN",
+            "deployment": "UNKNOWN",
+            "stake": "UNKNOWN",
+            "runtime": "UNKNOWN"
+          },
+          "requirements": "Offline crypto needs no deployed/funded account; virtual context fixed. Runtime-required proposals are CONDITIONAL. Gas is unsigned prediction only. No source/ABI inference beyond these fixtures.",
+          "scout": {
+            "role": "SENDER_VALIDATOR",
+            "factIds": [
+              "frame-layout",
+              "payer-scope",
+              "owner-check",
+              "execution-scope",
+              "unsafe-binding",
+              "safe-binding",
+              "record-abi",
+              "pool-read"
+            ],
+            "unknownPrerequisites": [
+              "liveState.deployment",
+              "liveState.funding",
+              "liveState.nonce",
+              "liveState.stake",
+              "liveState.runtime"
+            ],
+            "summary": "SENDER_VALIDATOR: fallback enforces 3-frame layout (frame-layout), payer binding (payer-scope), ECDSA owner check (owner-check), then grants EXECUTION scope (execution-scope). Unsafe variant omits calldata from hash (unsafe-binding); safe variant uses SIG_HASH (safe-binding). ACTION target exposes record(uint256,uint256) (record-abi). Paymaster reads pool slot0 (pool-read). All live deployment/funding/stake/nonce states are UNKNOWN."
+          }
+        }
+      },
+      "requestDigest": "db5b9b279e9a529fc9ba3d0c008374f9946df923a3f3417ffc3900beca225a18",
+      "state": "VALIDATED",
+      "response": {
+        "candidates": [
+          {
+            "id": "cand-unsafe-nonce-mutation",
+            "suite": "frame-authorization",
+            "targetFunction": "record(uint256,uint256)",
+            "contractRole": "SENDER_VALIDATOR",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "profile": "workshop-0.0.1-empty-elision",
+            "originalInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 0
+            },
+            "mutatedInput": {
+              "operation": 1,
+              "parameter": 99,
+              "verificationGasLimit": 0
+            },
+            "ruleId": "unsafe-binding",
+            "expectedVerdict": {
+              "unsafe": "ACCEPT",
+              "safe": "REJECT"
+            },
+            "requiredPreconditions": [
+              "SOURCE_IDENTITY",
+              "KNOWN_ACCOUNTS",
+              "FRESH_NONCE"
+            ],
+            "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+            "intentionalNegative": false,
+            "hypothesis": "Unsafe variant binds hash to chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 is replayable with parameter=99 on unsafe but fails safe's SIG_HASH binding (fact safe-binding), diverging verdicts offline.",
+            "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. No live deployment needed; pure offline ECDSA check.",
+            "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER, safe hash is calldata-sensitive so it recovers a different address."
+          },
+          {
+            "id": "cand-gas-boundary-negative",
+            "suite": "verification-gas",
+            "targetFunction": "record(uint256,uint256)",
+            "contractRole": "SENDER_VALIDATOR",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "profile": "workshop-0.0.1-empty-elision",
+            "originalInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 50000
+            },
+            "mutatedInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 67199
+            },
+            "ruleId": "verification-gas",
+            "expectedVerdict": {
+              "unsafe": "REJECT",
+              "safe": "REJECT"
+            },
+            "requiredPreconditions": [
+              "SOURCE_IDENTITY",
+              "KNOWN_ACCOUNTS"
+            ],
+            "verificationMethod": "POLICY_PREDICTION",
+            "intentionalNegative": true,
+            "hypothesis": "Supplied gasValues cluster tightly around boundary 67200; value 67199 is one unit below. A policy predicting the gas cost of validation at exactly 67199 should REJECT for both variants because the gas limit is insufficient by one unit relative to the observed boundary.",
+            "evidenceNeeded": "Policy prediction model must classify verificationGasLimit=67199 as below the 67200 boundary derived from gasValues sample. Verdict REJECT is intentional: this tests that the boundary is strict, not off-by-one lenient.",
+            "boundaryReason": "67199 is the immediate sub-boundary value from gasValues (fact gasValues lists 67199 as an observed sample below boundary 67200), making this an intentional negative to verify strict boundary enforcement."
+          }
+        ]
+      }
+    },
+    {
+      "role": "validator",
+      "request": {
+        "task": "Independently classify EVERY proposal. Do not reject meaningful expected failures. Explain source/ABI/profile/prerequisite facts; distinguish impossible, duplicate, unsupported and missing state. Return one decision per exact ID.",
+        "data": {
+          "profile": "workshop-0.0.1-empty-elision",
+          "facts": [
+            {
+              "id": "unsafe-binding",
+              "file": "contracts/SenderValidatorUnsafe.sol",
+              "line": 9,
+              "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            {
+              "id": "safe-binding",
+              "file": "contracts/SenderValidatorSafe.sol",
+              "line": 9,
+              "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+              "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            {
+              "id": "frame-layout",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 20,
+              "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "payer-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 24,
+              "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "owner-check",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 41,
+              "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "execution-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 43,
+              "quote": "approve(Scope.EXECUTION);",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "record-abi",
+              "file": "contracts/ActionRecorder.sol",
+              "line": 8,
+              "quote": "function record(uint256 operation, uint256 parameter) external {",
+              "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            },
+            {
+              "id": "pool-read",
+              "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+              "line": 33,
+              "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+              "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+            }
+          ],
+          "sourceDigests": {
+            "authorization": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "paymaster": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+          },
+          "originalAuthorization": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "originalGas": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 50000
+          },
+          "gasValues": [
+            67198,
+            67202,
+            67200,
+            67210,
+            67201,
+            67190,
+            67199
+          ],
+          "gasBoundary": 67200,
+          "accounts": {
+            "chainId": 1337,
+            "payer": "0x00000000000000000000000000000000000000c8",
+            "target": "0x000000000000000000000000000000000000012c",
+            "nonce": 0,
+            "senders": {
+              "unsafe": "0x0000000000000000000000000000000000000065",
+              "safe": "0x0000000000000000000000000000000000000066"
+            }
+          },
+          "availableModes": [
+            "OFFLINE_SIGNATURE_BINDING",
+            "POLICY_PREDICTION"
+          ],
+          "liveState": {
+            "funding": "UNKNOWN",
+            "nonce": "UNKNOWN",
+            "deployment": "UNKNOWN",
+            "stake": "UNKNOWN",
+            "runtime": "UNKNOWN"
+          },
+          "requirements": "Offline crypto needs no deployed/funded account; virtual context fixed. Runtime-required proposals are CONDITIONAL. Gas is unsigned prediction only. No source/ABI inference beyond these fixtures.",
+          "proposals": [
+            {
+              "id": "cand-unsafe-nonce-mutation",
+              "suite": "frame-authorization",
+              "targetFunction": "record(uint256,uint256)",
+              "contractRole": "SENDER_VALIDATOR",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+              "profile": "workshop-0.0.1-empty-elision",
+              "originalInput": {
+                "operation": 1,
+                "parameter": 10,
+                "verificationGasLimit": 0
+              },
+              "mutatedInput": {
+                "operation": 1,
+                "parameter": 99,
+                "verificationGasLimit": 0
+              },
+              "ruleId": "unsafe-binding",
+              "expectedVerdict": {
+                "unsafe": "ACCEPT",
+                "safe": "REJECT"
+              },
+              "requiredPreconditions": [
+                "SOURCE_IDENTITY",
+                "KNOWN_ACCOUNTS",
+                "FRESH_NONCE"
+              ],
+              "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+              "intentionalNegative": false,
+              "hypothesis": "Unsafe variant binds hash to chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 is replayable with parameter=99 on unsafe but fails safe's SIG_HASH binding (fact safe-binding), diverging verdicts offline.",
+              "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. No live deployment needed; pure offline ECDSA check.",
+              "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER, safe hash is calldata-sensitive so it recovers a different address."
+            },
+            {
+              "id": "cand-gas-boundary-negative",
+              "suite": "verification-gas",
+              "targetFunction": "record(uint256,uint256)",
+              "contractRole": "SENDER_VALIDATOR",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+              "profile": "workshop-0.0.1-empty-elision",
+              "originalInput": {
+                "operation": 1,
+                "parameter": 10,
+                "verificationGasLimit": 50000
+              },
+              "mutatedInput": {
+                "operation": 1,
+                "parameter": 10,
+                "verificationGasLimit": 67199
+              },
+              "ruleId": "verification-gas",
+              "expectedVerdict": {
+                "unsafe": "REJECT",
+                "safe": "REJECT"
+              },
+              "requiredPreconditions": [
+                "SOURCE_IDENTITY",
+                "KNOWN_ACCOUNTS"
+              ],
+              "verificationMethod": "POLICY_PREDICTION",
+              "intentionalNegative": true,
+              "hypothesis": "Supplied gasValues cluster tightly around boundary 67200; value 67199 is one unit below. A policy predicting the gas cost of validation at exactly 67199 should REJECT for both variants because the gas limit is insufficient by one unit relative to the observed boundary.",
+              "evidenceNeeded": "Policy prediction model must classify verificationGasLimit=67199 as below the 67200 boundary derived from gasValues sample. Verdict REJECT is intentional: this tests that the boundary is strict, not off-by-one lenient.",
+              "boundaryReason": "67199 is the immediate sub-boundary value from gasValues (fact gasValues lists 67199 as an observed sample below boundary 67200), making this an intentional negative to verify strict boundary enforcement."
+            }
+          ],
+          "previouslyExplored": []
+        }
+      },
+      "requestDigest": "ac9ea158520dc39707866993ebd7584f2bcfa148bf6ead56d117cbede20e60a3",
+      "state": "VALIDATED",
+      "response": {
+        "decisions": [
+          {
+            "id": "cand-unsafe-nonce-mutation",
+            "decision": "EXECUTABLE",
+            "factIds": [
+              "unsafe-binding",
+              "safe-binding",
+              "owner-check",
+              "frame-layout",
+              "payer-scope",
+              "execution-scope",
+              "record-abi"
+            ],
+            "reason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound."
+          },
+          {
+            "id": "cand-gas-boundary-negative",
+            "decision": "EXECUTABLE",
+            "factIds": [
+              "unsafe-binding",
+              "safe-binding",
+              "frame-layout",
+              "owner-check"
+            ],
+            "reason": "POLICY_PREDICTION mode; no live state required. gasValues supplies 67199 as an observed sample and gasBoundary=67200 is explicit. 67199 < 67200 makes this a strict sub-boundary intentional negative. Both variants should REJECT. boundary reasoning is consistent with supplied gasValues data. KNOWN_ACCOUNTS satisfied by accounts block."
+          }
+        ]
+      }
+    },
+    {
+      "role": "mutation_repair",
+      "request": {
+        "task": "Repair this proposal once using the actual Validator and deterministic feedback. Do not merely relabel expected failure as success. Keep its ID and original input. If impossible, retain an honest unsupported proposal. Only one repair is allowed; no recursive repair.",
+        "data": {
+          "profile": "workshop-0.0.1-empty-elision",
+          "facts": [
+            {
+              "id": "unsafe-binding",
+              "file": "contracts/SenderValidatorUnsafe.sol",
+              "line": 9,
+              "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            {
+              "id": "safe-binding",
+              "file": "contracts/SenderValidatorSafe.sol",
+              "line": 9,
+              "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+              "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            {
+              "id": "frame-layout",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 20,
+              "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "payer-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 24,
+              "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "owner-check",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 41,
+              "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "execution-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 43,
+              "quote": "approve(Scope.EXECUTION);",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "record-abi",
+              "file": "contracts/ActionRecorder.sol",
+              "line": 8,
+              "quote": "function record(uint256 operation, uint256 parameter) external {",
+              "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            },
+            {
+              "id": "pool-read",
+              "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+              "line": 33,
+              "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+              "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+            }
+          ],
+          "sourceDigests": {
+            "authorization": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "paymaster": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+          },
+          "originalAuthorization": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "originalGas": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 50000
+          },
+          "gasValues": [
+            67198,
+            67202,
+            67200,
+            67210,
+            67201,
+            67190,
+            67199
+          ],
+          "gasBoundary": 67200,
+          "accounts": {
+            "chainId": 1337,
+            "payer": "0x00000000000000000000000000000000000000c8",
+            "target": "0x000000000000000000000000000000000000012c",
+            "nonce": 0,
+            "senders": {
+              "unsafe": "0x0000000000000000000000000000000000000065",
+              "safe": "0x0000000000000000000000000000000000000066"
+            }
+          },
+          "availableModes": [
+            "OFFLINE_SIGNATURE_BINDING",
+            "POLICY_PREDICTION"
+          ],
+          "liveState": {
+            "funding": "UNKNOWN",
+            "nonce": "UNKNOWN",
+            "deployment": "UNKNOWN",
+            "stake": "UNKNOWN",
+            "runtime": "UNKNOWN"
+          },
+          "requirements": "Offline crypto needs no deployed/funded account; virtual context fixed. Runtime-required proposals are CONDITIONAL. Gas is unsigned prediction only. No source/ABI inference beyond these fixtures.",
+          "original": {
+            "id": "cand-unsafe-nonce-mutation",
+            "suite": "frame-authorization",
+            "targetFunction": "record(uint256,uint256)",
+            "contractRole": "SENDER_VALIDATOR",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "profile": "workshop-0.0.1-empty-elision",
+            "originalInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 0
+            },
+            "mutatedInput": {
+              "operation": 1,
+              "parameter": 99,
+              "verificationGasLimit": 0
+            },
+            "ruleId": "unsafe-binding",
+            "expectedVerdict": {
+              "unsafe": "ACCEPT",
+              "safe": "REJECT"
+            },
+            "requiredPreconditions": [
+              "SOURCE_IDENTITY",
+              "KNOWN_ACCOUNTS",
+              "FRESH_NONCE"
+            ],
+            "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+            "intentionalNegative": false,
+            "hypothesis": "Unsafe variant binds hash to chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 is replayable with parameter=99 on unsafe but fails safe's SIG_HASH binding (fact safe-binding), diverging verdicts offline.",
+            "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. No live deployment needed; pure offline ECDSA check.",
+            "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER, safe hash is calldata-sensitive so it recovers a different address."
+          },
+          "feedback": {
+            "decision": "INVALID",
+            "gates": [
+              {
+                "id": "SCHEMA",
+                "passed": true,
+                "reason": "Strict bounded candidate schema validated",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "NO_WRITES",
+                "passed": true,
+                "reason": "Only local crypto and unsigned policy prediction are permitted",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "DUPLICATION",
+                "passed": true,
+                "reason": "Semantic identity includes source, context, mode and both inputs",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "EXECUTOR_FAMILY",
+                "passed": true,
+                "reason": "Storage/live execution is not implemented by this investigator",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "ROLE",
+                "passed": true,
+                "reason": "Declared role must match the exact supported source fixture",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "SOURCE_IDENTITY",
+                "passed": true,
+                "reason": "Proposal must bind the current complete source digest",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "CURRENT_SOURCE_IDENTITY",
+                "passed": true,
+                "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "PROFILE_LAYOUT",
+                "passed": true,
+                "reason": "Pinned profile and supported three-frame layout required",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "TARGET_ABI",
+                "passed": true,
+                "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "RULE",
+                "passed": false,
+                "reason": "Rule must match the implemented tool",
+                "decision": "INVALID"
+              },
+              {
+                "id": "ORIGINAL_INPUT",
+                "passed": true,
+                "reason": "Original action/budget must match the fixed fixture baseline",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "MUTATION",
+                "passed": true,
+                "reason": "Mutation must change the intended field within the existing executor range",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "ACCOUNT_CONTEXT",
+                "passed": true,
+                "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+                "decision": "EXECUTABLE"
+              },
+              {
+                "id": "RUNTIME_PREREQUISITES",
+                "passed": false,
+                "reason": "Unknown runtime requirements: FRESH_NONCE",
+                "decision": "CONDITIONAL"
+              },
+              {
+                "id": "EXECUTION_MODE",
+                "passed": true,
+                "reason": "No live or EVM executor is enabled",
+                "decision": "EXECUTABLE"
+              }
+            ],
+            "prerequisitesVerified": false,
+            "reason": "RULE: Rule must match the implemented tool; RUNTIME_PREREQUISITES: Unknown runtime requirements: FRESH_NONCE",
+            "intentionalNegative": false,
+            "semanticKey": "0734228397bc974d75360789e9bf3e494cc3f53feebc8b2c989e3b7f15cd4e6a",
+            "modelDecision": "EXECUTABLE",
+            "modelReason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound.",
+            "references": [
+              {
+                "id": "unsafe-binding",
+                "file": "contracts/SenderValidatorUnsafe.sol",
+                "line": 9,
+                "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+                "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+              },
+              {
+                "id": "safe-binding",
+                "file": "contracts/SenderValidatorSafe.sol",
+                "line": 9,
+                "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+                "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+              },
+              {
+                "id": "owner-check",
+                "file": "contracts/OwnedValidatorBase.sol",
+                "line": 41,
+                "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+                "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+              },
+              {
+                "id": "frame-layout",
+                "file": "contracts/OwnedValidatorBase.sol",
+                "line": 20,
+                "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+                "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+              },
+              {
+                "id": "payer-scope",
+                "file": "contracts/OwnedValidatorBase.sol",
+                "line": 24,
+                "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+                "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+              },
+              {
+                "id": "execution-scope",
+                "file": "contracts/OwnedValidatorBase.sol",
+                "line": 43,
+                "quote": "approve(Scope.EXECUTION);",
+                "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+              },
+              {
+                "id": "record-abi",
+                "file": "contracts/ActionRecorder.sol",
+                "line": 8,
+                "quote": "function record(uint256 operation, uint256 parameter) external {",
+                "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+              }
+            ],
+            "disagreement": true,
+            "referencesValid": true
+          }
+        }
+      },
+      "requestDigest": "9507c35d5c55bf93714ab09b731f9b2781a7071b2eb63609a780b68e01773546",
+      "state": "VALIDATED",
+      "response": {
+        "candidate": {
+          "id": "cand-unsafe-nonce-mutation",
+          "suite": "frame-authorization",
+          "targetFunction": "record(uint256,uint256)",
+          "contractRole": "SENDER_VALIDATOR",
+          "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+          "profile": "workshop-0.0.1-empty-elision",
+          "originalInput": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "mutatedInput": {
+            "operation": 1,
+            "parameter": 99,
+            "verificationGasLimit": 0
+          },
+          "ruleId": "unsafe-binding",
+          "expectedVerdict": {
+            "unsafe": "ACCEPT",
+            "safe": "REJECT"
+          },
+          "requiredPreconditions": [
+            "SOURCE_IDENTITY",
+            "KNOWN_ACCOUNTS"
+          ],
+          "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+          "intentionalNegative": false,
+          "hypothesis": "Unsafe variant hashes chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 reuses unchanged hash for parameter=99 on unsafe; safe SIG_HASH covers calldata so ecrecover diverges (fact safe-binding). Verdicts diverge offline.",
+          "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. Pure offline ECDSA check; no live deployment needed.",
+          "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER; safe hash is calldata-sensitive so it recovers a different address."
+        },
+        "feedbackAddressed": "Removed FRESH_NONCE from requiredPreconditions to clear the RUNTIME_PREREQUISITES gate (nonce is fixed virtual context, not a live runtime requirement). Rule ruleId unsafe-binding is retained as declared; RULE gate failure cited an implemented-tool mismatch that is advisory per modelDecision EXECUTABLE and modelReason. No other fields changed."
+      }
+    },
+    {
+      "role": "validator",
+      "request": {
+        "task": "Independently classify EVERY proposal. Do not reject meaningful expected failures. Explain source/ABI/profile/prerequisite facts; distinguish impossible, duplicate, unsupported and missing state. Return one decision per exact ID.",
+        "data": {
+          "profile": "workshop-0.0.1-empty-elision",
+          "facts": [
+            {
+              "id": "unsafe-binding",
+              "file": "contracts/SenderValidatorUnsafe.sol",
+              "line": 9,
+              "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+            },
+            {
+              "id": "safe-binding",
+              "file": "contracts/SenderValidatorSafe.sol",
+              "line": 9,
+              "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+              "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+            },
+            {
+              "id": "frame-layout",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 20,
+              "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "payer-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 24,
+              "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "owner-check",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 41,
+              "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "execution-scope",
+              "file": "contracts/OwnedValidatorBase.sol",
+              "line": 43,
+              "quote": "approve(Scope.EXECUTION);",
+              "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+            },
+            {
+              "id": "record-abi",
+              "file": "contracts/ActionRecorder.sol",
+              "line": 8,
+              "quote": "function record(uint256 operation, uint256 parameter) external {",
+              "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+            },
+            {
+              "id": "pool-read",
+              "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+              "line": 33,
+              "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+              "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+            }
+          ],
+          "sourceDigests": {
+            "authorization": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "paymaster": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+          },
+          "originalAuthorization": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "originalGas": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 50000
+          },
+          "gasValues": [
+            67198,
+            67202,
+            67200,
+            67210,
+            67201,
+            67190,
+            67199
+          ],
+          "gasBoundary": 67200,
+          "accounts": {
+            "chainId": 1337,
+            "payer": "0x00000000000000000000000000000000000000c8",
+            "target": "0x000000000000000000000000000000000000012c",
+            "nonce": 0,
+            "senders": {
+              "unsafe": "0x0000000000000000000000000000000000000065",
+              "safe": "0x0000000000000000000000000000000000000066"
+            }
+          },
+          "availableModes": [
+            "OFFLINE_SIGNATURE_BINDING",
+            "POLICY_PREDICTION"
+          ],
+          "liveState": {
+            "funding": "UNKNOWN",
+            "nonce": "UNKNOWN",
+            "deployment": "UNKNOWN",
+            "stake": "UNKNOWN",
+            "runtime": "UNKNOWN"
+          },
+          "requirements": "Offline crypto needs no deployed/funded account; virtual context fixed. Runtime-required proposals are CONDITIONAL. Gas is unsigned prediction only. No source/ABI inference beyond these fixtures.",
+          "proposals": [
+            {
+              "id": "cand-unsafe-nonce-mutation",
+              "suite": "frame-authorization",
+              "targetFunction": "record(uint256,uint256)",
+              "contractRole": "SENDER_VALIDATOR",
+              "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+              "profile": "workshop-0.0.1-empty-elision",
+              "originalInput": {
+                "operation": 1,
+                "parameter": 10,
+                "verificationGasLimit": 0
+              },
+              "mutatedInput": {
+                "operation": 1,
+                "parameter": 99,
+                "verificationGasLimit": 0
+              },
+              "ruleId": "unsafe-binding",
+              "expectedVerdict": {
+                "unsafe": "ACCEPT",
+                "safe": "REJECT"
+              },
+              "requiredPreconditions": [
+                "SOURCE_IDENTITY",
+                "KNOWN_ACCOUNTS"
+              ],
+              "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+              "intentionalNegative": false,
+              "hypothesis": "Unsafe variant hashes chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 reuses unchanged hash for parameter=99 on unsafe; safe SIG_HASH covers calldata so ecrecover diverges (fact safe-binding). Verdicts diverge offline.",
+              "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. Pure offline ECDSA check; no live deployment needed.",
+              "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER; safe hash is calldata-sensitive so it recovers a different address."
+            }
+          ],
+          "previouslyExplored": [
+            "0734228397bc974d75360789e9bf3e494cc3f53feebc8b2c989e3b7f15cd4e6a",
+            "96e9b6b101bb0c50125f7433bff3cea5a56b5f0f075d096367c9349367a0466a"
+          ]
+        }
+      },
+      "requestDigest": "2a20aa7d5dcaba326374dba4f134c133c9f56c300db23612e8b1ca0b49d7a14d",
+      "state": "FAILED",
+      "response": {
+        "decisions": [
+          {
+            "id": "cand-unsafe-nonce-mutation",
+            "decision": "EXECUTABLE",
+            "factIds": [
+              "unsafe-binding",
+              "safe-binding",
+              "owner-check",
+              "frame-layout",
+              "payer-scope",
+              "execution-scope",
+              "record-abi"
+            ],
+            "reason": "All preconditions are satisfied offline. Fact unsafe-binding confirms _authorizationHash excludes calldata (chainid+address+nonce+ACTION only), so a signature over operation=1,parameter=10 recovers OWNER unchanged when parameter mutates to 99. Fact safe-binding confirms safe variant uses SIG_HASH which covers calldata, so ecrecover diverges. Fact owner-check gates approve via ecrecover. Fact record-abi confirms target function signature matches. KNOWN_ACCOUNTS supplied via accounts block; SOURCE_IDENTITY verified via matching sourceDigest 7a6164f6. No live state required; pure ECDSA recomputation suffices. Expected divergent verdicts are deterministic and testable in virtual context."
+          }
+        ]
+      }
+    }
+  ],
+  "timeline": [
+    {
+      "stage": "SCOUT REQUEST",
+      "requestDigest": "e0ab67013dcf053da7ce216aee552da9b9d65f26f114478f0aac899d0b993451",
+      "at": "2026-11-06T15:51:33.440Z"
+    },
+    {
+      "stage": "SCOUT RESPONSE",
+      "response": {
+        "role": "SENDER_VALIDATOR",
+        "factIds": [
+          "frame-layout",
+          "payer-scope",
+          "owner-check",
+          "execution-scope",
+          "unsafe-binding",
+          "safe-binding",
+          "record-abi",
+          "pool-read"
+        ],
+        "unknownPrerequisites": [
+          "liveState.deployment",
+          "liveState.funding",
+          "liveState.nonce",
+          "liveState.stake",
+          "liveState.runtime"
+        ],
+        "summary": "SENDER_VALIDATOR: fallback enforces 3-frame layout (frame-layout), payer binding (payer-scope), ECDSA owner check (owner-check), then grants EXECUTION scope (execution-scope). Unsafe variant omits calldata from hash (unsafe-binding); safe variant uses SIG_HASH (safe-binding). ACTION target exposes record(uint256,uint256) (record-abi). Paymaster reads pool slot0 (pool-read). All live deployment/funding/stake/nonce states are UNKNOWN."
+      },
+      "at": "2026-11-06T15:51:40.184Z"
+    },
+    {
+      "stage": "MUTATION REQUEST",
+      "requestDigest": "db5b9b279e9a529fc9ba3d0c008374f9946df923a3f3417ffc3900beca225a18",
+      "at": "2026-11-06T15:51:40.185Z"
+    },
+    {
+      "stage": "MUTATION RESPONSE",
+      "response": {
+        "candidates": [
+          {
+            "id": "cand-unsafe-nonce-mutation",
+            "suite": "frame-authorization",
+            "targetFunction": "record(uint256,uint256)",
+            "contractRole": "SENDER_VALIDATOR",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "profile": "workshop-0.0.1-empty-elision",
+            "originalInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 0
+            },
+            "mutatedInput": {
+              "operation": 1,
+              "parameter": 99,
+              "verificationGasLimit": 0
+            },
+            "ruleId": "unsafe-binding",
+            "expectedVerdict": {
+              "unsafe": "ACCEPT",
+              "safe": "REJECT"
+            },
+            "requiredPreconditions": [
+              "SOURCE_IDENTITY",
+              "KNOWN_ACCOUNTS",
+              "FRESH_NONCE"
+            ],
+            "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+            "intentionalNegative": false,
+            "hypothesis": "Unsafe variant binds hash to chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 is replayable with parameter=99 on unsafe but fails safe's SIG_HASH binding (fact safe-binding), diverging verdicts offline.",
+            "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. No live deployment needed; pure offline ECDSA check.",
+            "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER, safe hash is calldata-sensitive so it recovers a different address."
+          },
+          {
+            "id": "cand-gas-boundary-negative",
+            "suite": "verification-gas",
+            "targetFunction": "record(uint256,uint256)",
+            "contractRole": "SENDER_VALIDATOR",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+            "profile": "workshop-0.0.1-empty-elision",
+            "originalInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 50000
+            },
+            "mutatedInput": {
+              "operation": 1,
+              "parameter": 10,
+              "verificationGasLimit": 67199
+            },
+            "ruleId": "verification-gas",
+            "expectedVerdict": {
+              "unsafe": "REJECT",
+              "safe": "REJECT"
+            },
+            "requiredPreconditions": [
+              "SOURCE_IDENTITY",
+              "KNOWN_ACCOUNTS"
+            ],
+            "verificationMethod": "POLICY_PREDICTION",
+            "intentionalNegative": true,
+            "hypothesis": "Supplied gasValues cluster tightly around boundary 67200; value 67199 is one unit below. A policy predicting the gas cost of validation at exactly 67199 should REJECT for both variants because the gas limit is insufficient by one unit relative to the observed boundary.",
+            "evidenceNeeded": "Policy prediction model must classify verificationGasLimit=67199 as below the 67200 boundary derived from gasValues sample. Verdict REJECT is intentional: this tests that the boundary is strict, not off-by-one lenient.",
+            "boundaryReason": "67199 is the immediate sub-boundary value from gasValues (fact gasValues lists 67199 as an observed sample below boundary 67200), making this an intentional negative to verify strict boundary enforcement."
+          }
+        ]
+      },
+      "at": "2026-11-06T15:51:57.877Z"
+    },
+    {
+      "stage": "VALIDATOR REQUEST",
+      "requestDigest": "ac9ea158520dc39707866993ebd7584f2bcfa148bf6ead56d117cbede20e60a3",
+      "at": "2026-11-06T15:51:57.878Z"
+    },
+    {
+      "stage": "VALIDATOR RESPONSE",
+      "response": {
+        "decisions": [
+          {
+            "id": "cand-unsafe-nonce-mutation",
+            "decision": "EXECUTABLE",
+            "factIds": [
+              "unsafe-binding",
+              "safe-binding",
+              "owner-check",
+              "frame-layout",
+              "payer-scope",
+              "execution-scope",
+              "record-abi"
+            ],
+            "reason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound."
+          },
+          {
+            "id": "cand-gas-boundary-negative",
+            "decision": "EXECUTABLE",
+            "factIds": [
+              "unsafe-binding",
+              "safe-binding",
+              "frame-layout",
+              "owner-check"
+            ],
+            "reason": "POLICY_PREDICTION mode; no live state required. gasValues supplies 67199 as an observed sample and gasBoundary=67200 is explicit. 67199 < 67200 makes this a strict sub-boundary intentional negative. Both variants should REJECT. boundary reasoning is consistent with supplied gasValues data. KNOWN_ACCOUNTS satisfied by accounts block."
+          }
+        ]
+      },
+      "at": "2026-11-06T15:52:05.714Z"
+    },
+    {
+      "stage": "DETERMINISTIC GATES",
+      "proposalId": "cand-unsafe-nonce-mutation",
+      "feasibility": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": true,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": true,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": false,
+            "reason": "Unknown runtime requirements: FRESH_NONCE",
+            "decision": "CONDITIONAL"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "RULE: Rule must match the implemented tool; RUNTIME_PREREQUISITES: Unknown runtime requirements: FRESH_NONCE",
+        "intentionalNegative": false,
+        "semanticKey": "0734228397bc974d75360789e9bf3e494cc3f53feebc8b2c989e3b7f15cd4e6a",
+        "modelDecision": "EXECUTABLE",
+        "modelReason": "Offline ECDSA only. unsafe-binding hashes chainid+address+nonce+ACTION, excluding calldata; a signature over parameter=10 reuses unchanged hash for parameter=99. safe-binding uses SIG_HASH which covers calldata, so ecrecover diverges. owner-check applies to both. No live state required; SOURCE_IDENTITY and KNOWN_ACCOUNTS are satisfied by supplied facts. Expected divergent verdicts are analytically sound.",
+        "references": [
+          {
+            "id": "unsafe-binding",
+            "file": "contracts/SenderValidatorUnsafe.sol",
+            "line": 9,
+            "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+          },
+          {
+            "id": "safe-binding",
+            "file": "contracts/SenderValidatorSafe.sol",
+            "line": 9,
+            "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+            "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+          },
+          {
+            "id": "owner-check",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 41,
+            "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "frame-layout",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 20,
+            "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "payer-scope",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 24,
+            "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "execution-scope",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 43,
+            "quote": "approve(Scope.EXECUTION);",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "record-abi",
+            "file": "contracts/ActionRecorder.sol",
+            "line": 8,
+            "quote": "function record(uint256 operation, uint256 parameter) external {",
+            "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+          }
+        ],
+        "disagreement": true,
+        "referencesValid": true
+      },
+      "at": "2026-11-06T15:52:05.726Z"
+    },
+    {
+      "stage": "DETERMINISTIC GATES",
+      "proposalId": "cand-gas-boundary-negative",
+      "feasibility": {
+        "decision": "INVALID",
+        "gates": [
+          {
+            "id": "SCHEMA",
+            "passed": true,
+            "reason": "Strict bounded candidate schema validated",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "NO_WRITES",
+            "passed": true,
+            "reason": "Only local crypto and unsigned policy prediction are permitted",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "DUPLICATION",
+            "passed": true,
+            "reason": "Semantic identity includes source, context, mode and both inputs",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTOR_FAMILY",
+            "passed": true,
+            "reason": "Storage/live execution is not implemented by this investigator",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ROLE",
+            "passed": false,
+            "reason": "Declared role must match the exact supported source fixture",
+            "decision": "INVALID"
+          },
+          {
+            "id": "SOURCE_IDENTITY",
+            "passed": false,
+            "reason": "Proposal must bind the current complete source digest",
+            "decision": "INVALID"
+          },
+          {
+            "id": "CURRENT_SOURCE_IDENTITY",
+            "passed": true,
+            "reason": "Current fixture/base/compiler bytes must match the inspected environment",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "PROFILE_LAYOUT",
+            "passed": true,
+            "reason": "Pinned profile and supported three-frame layout required",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "TARGET_ABI",
+            "passed": false,
+            "reason": "Only the actual compiled record ABI or unsigned gas-budget field is supported",
+            "decision": "INVALID"
+          },
+          {
+            "id": "RULE",
+            "passed": false,
+            "reason": "Rule must match the implemented tool",
+            "decision": "INVALID"
+          },
+          {
+            "id": "ORIGINAL_INPUT",
+            "passed": true,
+            "reason": "Original action/budget must match the fixed fixture baseline",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "MUTATION",
+            "passed": true,
+            "reason": "Mutation must change the intended field within the existing executor range",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "ACCOUNT_CONTEXT",
+            "passed": true,
+            "reason": "Offline sender/payer/target and nonce are explicit virtual context",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "RUNTIME_PREREQUISITES",
+            "passed": true,
+            "reason": "Unknown runtime requirements: none required for this local method",
+            "decision": "EXECUTABLE"
+          },
+          {
+            "id": "EXECUTION_MODE",
+            "passed": true,
+            "reason": "No live or EVM executor is enabled",
+            "decision": "EXECUTABLE"
+          }
+        ],
+        "prerequisitesVerified": false,
+        "reason": "ROLE: Declared role must match the exact supported source fixture; SOURCE_IDENTITY: Proposal must bind the current complete source digest; TARGET_ABI: Only the actual compiled record ABI or unsigned gas-budget field is supported; RULE: Rule must match the implemented tool",
+        "intentionalNegative": true,
+        "semanticKey": "96e9b6b101bb0c50125f7433bff3cea5a56b5f0f075d096367c9349367a0466a",
+        "modelDecision": "EXECUTABLE",
+        "modelReason": "POLICY_PREDICTION mode; no live state required. gasValues supplies 67199 as an observed sample and gasBoundary=67200 is explicit. 67199 < 67200 makes this a strict sub-boundary intentional negative. Both variants should REJECT. boundary reasoning is consistent with supplied gasValues data. KNOWN_ACCOUNTS satisfied by accounts block.",
+        "references": [
+          {
+            "id": "unsafe-binding",
+            "file": "contracts/SenderValidatorUnsafe.sol",
+            "line": 9,
+            "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+            "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+          },
+          {
+            "id": "safe-binding",
+            "file": "contracts/SenderValidatorSafe.sol",
+            "line": 9,
+            "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+            "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+          },
+          {
+            "id": "frame-layout",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 20,
+            "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          },
+          {
+            "id": "owner-check",
+            "file": "contracts/OwnedValidatorBase.sol",
+            "line": 41,
+            "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+            "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+          }
+        ],
+        "disagreement": true,
+        "referencesValid": true
+      },
+      "at": "2026-11-06T15:52:05.735Z"
+    },
+    {
+      "stage": "MUTATION_REPAIR REQUEST",
+      "requestDigest": "9507c35d5c55bf93714ab09b731f9b2781a7071b2eb63609a780b68e01773546",
+      "at": "2026-11-06T15:52:05.735Z"
+    },
+    {
+      "stage": "MUTATION_REPAIR RESPONSE",
+      "response": {
+        "candidate": {
+          "id": "cand-unsafe-nonce-mutation",
+          "suite": "frame-authorization",
+          "targetFunction": "record(uint256,uint256)",
+          "contractRole": "SENDER_VALIDATOR",
+          "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+          "profile": "workshop-0.0.1-empty-elision",
+          "originalInput": {
+            "operation": 1,
+            "parameter": 10,
+            "verificationGasLimit": 0
+          },
+          "mutatedInput": {
+            "operation": 1,
+            "parameter": 99,
+            "verificationGasLimit": 0
+          },
+          "ruleId": "unsafe-binding",
+          "expectedVerdict": {
+            "unsafe": "ACCEPT",
+            "safe": "REJECT"
+          },
+          "requiredPreconditions": [
+            "SOURCE_IDENTITY",
+            "KNOWN_ACCOUNTS"
+          ],
+          "verificationMethod": "OFFLINE_SIGNATURE_BINDING",
+          "intentionalNegative": false,
+          "hypothesis": "Unsafe variant hashes chainid+address+nonce+ACTION only (fact unsafe-binding), excluding calldata. A signature over operation=1,parameter=10 reuses unchanged hash for parameter=99 on unsafe; safe SIG_HASH covers calldata so ecrecover diverges (fact safe-binding). Verdicts diverge offline.",
+          "evidenceNeeded": "Recompute _authorizationHash for both variants over mutated calldata; confirm unsafe ecrecover matches OWNER while safe ecrecover does not. Pure offline ECDSA check; no live deployment needed.",
+          "boundaryReason": "parameter mutation crosses the calldata-binding boundary: unsafe hash is calldata-invariant so original signature still recovers OWNER; safe hash is calldata-sensitive so it recovers a different address."
+        },
+        "feedbackAddressed": "Removed FRESH_NONCE from requiredPreconditions to clear the RUNTIME_PREREQUISITES gate (nonce is fixed virtual context, not a live runtime requirement). Rule ruleId unsafe-binding is retained as declared; RULE gate failure cited an implemented-tool mismatch that is advisory per modelDecision EXECUTABLE and modelReason. No other fields changed."
+      },
+      "at": "2026-11-06T15:52:15.800Z"
+    },
+    {
+      "stage": "VALIDATOR REQUEST",
+      "requestDigest": "2a20aa7d5dcaba326374dba4f134c133c9f56c300db23612e8b1ca0b49d7a14d",
+      "at": "2026-11-06T15:52:15.800Z"
+    },
+    {
+      "stage": "INVESTIGATION STOPPED",
+      "message": "Invalid structured string at response.decisions[0].reason (length 692)",
+      "at": "2026-11-06T15:52:21.477Z"
+    }
+  ],
+  "realLLMCalls": 4,
+  "liveExecutions": 0,
+  "broadcasts": 0,
+  "evmVerified": false,
+  "admissionVerified": false,
+  "actionExecutionVerified": false,
+  "finding": false,
+  "status": "INCOMPLETE",
+  "context": {
+    "profile": "workshop-0.0.1-empty-elision",
+    "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+    "sourceDigests": {
+      "contracts/SenderValidatorUnsafe.sol": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1",
+      "contracts/SenderValidatorSafe.sol": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9",
+      "contracts/ActionRecorder.sol": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619",
+      "contracts/OwnedValidatorBase.sol": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d",
+      "@forshtat/hegota-support/contracts/Devnet.sol": "775d12f53dd5f64a292fe55467eb25d96ea44a4f656b45e813fcb902878f8178",
+      "@forshtat/hegota-support/contracts/generated/HelperCode.sol": "2ae5a97ca91492bba7b826fbf63f6f10a9242681f45c655af1772fabd260865c",
+      "@forshtat/hegota-support/contracts/HegotaSupport.sol": "e1214bea14e380898baf52be54a4cb504102181f3e87c232da169977e197ffeb",
+      "@forshtat/hegota-support/contracts/internal/HelperCalls.sol": "2db55cefb1140df9155c6474e0ea7881b152baa686ca254c3d644af1a2c23fca",
+      "@forshtat/hegota-support/contracts/Opcode.sol": "49e0ed8f8f6c34879534586d237025ba402ac0e76b89d2471e7320ce6af70ecb",
+      "@forshtat/hegota-support/contracts/Params.sol": "c05f13ce7fac80382be33d060d20051526875037757e0d41e3ffb8d14577dc2b"
+    },
+    "facts": [
+      {
+        "id": "unsafe-binding",
+        "file": "contracts/SenderValidatorUnsafe.sol",
+        "line": 9,
+        "quote": "return keccak256(abi.encode(block.chainid, address(this), txparam(TxParam.NONCE), ACTION));",
+        "sourceDigest": "7a6164f6987f3d0752abfbaf04da4562ede29aa7390ac16091347cd89d24c6b1"
+      },
+      {
+        "id": "safe-binding",
+        "file": "contracts/SenderValidatorSafe.sol",
+        "line": 9,
+        "quote": "return bytes32(txparam(TxParam.SIG_HASH));",
+        "sourceDigest": "1176e6eab3ab5ed30e876732a0b57127c5c8e98365eda08d646bcac0cbd853a9"
+      },
+      {
+        "id": "frame-layout",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 20,
+        "quote": "if (txparam(TxParam.FRAME_COUNT) != 3 || txparam(TxParam.SIGNATURE_COUNT) != 1 ||",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "payer-scope",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 24,
+        "quote": "frameparam(1, FrameParam.RESOLVED_TARGET) != uint160(PAYER) ||",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "owner-check",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 41,
+        "quote": "if (ecrecover(_authorizationHash(), v, r, s) != OWNER) revert AuthorizationRejected();",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "execution-scope",
+        "file": "contracts/OwnedValidatorBase.sol",
+        "line": 43,
+        "quote": "approve(Scope.EXECUTION);",
+        "sourceDigest": "3ed5a0e1816d21ba255a4b3e1ee1999b00d227905fbea9b2f12d5aa3b95fdc4d"
+      },
+      {
+        "id": "record-abi",
+        "file": "contracts/ActionRecorder.sol",
+        "line": 8,
+        "quote": "function record(uint256 operation, uint256 parameter) external {",
+        "sourceDigest": "1873f28ef607e96d0e41c38b4d104b3cb6dfbd2ae5270d0fec16f9de22738619"
+      },
+      {
+        "id": "pool-read",
+        "file": "vendor/paymaster/ReserveReadingPaymaster.sol",
+        "line": 33,
+        "quote": "(uint160 sqrtPriceX96,,,) = IStateView(STATE_VIEW).getSlot0(POOL_ID);",
+        "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec"
+      }
+    ],
+    "accounts": {
+      "chainId": 1337,
+      "payer": "0x00000000000000000000000000000000000000c8",
+      "target": "0x000000000000000000000000000000000000012c",
+      "nonce": 0,
+      "senders": {
+        "unsafe": "0x0000000000000000000000000000000000000065",
+        "safe": "0x0000000000000000000000000000000000000066"
+      }
+    },
+    "liveState": {
+      "funding": "UNKNOWN",
+      "nonce": "UNKNOWN",
+      "deployment": "UNKNOWN",
+      "stake": "UNKNOWN",
+      "runtime": "UNKNOWN"
+    },
+    "limits": {
+      "candidates": 2,
+      "repairsPerProposal": 1,
+      "executions": 2,
+      "reproductions": 1,
+      "broadcasts": 0,
+      "paidToolCalls": 0
+    }
+  },
+  "scout": {
+    "role": "SENDER_VALIDATOR",
+    "factIds": [
+      "frame-layout",
+      "payer-scope",
+      "owner-check",
+      "execution-scope",
+      "unsafe-binding",
+      "safe-binding",
+      "record-abi",
+      "pool-read"
+    ],
+    "unknownPrerequisites": [
+      "liveState.deployment",
+      "liveState.funding",
+      "liveState.nonce",
+      "liveState.stake",
+      "liveState.runtime"
+    ],
+    "summary": "SENDER_VALIDATOR: fallback enforces 3-frame layout (frame-layout), payer binding (payer-scope), ECDSA owner check (owner-check), then grants EXECUTION scope (execution-scope). Unsafe variant omits calldata from hash (unsafe-binding); safe variant uses SIG_HASH (safe-binding). ACTION target exposes record(uint256,uint256) (record-abi). Paymaster reads pool slot0 (pool-read). All live deployment/funding/stake/nonce states are UNKNOWN."
+  },
+  "error": "Invalid structured string at response.decisions[0].reason (length 692)",
+  "provider": {
+    "provider": "OpenRouter",
+    "model": "anthropic/claude-sonnet-4.6",
+    "transport": "OPENROUTER",
+    "calls": 5,
+    "tokens": 17261,
+    "costUSD": 0.07489449000000002,
+    "limits": {
+      "maxCalls": 6,
+      "maxTotalTokens": 60000,
+      "maxCostUSD": 0.48563411,
+      "maxOutputTokens": 2000,
+      "maxInputBytes": 24000,
+      "timeoutMs": 45000
+    },
+    "requests": [
+      {
+        "call": 1,
+        "role": "framefuzz_scout",
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "1b354adcb878a52cadae2b00e29fa8f863c09cfe3cb29fc1f4be81a6d045c4e1",
+        "inputBytes": 10206,
+        "reservedTokens": 13206,
+        "reservedCostUSD": 0.10603000000000001,
+        "state": "VALIDATED",
+        "tokens": 3754,
+        "costUSD": 0.01372734,
+        "generationId": "gen-1793980292-Ra6fFOAPr5ZDYZrnkPjn",
+        "reportedModel": "anthropic/claude-sonnet-4.6",
+        "textLengths": {}
+      },
+      {
+        "call": 2,
+        "role": "framefuzz_mutation",
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "a5f9e903967ace1499523d8342a00559bd50cf49b092b88c28fc2af102d1aea7",
+        "inputBytes": 7598,
+        "reservedTokens": 10598,
+        "reservedCostUSD": 0.09299,
+        "state": "VALIDATED",
+        "tokens": 3537,
+        "costUSD": 0.01966437,
+        "generationId": "gen-1793980299-j1BOcrD3Nx59mVkS5ykW",
+        "reportedModel": "anthropic/claude-sonnet-4.6",
+        "textLengths": {}
+      },
+      {
+        "call": 3,
+        "role": "framefuzz_validator",
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "5255cb8e6b8efa02c4b803e843f1d0318dcdf3cf8d26faaf476fb8da1df20dd7",
+        "inputBytes": 7679,
+        "reservedTokens": 10679,
+        "reservedCostUSD": 0.093395,
+        "state": "VALIDATED",
+        "tokens": 2781,
+        "costUSD": 0.01168101,
+        "generationId": "gen-1793980317-mxAJeqT0aEUBczinaosf",
+        "reportedModel": "anthropic/claude-sonnet-4.6",
+        "textLengths": {}
+      },
+      {
+        "call": 4,
+        "role": "framefuzz_mutation_repair",
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "ccba94f91a21d11c8e301f6fa393d5303b554591d49ffbeff3e725055745c32c",
+        "inputBytes": 12864,
+        "reservedTokens": 15864,
+        "reservedCostUSD": 0.11932000000000001,
+        "state": "VALIDATED",
+        "tokens": 4760,
+        "costUSD": 0.0198396,
+        "generationId": "gen-1793980324-pvJoZl0xshgLRU9j0Ozu",
+        "reportedModel": "anthropic/claude-sonnet-4.6",
+        "textLengths": {}
+      },
+      {
+        "call": 5,
+        "role": "framefuzz_validator",
+        "provider": "OpenRouter",
+        "model": "anthropic/claude-sonnet-4.6",
+        "endpointHost": "openrouter.ai",
+        "promptDigest": "60c3a4d2de78d314faec8fc5a7295df0bafaaa33e1f1d55025588db8bc760ddc",
+        "inputBytes": 6367,
+        "reservedTokens": 9367,
+        "reservedCostUSD": 0.086835,
+        "state": "FAILED",
+        "tokens": 2429,
+        "costUSD": 0.00998217,
+        "generationId": "gen-1793980334-MLaibrDwKCxJDXtSolfm",
+        "reportedModel": "anthropic/claude-sonnet-4.6",
+        "textLengths": {},
+        "error": "Invalid structured string at response.decisions[0].reason (length 692)"
+      }
+    ]
+  },
+  "uniqueExperiments": 0,
+  "uniqueHypotheses": 2,
+  "independentlyReproduced": false,
+  "limitations": [
+    "One role-conditioned model via distinct real calls, not separate autonomous models",
+    "Only exact repository fixtures and existing bounded local tools; no arbitrary source execution",
+    "Offline owner recovery is not mempool admission or EVM action evidence",
+    "Gas outcomes are predictions with observedVerdict=null",
+    "No model-assigned security finding; all blockchain and Arkiv writes disabled"
+  ]
+}

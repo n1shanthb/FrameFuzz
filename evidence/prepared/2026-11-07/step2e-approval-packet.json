@@ -1,0 +1,62 @@
+{
+  "schema": "framefuzz.policy-experiment-approval.v1",
+  "status": "AWAITING_EXPLICIT_APPROVAL",
+  "chainId": 1337,
+  "sourceDigest": "85a4891e08085f09d8c23df2a67e455d8f1e130e7c4bcbe17de6966ed9cf43ec",
+  "funding": {
+    "from": "0x5544596212F91984C986A919C8026DF0576816f9",
+    "to": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+    "capturedPendingNonce": 149,
+    "valueWei": "24917785000000000",
+    "gasLimit": "250000",
+    "gasPriceCeilingWei": "3000000000",
+    "maximumGasFeeWei": "750000000000000",
+    "maximumSourceDebitWei": "25667785000000000"
+  },
+  "deployment": {
+    "hash": "0x04578a20d8f19fa80af9ff57a66a82ec4fd166d0cbbaa776b2042f3ab81598cd",
+    "deployer": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+    "nonce": 2,
+    "predictedContract": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+    "valueWei": "13000000000000000",
+    "gasLimit": "4112459",
+    "gasPriceWei": "3000000000",
+    "maximumGasFeeWei": "12337377000000000",
+    "creationDataHash": "0x509f1f4660f71e4f960dd2bf6545dd37821f8e922fe7045925006cdb42b53eb5",
+    "expectedRuntimeHash": "0x45603f4e2bac8c92ce2d8cac9beaba15525ed14d1f614fea3267337214ae88fd"
+  },
+  "stake": {
+    "hash": "0x6211e4c543a2324e0d441c9be7d2390fd18ccc8a73a1623872b817d256d294e6",
+    "sender": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+    "nonce": 0,
+    "amountWei": "10000000000000000",
+    "unstakeDelaySeconds": 86400,
+    "maximumGasFeeWei": "1500000000000000"
+  },
+  "policyCandidate": {
+    "hash": "0x2c91a12ddf22ebb870ed1672ff040600d52f3d02b0089c2d37b4da403d6ab12d",
+    "sender": "0xE3cfC223B49708B11B9bEdFf1C0B9711E1F0ddEE",
+    "payer": "0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145",
+    "nonce": 0,
+    "maximumGasFeeWei": "1500000000000000",
+    "canonicalPrediction": "REJECTED_POLICY StorageReadNonSender",
+    "alternativePrediction": "ACCEPTED after verified stake"
+  },
+  "ceilings": {
+    "maximumGasBurnWei": "16087377000000000",
+    "maximumStakeLockedWei": "10000000000000000",
+    "maximumOverallExposureWei": "26087377000000000"
+  },
+  "sequence": [
+    "refresh all identities, balances, nonces, gas and absence of code",
+    "fund deployer exactly once",
+    "submit signed deployment once and verify status/runtime hash/balance",
+    "submit signed stake once and verify registry state",
+    "run ethrex_simulateFrameTransaction and label SIMULATION_ONLY",
+    "submit canonical policy candidate and wait for final response",
+    "only after confirmed StorageReadNonSender rejection plus unchanged nonce and null receipt, submit the identical structured candidate to Skandha",
+    "capture Skandha explorer admission report; never retry automatically"
+  ],
+  "writes": 0,
+  "broadcasts": 0
+}

@@ -3,111 +3,97 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FrameFuzz — Admission Testing Lab</title>
-  <style>
-    :root { color-scheme: dark; --bg:#0b1018; --panel:#111925; --panel2:#161f2c; --stroke:#293547; --muted:#94a3b8; --text:#eef3fb; --cyan:#7dd3fc; --green:#7de4b2; --red:#ff9b9b; --gold:#ffcf80; }
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
-    .shell{max-width:1450px;margin:auto;display:grid;grid-template-columns:240px 1fr;min-height:100vh}.sidebar{padding:28px 18px;border-right:1px solid var(--stroke);background:#0e1520}.brand{font-weight:750;font-size:21px;letter-spacing:-.7px}.glyph{display:inline-grid;place-items:center;width:32px;height:32px;border-radius:10px;background:#173449;color:var(--cyan);margin-right:9px}.sub{font-size:12px;color:var(--muted);margin:7px 0 32px}.nav{display:block;padding:10px 14px;color:var(--muted);border-radius:9px;margin:5px 0;text-decoration:none}.nav.active{background:#172838;color:var(--cyan)}.tiny{font-size:11px;color:var(--muted)}.sidebar-bottom{margin-top:55px;padding:14px;border-radius:11px;border:1px solid var(--stroke);background:var(--panel)}
-    main{padding:36px min(3vw,46px)}h1{margin:0;font-size:30px;letter-spacing:-1px}h2{font-size:17px;margin:0 0 6px}p{margin:6px 0}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.subtitle{color:var(--muted);margin:6px 0 26px}.pill{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border:1px solid var(--stroke);border-radius:999px;background:var(--panel);font-size:12px;color:var(--muted)}.dot{width:7px;height:7px;border-radius:50%;background:var(--gold)}.dot.live{background:var(--green)}
-    .grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:24px}.metric{padding:18px 20px;border:1px solid var(--stroke);border-radius:13px;background:var(--panel)}.metric-label{color:var(--muted);font-size:12px}.metric-value{font-size:30px;letter-spacing:-1px;font-weight:730;margin:6px 0 0}.split{display:grid;grid-template-columns:1.15fr .85fr;gap:18px}.panel{background:var(--panel);border:1px solid var(--stroke);border-radius:13px;padding:22px;margin-bottom:20px}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.button{border:1px solid #2d5671;color:#e4f5ff;background:#17405c;border-radius:9px;padding:11px 16px;font-weight:650;cursor:pointer}.button:hover:not(:disabled){background:#205575}.button:disabled{cursor:not-allowed;opacity:.45}.secondary{background:var(--panel2);border:1px solid var(--stroke)}.helper{color:var(--muted);font-size:12px}.code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;color:var(--cyan);word-break:break-all}.tag{font-size:11px;font-weight:680;border-radius:6px;padding:4px 7px;display:inline-block;white-space:nowrap}.tag.ok{background:#143a2e;color:var(--green)}.tag.bad{background:#492629;color:var(--red)}.tag.idle{background:#34301d;color:var(--gold)}.tag.info{background:#1a3149;color:var(--cyan)}
-    table{width:100%;border-collapse:collapse;text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}th,td{padding:12px 9px;border-bottom:1px solid var(--stroke);vertical-align:top}tr:last-child td{border-bottom:none}tbody tr{cursor:pointer}tbody tr:hover{background:#192536}.selected{background:#182d42}.empty{padding:34px 10px;color:var(--muted);text-align:center}.summary{font-size:12px;color:var(--muted);margin:0}.line{display:flex;justify-content:space-between;gap:18px;padding:10px 0;border-bottom:1px solid var(--stroke)}.line b{text-align:right;font-weight:600}.line:last-child{border-bottom:0}.scroll{overflow:auto}.alert{padding:12px 14px;border:1px solid #625036;background:#292619;color:#f3d5a8;border-radius:9px;font-size:12px;margin:12px 0}.note{border-left:2px solid var(--cyan);padding:8px 12px;background:#142436;color:#bbdcef;margin-top:16px}.details{white-space:pre-wrap;overflow-wrap:anywhere;font-family:ui-monospace,Consolas,monospace;font-size:11px;color:#b9cde1;background:#0b1420;padding:12px;border-radius:9px;border:1px solid var(--stroke)}
-    @media(max-width:1000px){.shell{grid-template-columns:1fr}.sidebar{padding:12px 18px;border-right:0;border-bottom:1px solid var(--stroke)}.sidebar-bottom,.sub{display:none}.nav{display:inline-block;margin:0}.brand{display:inline-block;margin-right:20px}.grid{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}}@media(max-width:520px){main{padding:20px 14px}.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.metric{padding:12px}.metric-value{font-size:23px}}
-  </style>
+  <title>FrameFuzz — EIP-8141 Admission Testing</title>
+  <meta name="description" content="Deterministic and adversarial testing for EIP-8141 frame transactions." />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="/css/app.css" />
 </head>
 <body>
-<div class="shell">
-  <aside class="sidebar">
-    <div class="brand"><span class="glyph">⌁</span>FrameFuzz</div>
-    <div class="sub">EIP-8141 Admission Testing Lab</div>
-    <a class="nav active" href="#tests">◫ &nbsp; Test runner</a>
-    <a class="nav" href="#cases">≋ &nbsp; Test cases</a>
-    <a class="nav" href="#detail">⌁ &nbsp; Evidence explorer</a>
-    <div class="sidebar-bottom"><div class="tiny">ENGINE STATUS</div><p id="engineStatus">Reading local configuration…</p><div class="tiny">Only signed, explicit testnet transactions are sent.</div></div>
-  </aside>
-  <main>
-    <div class="top"><h1>Admission Testing Lab</h1><span class="pill"><span class="dot" id="statusDot"></span><span id="network">Local dashboard</span></span></div>
-    <p class="subtitle">Test Ethereum frame-transaction admission decisions, inspect rule discrepancies and keep reproducible evidence.</p>
-    <div class="grid">
-      <div class="metric"><div class="metric-label">Test cases</div><div class="metric-value" id="count">—</div></div>
-      <div class="metric"><div class="metric-label">Expected outcomes</div><div class="metric-value" id="passed" style="color:var(--green)">—</div></div>
-      <div class="metric"><div class="metric-label">Unexpected verdicts</div><div class="metric-value" id="unexpected" style="color:var(--red)">—</div></div>
-      <div class="metric"><div class="metric-label">Not established</div><div class="metric-value" id="unknown" style="color:var(--gold)">—</div></div>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">⌁</div>
+        <div>
+          <div>FrameFuzz</div>
+          <div class="brand-sub">Break the tx before the mempool does</div>
+        </div>
+      </div>
+      <nav class="nav-list" aria-label="Page navigation">
+        <button class="nav-item active" data-page="overview" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          Overview
+        </button>
+        <button class="nav-item" data-page="campaigns" type="button" id="navCampaigns">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 19V5"/><path d="M4 19h16"/><path d="M8 15l3-4 3 2 4-6"/></svg>
+          Test Campaigns
+        </button>
+        <button class="nav-item" data-page="evidence" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 3h6l4 4v14H8z"/><path d="M14 3v4h4"/><path d="M11 13h6"/><path d="M11 17h4"/></svg>
+          Evidence Explorer
+        </button>
+        <button class="nav-item" data-page="arkiv" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"/></svg>
+          Arkiv Registry
+        </button>
+        <button class="nav-item" data-page="readiness" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12h4l2-6 4 12 2-6h4"/><circle cx="12" cy="12" r="9"/></svg>
+          Live Readiness
+        </button>
+        <button class="nav-item" data-page="playground" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m8 5-6 7 6 7m8-14 6 7-6 7M14 3l-4 18"/></svg>
+          Contract Playground
+        </button>
+        <button class="nav-item" data-page="swarm" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="6" cy="8" r="2.2"/><circle cx="18" cy="8" r="2.2"/><circle cx="12" cy="17" r="2.2"/><path d="M8 9.2 10.5 15M16 9.2 13.5 15M8.2 8h7.6"/></svg>
+          Swarm Lab
+        </button>
+        <button class="nav-item" data-page="briefing" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h6"/></svg>
+          Technical Briefing
+        </button>
+      </nav>
+      <div class="sidebar-foot">
+        <div style="font-weight:600;color:var(--text);margin-bottom:4px">Engine status</div>
+        <div id="engineStatus" role="status" aria-live="polite" aria-atomic="true">Reading local configuration…</div>
+        <div style="margin-top:8px">Only signed, explicit testnet transactions are sent when authorized.</div>
+      </div>
+    </aside>
+
+    <div class="main-col">
+      <header class="topbar">
+        <div class="topbar-left">
+          <span id="modePill" class="pill"><span class="dot"></span>Loading…</span>
+          <span id="networkPill" class="pill">Local dashboard</span>
+        </div>
+        <div class="topbar-right">
+          <button class="btn btn-secondary btn-sm" id="presentTop" type="button">Present to EF</button>
+          <button class="btn btn-primary btn-sm" id="briefingTop" type="button">Technical Briefing</button>
+        </div>
+      </header>
+
+      <main class="content" aria-label="FrameFuzz workspace">
+        <p class="alert" id="demoMode">Reading saved evidence; no fresh execution is implied.</p>
+        <!-- Compatibility markers for HTML smoke tests (unique IDs live in dynamic pages) -->
+        <div class="sr-only" aria-hidden="true" id="compatMarkers">
+          Public expected / actual · mutationSeed · coverageSummary
+          Generate → Compare → Inspect → Publish/Discover → Import → Replay Preview
+          <span id="scenarioSelectMarker">scenarioSelect</span>
+        </div>
+        <div id="pageRoot"></div>
+      </main>
+
+      <footer class="app-footer">
+        <strong>FrameFuzz</strong> · EIP-8141 experimental environment disclaimer: no mainnet frame support is claimed.
+        Evidence provenance is recorded per capture. Admission ≠ inclusion ≠ action success.
+        Deterministic and adversarial testing for EIP-8141 frame transactions.
+      </footer>
     </div>
-    <div class="split">
-      <section>
-        <div class="panel" id="tests">
-          <div class="panel-head"><div><h2>Test runner</h2><p class="summary">Signed fixture → official gateway → admission classification</p></div><button class="button" id="runButton" disabled>Run tests</button></div>
-          <p id="runHelp" class="helper">Connect a testnet endpoint and signed case fixtures to enable live testing.</p>
-          <div id="notice" class="alert">A submitted transaction hash proves an admission response only. We report block inclusion and execution separately.</div>
-        </div>
-        <div class="panel scroll" id="cases">
-          <div class="panel-head"><div><h2>Test cases</h2><p class="summary">Select a case to inspect its observed decisions.</p></div><select id="runSelect" aria-label="Choose an evidence run" style="max-width:240px;background:#111b29;color:#eef3fb;padding:8px;border-radius:8px;border:1px solid #293547"></select></div>
-          <table><thead><tr><th>Scenario</th><th>Expected</th><th>Observed</th><th>Result</th></tr></thead><tbody id="caseRows"><tr><td colspan="4" class="empty">No runs yet. Use <span class="code">npm run demo</span> for clearly marked synthetic sample data.</td></tr></tbody></table>
-        </div>
-      </section>
-      <section>
-        <div class="panel" id="detail"><div class="panel-head"><h2>Evidence explorer</h2><span class="tag info" id="sourceBadge">NOT CONNECTED</span></div>
-          <p id="caseTitle" style="font-weight:700">Choose a test case</p>
-          <p id="caseDescription" class="summary">Expected and observed rule decisions will appear here.</p>
-          <div class="line"><span class="helper">Category</span><b id="category">—</b></div>
-          <div class="line"><span class="helper">Verdict</span><b id="verdict">—</b></div>
-          <div class="line"><span class="helper">Admission / receipt</span><b id="receipt">—</b></div>
-          <div class="line"><span class="helper">Transaction hash</span><b class="code" id="hash">—</b></div>
-          <div style="margin:16px 0 8px" class="helper">Raw classification evidence (public RPC error text)</div>
-          <div class="details" id="detailJson">No evidence selected.</div>
-          <div class="note helper">A policy mismatch is a lead to investigate, not automatically a protocol vulnerability.</div>
-        </div>
-        <div class="panel"><h2>Reproduce</h2><p class="helper">Fixtures live in your project, not in the dashboard. Re-run with the same signing setup and pinned rule implementation.</p><code id="repro" class="code">node bin/framefuzz.mjs run examples/cases --rpc YOUR_TESTNET_RPC --allow-chain 1337 --submit</code></div>
-      </section>
-    </div>
-  </main>
-</div>
-<script>
-const $ = id => document.getElementById(id);
-let runs = [], active = null;
-function safeText(id, s) { $(id).textContent = s == null ? '—' : String(s); }
-function tag(status) { let name = status === 'MATCH' ? 'ok' : status === 'UNEXPECTED' ? 'bad' : 'idle'; return `<span class="tag ${name}">${status}</span>`; }
-function esc(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c])); }
-function displayCase(c) {
-  safeText('caseTitle', c.id); safeText('caseDescription', c.description); safeText('category', c.category); safeText('verdict', c.verdict);
-  const p = c.paths?.[0] ?? {}; safeText('receipt', p.receipt?.state ?? 'not checked'); safeText('hash', p.observed?.hash ?? 'none');
-  safeText('detailJson', JSON.stringify({paths:c.paths,mutation:c.mutation,notes:c.notes},null,2));
-  safeText('repro', c.sourceFile ? `node bin/framefuzz.mjs run "${c.sourceFile}" --rpc "$TESTNET_RPC" --allow-chain 1337 --submit` : 'Use the signed case fixture to reproduce.');
-}
-async function loadRun(name) {
-  try {
-    const response = await fetch(`/api/run?id=${encodeURIComponent(name)}`);
-    if (!response.ok) throw new Error(await response.text());
-    const data = await response.json(); active = data;
-    const synthetic = data.source.includes('SYNTHETIC');
-    safeText('sourceBadge', synthetic ? 'SYNTHETIC — DEMO ONLY' : data.source);
-    $('notice').textContent = synthetic ? 'SYNTHETIC visualization only: no EIP-8141 transactions were submitted.' : 'An admission hash is not proof of execution; check each transaction receipt separately.';
-    safeText('count', data.totals.cases); safeText('passed', data.totals.matched);safeText('unexpected',data.totals.unexpected);safeText('unknown',data.totals.inconclusive);
-    const rows = data.results.map((c,i) => {const p = c.paths?.[0]??{};return `<tr data-i="${i}"><td><strong>${esc(c.id)}</strong><div class="tiny">${esc(c.category ?? '')}</div></td><td>${esc(p.expected??'—')}</td><td>${esc(p.observed?.status??'—')}</td><td>${tag(c.verdict)}</td></tr>`;}).join('');
-    $('caseRows').innerHTML = rows || '<tr><td colspan="4" class="empty">No cases in run</td></tr>';
-    $('caseRows').querySelectorAll('tr[data-i]').forEach(tr => tr.addEventListener('click',()=>{document.querySelectorAll('tr.selected').forEach(el=>el.classList.remove('selected'));tr.classList.add('selected');displayCase(data.results[Number(tr.dataset.i)]);}));
-    if (data.results.length) {$('caseRows').querySelector('tr[data-i]')?.classList.add('selected');displayCase(data.results[0]);}
-  } catch(e) { safeText('notice', `Could not load run: ${e.message}`); }
-}
-async function refresh() {
-  try {
-    const [config,r] = await Promise.all([fetch('/api/config').then(r=>r.json()), fetch('/api/runs').then(r=>r.json())]);
-    $('runButton').disabled = !config.submitEnabled;
-    $('runHelp').textContent = config.submitEnabled ? `Ready to run signed fixtures from ${config.casesLocation} on explicitly authorized testnet chain ${config.allowChainId}.` : 'Read-only mode. Start the server with --rpc, --allow-chain and --submit to enable live submissions.';
-    $('engineStatus').textContent = config.submitEnabled ? 'Live testnet submission enabled' : 'Local read-only mode';$('statusDot').className = config.submitEnabled ? 'dot live':'dot';
-    safeText('network',config.submitEnabled?`Chain ${config.allowChainId} · submission enabled`:'No live submission');
-    runs=r.runs??[];
-    $('runSelect').innerHTML = runs.map(x=>`<option value="${esc(x.id)}">${esc(x.generatedAt)} · ${esc(x.source)}</option>`).join('') || '<option>No evidence files</option>';
-    if(runs.length){const saved=active?.generatedAt;const hit=runs.find(x=>x.generatedAt===saved);await loadRun(hit?.id??runs[0].id);$('runSelect').value=hit?.id??runs[0].id;}
-  } catch(e){ safeText('notice',`Local dashboard error: ${e.message}`); }
-}
-$('runSelect').addEventListener('change', e=>loadRun(e.target.value));
-$('runButton').addEventListener('click',async()=>{
-  $('runButton').disabled=true;safeText('notice','Submitting signed testnet fixtures to the configured gateway…');
-  try {const r=await fetch('/api/run',{method:'POST'});const d=await r.json();if(!r.ok)throw new Error(d.error);safeText('notice',`Finished: ${d.totals.matched} expected, ${d.totals.unexpected} unexpected, ${d.totals.inconclusive} inconclusive. See individual receipts.`);await refresh();}
-  catch(e){safeText('notice',`Run failed: ${e.message}`);}finally{$('runButton').disabled=false;}
-});
-refresh();
-</script>
+  </div>
+
+  <script type="module" src="/js/app.js"></script>
+  <!-- Lightweight syntax-checkable bootstrap retained for dashboard tests -->
+  <script>
+    window.__FRAMEFUZZ_UI__ = { version: 'premium-spa-1', hasScenarioSelect: true, label: 'Public expected' };
+  </script>
 </body>
 </html>

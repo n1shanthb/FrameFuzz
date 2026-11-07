@@ -1,0 +1,55 @@
+{
+  "schema": "framefuzz.independent-replay.v1",
+  "pid": 9724,
+  "descriptorDigest": "f2ec4312e709ba9a056144ecd4dc6515e5c803346243a5095576ea38b340edbb",
+  "executionClass": "OFFLINE_SIGNATURE_BINDING",
+  "sourceHashesVerified": true,
+  "equivalentSemanticProperties": true,
+  "observation": {
+    "executionClass": "OFFLINE_SIGNATURE_BINDING",
+    "semanticProperties": {
+      "unsafe": {
+        "sameWitness": true,
+        "sameTarget": true,
+        "canonicalHashChanged": true,
+        "authorizedOwnerRecovered": true,
+        "tamperedOwnerRecovered": true
+      },
+      "safe": {
+        "sameWitness": true,
+        "sameTarget": true,
+        "canonicalHashChanged": true,
+        "authorizedOwnerRecovered": true,
+        "tamperedOwnerRecovered": false
+      }
+    },
+    "results": {
+      "unsafe": {
+        "sameWitness": true,
+        "sameTarget": true,
+        "canonicalHashChanged": true,
+        "authorizedOwnerRecovered": true,
+        "tamperedOwnerRecovered": true,
+        "authorizedComputedHash": "0x2a8dde49cf564c9c405f7916b94963bf9c1bfb58c231b13b50fd65e21ecb797a",
+        "tamperedComputedHash": "0x58b8541fe3e1c3aa23bb778f549de93bfb380f1482fe5886f4f1f4fa0bc549ea"
+      },
+      "safe": {
+        "sameWitness": true,
+        "sameTarget": true,
+        "canonicalHashChanged": true,
+        "authorizedOwnerRecovered": true,
+        "tamperedOwnerRecovered": false,
+        "authorizedComputedHash": "0x4eb5ec34f3201c401fb0581890a743b422086f7a23a1c95fc2021d41dc08931a",
+        "tamperedComputedHash": "0x0de52251d15f680fee9cf61baec24abeb3bafc48d6100a0dd5b470b131917bdf"
+      }
+    },
+    "verdict": "OFFLINE_BINDING_DIFFERENTIAL_OBSERVED",
+    "finding": false,
+    "evmExecuted": false,
+    "admissionVerified": false,
+    "actionExecutionVerified": false,
+    "broadcasts": 0
+  },
+  "liveVerified": false,
+  "finding": false
+}

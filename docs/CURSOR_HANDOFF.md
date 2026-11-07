@@ -1,5 +1,7 @@
 # Cursor agent handoff — integrate only after paymaster experiment is isolated
 
+> Historical integration notes from the starter. The current runner, adapter contract and exact resume steps are documented in root `CURRENT_STATUS.md`, `UP_NEXT.md`, and `docs/ADAPTER.md`. Use those first and read docs/CURRENT_CAPABILITIES.md. The real signer was imported and historical live campaigns completed; the starter-era instructions below are historical only.
+
 ## Avoid merge conflicts
 
 The active Cloud Agent is working on `PAYMASTER_FEASIBILITY.md` and the Uniswap sponsorship PoC. Do **not** edit the active paymaster contracts or its experiment scripts from another agent mid-run.

@@ -4,13 +4,33 @@
   "private": true,
   "type": "module",
   "description": "EIP-8141 admission-test engine and results UI (hackathon scaffold)",
-  "bin": { "framefuzz": "./bin/framefuzz.mjs" },
+  "bin": {
+    "framefuzz": "./bin/framefuzz.mjs"
+  },
   "scripts": {
     "test": "node --test",
+    "verify": "node scripts/verify-local.mjs",
+    "ui:install": "npm install --prefix web-ui",
+    "ui:dev": "npm run dev --prefix web-ui",
+    "ui:build": "npm run build --prefix web-ui",
     "start": "node ./bin/framefuzz.mjs serve --cases examples/cases --results runs --port 4177",
     "demo": "node ./bin/framefuzz.mjs demo --results runs",
-    "run:preview": "node ./bin/framefuzz.mjs run examples/cases --allow-chain 1337"
+    "demo:mock": "node ./bin/framefuzz.mjs mock-demo --results runs",
+    "run:preview": "node ./bin/framefuzz.mjs mutate --suite verification-gas --seed 42 --count 7 --preview"
   },
-  "engines": { "node": ">=20" },
-  "license": "MIT"
+  "engines": {
+    "node": ">=20.12"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@arkiv-network/sdk": "1.0.1",
+    "@forshtat/hegota-support": "0.0.1",
+    "viem": "2.57.7"
+  },
+  "devDependencies": {
+    "solc": "0.8.28"
+  },
+  "overrides": {
+    "tmp": "0.2.7"
+  }
 }

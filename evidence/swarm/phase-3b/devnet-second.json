@@ -1,0 +1,67 @@
+{
+  "schema": "framefuzz.devnet-read-survey.v1",
+  "source": "READ_ONLY_NETWORK_DISCOVERY",
+  "officialListing": "https://ethglobal.com/events/mumbai/prizes",
+  "generatedAt": "2026-11-06T08:32:30.303Z",
+  "requestCount": 3,
+  "observations": [
+    {
+      "network": 1,
+      "endpoint": "https://devnet1.altmempool.wtf",
+      "method": "eth_getBlockByNumber",
+      "observedAt": "2026-11-06T08:32:29.259Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "causeCode": "ECONNRESET",
+        "message": "Transport error calling eth_getBlockByNumber: fetch failed"
+      }
+    },
+    {
+      "network": 3,
+      "endpoint": "https://devnet3.altmempool.wtf",
+      "method": "eth_getBlockByNumber",
+      "observedAt": "2026-11-06T08:32:29.296Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "causeCode": "ECONNRESET",
+        "message": "Transport error calling eth_getBlockByNumber: fetch failed"
+      }
+    },
+    {
+      "network": 2,
+      "endpoint": "https://devnet2.altmempool.wtf",
+      "method": "eth_getBlockByNumber",
+      "observedAt": "2026-11-06T08:32:29.295Z",
+      "error": {
+        "name": "TransportError",
+        "code": null,
+        "causeCode": "ECONNRESET",
+        "message": "Transport error calling eth_getBlockByNumber: fetch failed"
+      }
+    }
+  ],
+  "advancement": [
+    {
+      "network": 1,
+      "before": null,
+      "after": null,
+      "advancing": "UNKNOWN"
+    },
+    {
+      "network": 2,
+      "before": null,
+      "after": null,
+      "advancing": "UNKNOWN"
+    },
+    {
+      "network": 3,
+      "before": null,
+      "after": null,
+      "advancing": "UNKNOWN"
+    }
+  ],
+  "executionAllowlistChanged": false,
+  "broadcasts": 0
+}

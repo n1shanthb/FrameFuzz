@@ -19,6 +19,10 @@ A developer can run a real signed EIP-8141 admission test, compare expected and 
 6. Improve the existing dashboard using saved evidence; run tests and CLI/dashboard smoke checks.
 
 ## Fixed decisions
+- Playground live agents enable under `--mode LIVE_READ_ONLY` or `LIVE_AUTHORIZED` when `OPENROUTER_API_KEY` is configured; `FRAMEFUZZ_SWARM=on` remains a legacy/alternate enable (Swarm Lab offline crypto). Blockers are surfaced in `investigationReadiness`. Paid OpenRouter calls still require UI consent (or explicit CLI real-mode). No live deployment, broadcast or Arkiv write without separate explicit approval and resolved wallet/health/hash checks. Only owned unsafe fixtures are in scope; action execution and independent reproduction are required for a finding.
+- Public identity: FrameFuzz stands on its own demonstrated functionality. Keep competitive research/marketing outside the public project; retain legitimate upstream licenses and technical attribution. Use immutable saved evidence when devnets fail, label its capture time and disable external actions in offline mode. Human feedback/submission is pending unless confirmed.
+- Registry scope authorized after the core gate passed: Arkiv Rabdi chain 7794095 only, official SDK, separate test writer, sanitized wallet-owned expiring semantic fixtures. Community reads cross publishers; all community imports are unsigned previews with UNKNOWN local rule confidence. No remote script/fixture-path execution or automatic broadcast. Historical receipts remain publisher claims separate from new outcomes. Do not add unrelated sponsor integrations.
+- Mutation task scope: generate deterministic unsigned models and environment/setup variants, then compile through the proven adapter. Preserve `evidence/live/2026-11-06/` unchanged; new campaign evidence belongs under `evidence/mutations/`. Confidence is explicit and provenance-limited. No automatic remote shrinking or large public campaigns; at most seven selected variants per live invocation.
 - Node.js 20+, dependency-light implementation; no giant frontend rewrite.
 - Independent signed transactions and safe state for each public/alternative comparison.
 - Expected policy differences are not automatically vulnerabilities.
@@ -31,4 +35,20 @@ A developer can run a real signed EIP-8141 admission test, compare expected and 
 The handoff is file-backed, so it does not depend on access to this chat. Open this exact folder in Cursor. Its always-applied `.cursor/rules/framefuzz.mdc` points to `AGENTS.md` and the checkpoint documents. Read them, inspect Git, then resume the first pending task. This shares project state, not IDE chat history or authentication sessions.
 
 ## Commit and GitHub policy
-The user requests frequent coherent commits, including single-file commits when appropriate, with one-line conventional messages. Do not wait until the whole MVP is complete. Keep unrelated work separate and check staged changes for secrets. GitHub authentication is personal and cannot be repaired by guessing credentials. Verify the destination before attaching a remote. Remote creation, visibility, and pushing remain pending until a destination is established and publication is authorized.
+The user requests frequent coherent commits, including single-file commits when appropriate, with one-line conventional messages. Do not wait until the whole MVP is complete. Keep unrelated work separate and check staged changes for secrets. GitHub authentication is personal and cannot be repaired by guessing credentials. The configured remote is `https://github.com/n1shanthb/ethglobalmumbai.git`; pushing still requires authorization. Preserve the active `feat/framefuzz-mvp` branch.
+
+## Offline investigator authorization update
+The user explicitly requested a real bounded investigator using OpenRouter and selected Sonnet. This authorizes bounded provider requests for owned-fixture offline investigation, including three perspective proposals and an observation-conditioned follow-up, plus additive Swarm Lab controls. It does not authorize blockchain deployment/submission, registry writes or push. Existing live gates remain in force. See docs/INVESTIGATOR.md; real provider demonstration is independently recorded in evidence/investigator/2026-11-06/sonnet-retry-2.json; it establishes offline signature binding only.
+
+## Phase3 authority
+User explicitly authorizes a short read-only readiness pass and conditional owned proof harness only. STOP before deployment, broadcast, test-ETH spending or Arkiv publication. Phase3 P5 stops live work when sponsor/wallet/runtime compatibility cannot be established. Exact manifest and source report are in docs/PHASE3_MANIFEST.md and docs/PHASE3_COMPATIBILITY.md. No separate live approval has been given.
+
+## Phase3B authority
+User authorizes isolated self_verify code, offline feasibility/signing tests, and read-only inspection of the three officially listed devnets. These hosts are survey-only, not additions to execution allowlists. No deployment, transfer/faucet funding, signed broadcast, Arkiv write or endpoint switch is authorized. Runtime uncertainty and funding/address gates remain. See docs/SELF_FUNDED_FEASIBILITY.md.
+
+## Completion Pass2 authority and canonical status
+
+Pass2 authorizes local implementation/tests and read-only public Arkiv/GitHub checks, including locally saved unsigned preview import. It does not authorize chain writes, funding/deployment, new provider calls, Arkiv publication, push, visibility changes or external forms. Stop after this pass. Current capability truth is docs/CURRENT_CAPABILITIES.md; root CURRENT_STATUS.md/UP_NEXT.md/BUILD_STATUS.md are active handoff files. Earlier reports and docs/history/ remain dated snapshots. Five scoped partial features are complete; raw live action proof and actual public delivery remain unverified.
+
+## Agentic feasibility authorization and boundary
+The user authorized the genuine role-separated OpenRouter pipeline and a cumulative $0.50 engineering demonstration budget, allowing needed calls within that amount. Actual total was $0.19351332 across11 requests, including failures. Stop additional demonstration calls after success. Future paid runs require deliberate UI consent or CLI real-mode selection. All proposals require an LLM Validator and non-overridable deterministic gates; model prose never authorizes deployment, funding, broadcast, Arkiv publication or findings. Current implementation/evidence: docs/AGENTIC_FEASIBILITY.md. No new chain-write permission was granted.

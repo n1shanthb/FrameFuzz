@@ -1,0 +1,40 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {generatePrivateKey,privateKeyToAccount} from 'viem/accounts';
+import {recoverAddress} from 'viem';
+import {decodeTx} from '@forshtat/hegota-support/tx';
+import {profile} from '../src/adapters/workshop-codec.mjs';
+import {prepareSelfRelayCandidate,SELF_RELAY_MAX_FEE_WEI} from '../src/adapters/self-relay.mjs';
+import {EF_CANONICAL_ENDPOINT,EF_ALTERNATIVE_ENDPOINT} from '../src/adapters/ef-routing.mjs';
+const recipient='0x'+'2'.repeat(40);
+test('pinned self-relay signs canonical scope-3 sender/payer with no paymaster',async()=>{
+ const key=generatePrivateKey(),address=privateKeyToAccount(key).address;
+ const c=await prepareSelfRelayCandidate({privateKey:key,recipient,sourceDigest:null});
+ const tx=decodeTx(profile,c.raw);
+ assert.equal(c.sender,address);assert.equal(c.payer,address);assert.equal(tx.frames[0].mode,1);assert.equal(tx.frames[0].flags,3);assert.equal(tx.frames[0].target,null);
+ assert.equal(tx.frames[1].mode,2);assert.equal(tx.frames[1].target,recipient);assert.equal(tx.signatures[0].scheme,1);
+ const sig=tx.signatures[0].signature;
+ const canonical='0x'+sig.slice(4)+(27+Number.parseInt(sig.slice(2,4),16)).toString(16);
+ assert.equal((await recoverAddress({hash:c.signatureHash,signature:canonical})).toLowerCase(),address.toLowerCase());
+ assert(BigInt(c.fee.maxFeeWei)<=SELF_RELAY_MAX_FEE_WEI);assert.equal(c.broadcasts,0);
+ assert.equal(c.requests.public.params[0],c.raw);assert.deepEqual(c.requests.alternative.params[0],c.wire);
+ assert.equal(c.requests.public.endpoint,EF_CANONICAL_ENDPOINT);assert.equal(c.requests.alternative.endpoint,EF_ALTERNATIVE_ENDPOINT);
+ assert.equal(new URL(c.requests.public.endpoint).pathname,'/');assert.equal(new URL(c.requests.alternative.endpoint).pathname,'/rpc/');
+ assert.deepEqual(c.observed,{public:null,alternative:null});assert.equal(JSON.stringify(c).includes(key),false);
+});
+test('fresh sender or nonce changes signed identity, and invalid context fails closed',async()=>{
+ const a=generatePrivateKey(),b=generatePrivateKey();
+ const x=await prepareSelfRelayCandidate({privateKey:a,recipient,nonce:0});
+ const y=await prepareSelfRelayCandidate({privateKey:a,recipient,nonce:1});
+ const z=await prepareSelfRelayCandidate({privateKey:b,recipient,nonce:0});
+ assert.notEqual(x.transactionHash,y.transactionHash);assert.notEqual(x.transactionHash,z.transactionHash);
+ await assert.rejects(()=>prepareSelfRelayCandidate({privateKey:a,recipient,nonce:-1}),/nonce/);
+ await assert.rejects(()=>prepareSelfRelayCandidate({privateKey:a,recipient:'0x',nonce:0}),/recipient/);
+});
+test('mock endpoint transports keep two actual responses distinct and do not manufacture a verdict',async()=>{
+ const c=await prepareSelfRelayCandidate({privateKey:generatePrivateKey(),recipient});
+ const mock=async request=>request.method==='eth_sendRawTransaction'?{error:{code:-32000,message:'known transaction'}}:{result:c.transactionHash};
+ const a=await mock(c.requests.public),b=await mock(c.requests.alternative);
+ assert.equal(a.error.message,'known transaction');assert.equal(b.result,c.transactionHash);
+ assert.deepEqual(c.observed,{public:null,alternative:null});
+});

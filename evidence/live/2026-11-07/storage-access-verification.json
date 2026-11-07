@@ -1,0 +1,131 @@
+{
+  "schema": "framefuzz.storage-access-verification.v1",
+  "evidenceFile": "evidence/live/2026-11-07/storage-access-live.json",
+  "verifiedAt": "2026-11-06T22:49:32.626Z",
+  "checks": [
+    {
+      "id": "same_signed_identity",
+      "ok": true,
+      "detail": {
+        "hash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+        "canonicalHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d",
+        "alternativeHash": "0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d"
+      }
+    },
+    {
+      "id": "ethrex_storage_read_non_sender",
+      "ok": true,
+      "detail": {
+        "status": "REJECTED_POLICY",
+        "errorClass": "admission_policy",
+        "code": -32000,
+        "message": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+        "data": null
+      }
+    },
+    {
+      "id": "skandha_accepted_admission_id",
+      "ok": true,
+      "detail": {
+        "status": "ACCEPTED",
+        "id": 1647
+      }
+    },
+    {
+      "id": "events_show_admitted_then_dropped",
+      "ok": true,
+      "detail": {
+        "later": "dropped",
+        "outcome": "dropped"
+      }
+    },
+    {
+      "id": "timestamps_present",
+      "ok": true,
+      "detail": {
+        "observedAt": "2026-11-06T22:31:05.703Z",
+        "completedAt": "2026-11-06T22:31:23.717Z"
+      }
+    },
+    {
+      "id": "stake_recorded",
+      "ok": true,
+      "detail": {
+        "amountWei": "12000000000000000",
+        "unstakeDelay": 86400,
+        "withdrawTime": 0,
+        "status": "STAKED"
+      }
+    },
+    {
+      "id": "signature_present",
+      "ok": true,
+      "detail": {
+        "signer": "0x366E6203603C39Eec1e75b3be6f078911447f235"
+      }
+    },
+    {
+      "id": "nonce_nine",
+      "ok": true,
+      "detail": {
+        "candidate": 9
+      }
+    },
+    {
+      "id": "source_digest",
+      "ok": true,
+      "detail": "05e4454685fa6755f0d691a382a47b8a2f941458ea075d58e823c75e2e1f6959"
+    },
+    {
+      "id": "runtime_template",
+      "ok": true,
+      "detail": "0xa0b282997f1eacc54f302d398988e4cae8124b9fc8fd0ca3c2e2f21d326ec1ea"
+    },
+    {
+      "id": "runtime_bound_on_chain",
+      "ok": true,
+      "detail": {
+        "codeHash": "0xa0a316570cc6cd421fd22ee5bcb61332b75b07a6bee9a6e0ccb8169825b51404"
+      }
+    },
+    {
+      "id": "foreign_code_present",
+      "ok": true,
+      "detail": {
+        "bytes": 78
+      }
+    },
+    {
+      "id": "inclusion_false",
+      "ok": true,
+      "detail": {
+        "receipt": null
+      }
+    },
+    {
+      "id": "claims",
+      "ok": true,
+      "detail": {
+        "ADMISSION_DIVERGENCE": true,
+        "INCLUSION": false,
+        "EXECUTION_SUCCESS": "NOT_OBSERVED"
+      }
+    },
+    {
+      "id": "regression_descriptor_valid",
+      "ok": true,
+      "detail": {
+        "contentDigest": "dae7dee038cfd7cc4529d5131f82a595840aa3608d3661a8b179f42ffcbe2bf2",
+        "inclusionStatus": "DROPPED"
+      }
+    }
+  ],
+  "summary": {
+    "ADMISSION_DIVERGENCE": true,
+    "INCLUSION": false,
+    "EXECUTION_SUCCESS": "NOT_OBSERVED",
+    "allPassed": true
+  },
+  "writes": 0,
+  "broadcasts": 0
+}

@@ -1,0 +1,1398 @@
+{
+  "schema": "framefuzz.evidence.v1",
+  "generatedAt": "2026-11-05T22:43:59.647Z",
+  "source": "PREVIEW_GENERATED — NO RPC OR SIGNING",
+  "chainId": 1337,
+  "rpc": "[offline preview]",
+  "submissions": 0,
+  "results": [
+    {
+      "id": "uniswap-storage-s42-0-unstaked",
+      "family": "uniswap-storage",
+      "category": "Generated semantic mutation",
+      "description": "Seed 42, variant 0: {\"operation\":\"storage-and-stake\",\"kind\":\"unstaked\",\"poolRead\":true,\"staked\":false,\"region\":\"unstaked\"}",
+      "mutation": {
+        "generatorVersion": "framefuzz.semantic.v1",
+        "seed": 42,
+        "index": 0,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": true,
+          "configuration": {
+            "kind": "unstaked"
+          }
+        },
+        "parameter": {
+          "operation": "storage-and-stake",
+          "kind": "unstaked",
+          "poolRead": true,
+          "staked": false,
+          "region": "unstaked"
+        }
+      },
+      "ruleProvenance": {
+        "confidence": "VERIFIED",
+        "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+        "evidence": [
+          {
+            "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+            "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+          }
+        ],
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "sidecarVersion": "v4.1.1",
+        "deployedSidecarCommit": null,
+        "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "fixtureCodeHashes": {
+          "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+          "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+          "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+        }
+      },
+      "reproduction": {
+        "schema": "framefuzz.mutation-reproduction.v1",
+        "generatorVersion": "framefuzz.semantic.v1",
+        "definition": {
+          "version": "framefuzz.semantic.v1",
+          "suite": "uniswap-storage",
+          "seed": 42,
+          "count": 3,
+          "ruleModel": {
+            "version": "forshtat-1337-observed-2026-11-06.v1",
+            "chainId": 1337,
+            "provenance": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "gas": {
+              "maxTotal": 100000,
+              "senderExecution": 30000,
+              "signatureCost": 2800,
+              "observedPayerUsed": 7093,
+              "knownSufficientPayer": 50000
+            },
+            "storage": {
+              "public": {
+                "unstaked": false,
+                "staked": false,
+                "rejection": "StorageReadNonSender"
+              },
+              "alt": {
+                "unstaked": false,
+                "staked": true,
+                "rejection": "unstaked payer accessed"
+              }
+            }
+          },
+          "baseTemplate": {
+            "id": "workshop-sponsored-v1",
+            "model": {
+              "verificationGasLimit": 50000,
+              "poolRead": false
+            },
+            "setup": {
+              "staked": false,
+              "poolRead": false,
+              "configuration": {
+                "kind": "basic"
+              }
+            }
+          },
+          "operation": {
+            "type": "storage-and-stake"
+          },
+          "paths": [
+            "public",
+            "alt"
+          ]
+        },
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "variantIndex": 0,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": true,
+          "configuration": {
+            "kind": "unstaked"
+          }
+        },
+        "oracle": {
+          "public": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "public unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "alt": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "unstaked payer accessed",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "alt unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          }
+        },
+        "accountAllocation": "Allocate a fresh isolated sender per case/path, query pending nonce after checked setup, re-encode and re-sign; never replay stale signed bytes",
+        "cli": "node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --variant 0 --submit --allow-chain 1337",
+        "network": {
+          "chainId": 1337,
+          "endpoints": {
+            "public": "https://altmempool.forshtat.com/[redacted-path]",
+            "alt": "https://altmempool.forshtat.com/[redacted-path]"
+          },
+          "configFile": "examples/live/devnet.json",
+          "paymasters": {
+            "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+          },
+          "codeHashes": {
+            "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+            "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+            "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+          }
+        },
+        "rulesFile": "rules/devnet-1337.v1.json",
+        "decisions": [
+          {
+            "path": "public",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "rejected",
+              "expectedRule": "StorageReadNonSender",
+              "prerequisite": {
+                "poolRead": true,
+                "staked": false,
+                "paymasterKind": "unstaked"
+              },
+              "reason": "public unstaked external Uniswap storage read is disallowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "inconclusive",
+              "message": "Offline preview: no signing, setup, RPC or submission"
+            },
+            "receipt": {
+              "state": "not_checked"
+            }
+          },
+          {
+            "path": "alt",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "rejected",
+              "expectedRule": "unstaked payer accessed",
+              "prerequisite": {
+                "poolRead": true,
+                "staked": false,
+                "paymasterKind": "unstaked"
+              },
+              "reason": "alt unstaked external Uniswap storage read is disallowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "inconclusive",
+              "message": "Offline preview: no signing, setup, RPC or submission"
+            },
+            "receipt": {
+              "state": "not_checked"
+            }
+          }
+        ],
+        "unexpected": false,
+        "shrink": null
+      },
+      "paths": [
+        {
+          "id": "public",
+          "method": "eth_sendRawTransaction",
+          "expected": "rejected",
+          "expectedRule": "StorageReadNonSender",
+          "observed": {
+            "status": "inconclusive",
+            "message": "Offline preview: no signing, setup, RPC or submission"
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "public unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "comparison": {
+            "verdict": "INCONCLUSIVE",
+            "reason": "Offline preview: no signing, setup, RPC or submission"
+          }
+        },
+        {
+          "id": "alt",
+          "method": "eth_sendFrameTransaction",
+          "expected": "rejected",
+          "expectedRule": "unstaked payer accessed",
+          "observed": {
+            "status": "inconclusive",
+            "message": "Offline preview: no signing, setup, RPC or submission"
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "unstaked payer accessed",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": false,
+              "paymasterKind": "unstaked"
+            },
+            "reason": "alt unstaked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "comparison": {
+            "verdict": "INCONCLUSIVE",
+            "reason": "Offline preview: no signing, setup, RPC or submission"
+          }
+        }
+      ],
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "id": "uniswap-storage-s42-1-staked",
+      "family": "uniswap-storage",
+      "category": "Generated semantic mutation",
+      "description": "Seed 42, variant 1: {\"operation\":\"storage-and-stake\",\"kind\":\"staked\",\"poolRead\":true,\"staked\":true,\"region\":\"staked\"}",
+      "mutation": {
+        "generatorVersion": "framefuzz.semantic.v1",
+        "seed": 42,
+        "index": 1,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": true,
+          "poolRead": true,
+          "configuration": {
+            "kind": "staked"
+          }
+        },
+        "parameter": {
+          "operation": "storage-and-stake",
+          "kind": "staked",
+          "poolRead": true,
+          "staked": true,
+          "region": "staked"
+        }
+      },
+      "ruleProvenance": {
+        "confidence": "VERIFIED",
+        "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+        "evidence": [
+          {
+            "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+            "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+          }
+        ],
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "sidecarVersion": "v4.1.1",
+        "deployedSidecarCommit": null,
+        "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "fixtureCodeHashes": {
+          "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+          "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+          "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+        }
+      },
+      "reproduction": {
+        "schema": "framefuzz.mutation-reproduction.v1",
+        "generatorVersion": "framefuzz.semantic.v1",
+        "definition": {
+          "version": "framefuzz.semantic.v1",
+          "suite": "uniswap-storage",
+          "seed": 42,
+          "count": 3,
+          "ruleModel": {
+            "version": "forshtat-1337-observed-2026-11-06.v1",
+            "chainId": 1337,
+            "provenance": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "gas": {
+              "maxTotal": 100000,
+              "senderExecution": 30000,
+              "signatureCost": 2800,
+              "observedPayerUsed": 7093,
+              "knownSufficientPayer": 50000
+            },
+            "storage": {
+              "public": {
+                "unstaked": false,
+                "staked": false,
+                "rejection": "StorageReadNonSender"
+              },
+              "alt": {
+                "unstaked": false,
+                "staked": true,
+                "rejection": "unstaked payer accessed"
+              }
+            }
+          },
+          "baseTemplate": {
+            "id": "workshop-sponsored-v1",
+            "model": {
+              "verificationGasLimit": 50000,
+              "poolRead": false
+            },
+            "setup": {
+              "staked": false,
+              "poolRead": false,
+              "configuration": {
+                "kind": "basic"
+              }
+            }
+          },
+          "operation": {
+            "type": "storage-and-stake"
+          },
+          "paths": [
+            "public",
+            "alt"
+          ]
+        },
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "variantIndex": 1,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": true
+        },
+        "setup": {
+          "staked": true,
+          "poolRead": true,
+          "configuration": {
+            "kind": "staked"
+          }
+        },
+        "oracle": {
+          "public": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "public staked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "alt": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "accepted",
+            "expectedRule": null,
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "alt staked external Uniswap storage read is allowed by the evidenced policy"
+          }
+        },
+        "accountAllocation": "Allocate a fresh isolated sender per case/path, query pending nonce after checked setup, re-encode and re-sign; never replay stale signed bytes",
+        "cli": "node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --variant 1 --submit --allow-chain 1337",
+        "network": {
+          "chainId": 1337,
+          "endpoints": {
+            "public": "https://altmempool.forshtat.com/[redacted-path]",
+            "alt": "https://altmempool.forshtat.com/[redacted-path]"
+          },
+          "configFile": "examples/live/devnet.json",
+          "paymasters": {
+            "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+          },
+          "codeHashes": {
+            "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+            "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+            "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+          }
+        },
+        "rulesFile": "rules/devnet-1337.v1.json",
+        "decisions": [
+          {
+            "path": "public",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "rejected",
+              "expectedRule": "StorageReadNonSender",
+              "prerequisite": {
+                "poolRead": true,
+                "staked": true,
+                "paymasterKind": "staked"
+              },
+              "reason": "public staked external Uniswap storage read is disallowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "inconclusive",
+              "message": "Offline preview: no signing, setup, RPC or submission"
+            },
+            "receipt": {
+              "state": "not_checked"
+            }
+          },
+          {
+            "path": "alt",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "expected": "accepted",
+              "expectedRule": null,
+              "prerequisite": {
+                "poolRead": true,
+                "staked": true,
+                "paymasterKind": "staked"
+              },
+              "reason": "alt staked external Uniswap storage read is allowed by the evidenced policy"
+            },
+            "observed": {
+              "status": "inconclusive",
+              "message": "Offline preview: no signing, setup, RPC or submission"
+            },
+            "receipt": {
+              "state": "not_checked"
+            }
+          }
+        ],
+        "unexpected": false,
+        "shrink": null
+      },
+      "paths": [
+        {
+          "id": "public",
+          "method": "eth_sendRawTransaction",
+          "expected": "rejected",
+          "expectedRule": "StorageReadNonSender",
+          "observed": {
+            "status": "inconclusive",
+            "message": "Offline preview: no signing, setup, RPC or submission"
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "rejected",
+            "expectedRule": "StorageReadNonSender",
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "public staked external Uniswap storage read is disallowed by the evidenced policy"
+          },
+          "comparison": {
+            "verdict": "INCONCLUSIVE",
+            "reason": "Offline preview: no signing, setup, RPC or submission"
+          }
+        },
+        {
+          "id": "alt",
+          "method": "eth_sendFrameTransaction",
+          "expected": "accepted",
+          "expectedRule": null,
+          "observed": {
+            "status": "inconclusive",
+            "message": "Offline preview: no signing, setup, RPC or submission"
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "expected": "accepted",
+            "expectedRule": null,
+            "prerequisite": {
+              "poolRead": true,
+              "staked": true,
+              "paymasterKind": "staked"
+            },
+            "reason": "alt staked external Uniswap storage read is allowed by the evidenced policy"
+          },
+          "comparison": {
+            "verdict": "INCONCLUSIVE",
+            "reason": "Offline preview: no signing, setup, RPC or submission"
+          }
+        }
+      ],
+      "verdict": "INCONCLUSIVE"
+    },
+    {
+      "id": "uniswap-storage-s42-2-basic",
+      "family": "uniswap-storage",
+      "category": "Generated semantic mutation",
+      "description": "Seed 42, variant 2: {\"operation\":\"storage-and-stake\",\"kind\":\"basic\",\"poolRead\":false,\"staked\":false,\"region\":\"basic\"}",
+      "mutation": {
+        "generatorVersion": "framefuzz.semantic.v1",
+        "seed": 42,
+        "index": 2,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": false
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": false,
+          "configuration": {
+            "kind": "basic"
+          }
+        },
+        "parameter": {
+          "operation": "storage-and-stake",
+          "kind": "basic",
+          "poolRead": false,
+          "staked": false,
+          "region": "basic"
+        }
+      },
+      "ruleProvenance": {
+        "confidence": "VERIFIED",
+        "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+        "evidence": [
+          {
+            "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+            "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+          }
+        ],
+        "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+        "sidecarVersion": "v4.1.1",
+        "deployedSidecarCommit": null,
+        "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+        "fixtureCodeHashes": {
+          "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+          "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+          "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+        }
+      },
+      "reproduction": {
+        "schema": "framefuzz.mutation-reproduction.v1",
+        "generatorVersion": "framefuzz.semantic.v1",
+        "definition": {
+          "version": "framefuzz.semantic.v1",
+          "suite": "uniswap-storage",
+          "seed": 42,
+          "count": 3,
+          "ruleModel": {
+            "version": "forshtat-1337-observed-2026-11-06.v1",
+            "chainId": 1337,
+            "provenance": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "gas": {
+              "maxTotal": 100000,
+              "senderExecution": 30000,
+              "signatureCost": 2800,
+              "observedPayerUsed": 7093,
+              "knownSufficientPayer": 50000
+            },
+            "storage": {
+              "public": {
+                "unstaked": false,
+                "staked": false,
+                "rejection": "StorageReadNonSender"
+              },
+              "alt": {
+                "unstaked": false,
+                "staked": true,
+                "rejection": "unstaked payer accessed"
+              }
+            }
+          },
+          "baseTemplate": {
+            "id": "workshop-sponsored-v1",
+            "model": {
+              "verificationGasLimit": 50000,
+              "poolRead": false
+            },
+            "setup": {
+              "staked": false,
+              "poolRead": false,
+              "configuration": {
+                "kind": "basic"
+              }
+            }
+          },
+          "operation": {
+            "type": "storage-and-stake"
+          },
+          "paths": [
+            "public",
+            "alt"
+          ]
+        },
+        "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+        "variantIndex": 2,
+        "baseTemplateId": "workshop-sponsored-v1",
+        "unsignedModel": {
+          "verificationGasLimit": 50000,
+          "poolRead": false
+        },
+        "setup": {
+          "staked": false,
+          "poolRead": false,
+          "configuration": {
+            "kind": "basic"
+          }
+        },
+        "oracle": {
+          "public": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          },
+          "alt": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          }
+        },
+        "accountAllocation": "Allocate a fresh isolated sender per case/path, query pending nonce after checked setup, re-encode and re-sign; never replay stale signed bytes",
+        "cli": "node bin/framefuzz.mjs mutate --suite uniswap-storage --seed 42 --count 3 --variant 2 --submit --allow-chain 1337",
+        "network": {
+          "chainId": 1337,
+          "endpoints": {
+            "public": "https://altmempool.forshtat.com/[redacted-path]",
+            "alt": "https://altmempool.forshtat.com/[redacted-path]"
+          },
+          "configFile": "examples/live/devnet.json",
+          "paymasters": {
+            "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+            "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+            "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+          },
+          "codeHashes": {
+            "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+            "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+            "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+          }
+        },
+        "rulesFile": "rules/devnet-1337.v1.json",
+        "decisions": [
+          {
+            "path": "public",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "expected": "accepted",
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+            },
+            "observed": {
+              "status": "inconclusive",
+              "message": "Offline preview: no signing, setup, RPC or submission"
+            },
+            "receipt": {
+              "state": "not_checked"
+            }
+          },
+          {
+            "path": "alt",
+            "oracle": {
+              "ruleId": "STORAGE_ACCESS",
+              "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+              "confidence": "VERIFIED",
+              "source": {
+                "confidence": "VERIFIED",
+                "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+                "evidence": [
+                  {
+                    "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                    "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                  }
+                ],
+                "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+                "sidecarVersion": "v4.1.1",
+                "deployedSidecarCommit": null,
+                "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+                "fixtureCodeHashes": {
+                  "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                  "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                  "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+                }
+              },
+              "expected": "accepted",
+              "components": {
+                "payer": 50000,
+                "sender": 30000,
+                "signature": 2800,
+                "total": 82800,
+                "cap": 100000
+              },
+              "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+            },
+            "observed": {
+              "status": "inconclusive",
+              "message": "Offline preview: no signing, setup, RPC or submission"
+            },
+            "receipt": {
+              "state": "not_checked"
+            }
+          }
+        ],
+        "unexpected": false,
+        "shrink": null
+      },
+      "paths": [
+        {
+          "id": "public",
+          "method": "eth_sendRawTransaction",
+          "expected": "accepted",
+          "observed": {
+            "status": "inconclusive",
+            "message": "Offline preview: no signing, setup, RPC or submission"
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          },
+          "comparison": {
+            "verdict": "INCONCLUSIVE",
+            "reason": "Offline preview: no signing, setup, RPC or submission"
+          }
+        },
+        {
+          "id": "alt",
+          "method": "eth_sendFrameTransaction",
+          "expected": "accepted",
+          "observed": {
+            "status": "inconclusive",
+            "message": "Offline preview: no signing, setup, RPC or submission"
+          },
+          "receipt": {
+            "state": "not_checked"
+          },
+          "oracle": {
+            "ruleId": "STORAGE_ACCESS",
+            "modelVersion": "forshtat-1337-observed-2026-11-06.v1",
+            "confidence": "VERIFIED",
+            "source": {
+              "confidence": "VERIFIED",
+              "meaning": "Verified observed rule behavior for the pinned fixture, not an attestation of the sidecar build",
+              "evidence": [
+                {
+                  "file": "evidence/live/2026-11-06/2026-11-05T22-04-27-896Z-LIVE_RPC_SUBMISSION-3a838bca.json",
+                  "sha256": "c473950c4697551408e406a2f32cdd4738c22c3a26bc0044a4d5ee8d0c0468a6"
+                }
+              ],
+              "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+              "sidecarVersion": "v4.1.1",
+              "deployedSidecarCommit": null,
+              "reviewedSidecarCommit": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+              "fixtureCodeHashes": {
+                "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+                "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+                "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+              }
+            },
+            "expected": "accepted",
+            "components": {
+              "payer": 50000,
+              "sender": 30000,
+              "signature": 2800,
+              "total": 82800,
+              "cap": 100000
+            },
+            "reason": "Budget 82800 <= 100000, payer gas >= evidenced sufficient 50000, and no external pool read; setup must still pass"
+          },
+          "comparison": {
+            "verdict": "INCONCLUSIVE",
+            "reason": "Offline preview: no signing, setup, RPC or submission"
+          }
+        }
+      ],
+      "verdict": "INCONCLUSIVE"
+    }
+  ],
+  "campaign": {
+    "generatorVersion": "framefuzz.semantic.v1",
+    "suite": "uniswap-storage",
+    "seed": 42,
+    "count": 3,
+    "selectedVariant": null,
+    "definitionDigest": "25b92b3e079ca2ecc9e5b7c2cc03851fae0c189eebb7b1a3d38b89e5a57793c8",
+    "ruleModelVersion": "forshtat-1337-observed-2026-11-06.v1"
+  },
+  "network": null,
+  "coverage": {
+    "generatorVersion": "framefuzz.semantic.v1",
+    "generatedVariants": 3,
+    "decisions": 6,
+    "rules": [
+      {
+        "ruleId": "STORAGE_ACCESS",
+        "path": "public",
+        "variants": 3,
+        "verified": 3,
+        "inferred": 0,
+        "unknown": 0,
+        "expectedAccept": 1,
+        "expectedReject": 2,
+        "matched": 0,
+        "unexpected": 0,
+        "preconditionFailures": 0,
+        "regions": [
+          "unstaked",
+          "staked",
+          "basic"
+        ]
+      },
+      {
+        "ruleId": "STORAGE_ACCESS",
+        "path": "alt",
+        "variants": 3,
+        "verified": 3,
+        "inferred": 0,
+        "unknown": 0,
+        "expectedAccept": 2,
+        "expectedReject": 1,
+        "matched": 0,
+        "unexpected": 0,
+        "preconditionFailures": 0,
+        "regions": [
+          "unstaked",
+          "staked",
+          "basic"
+        ]
+      }
+    ]
+  },
+  "totals": {
+    "cases": 3,
+    "matched": 0,
+    "unexpected": 0,
+    "inconclusive": 3,
+    "transportFailures": 0,
+    "preconditionFailures": 0
+  }
+}

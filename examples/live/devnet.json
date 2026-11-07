@@ -1,0 +1,35 @@
+{
+  "chainId": 1337,
+  "authorizedEndpoints": [
+    "https://altmempool.forshtat.com",
+    "https://altmempool.forshtat.com/rpc/"
+  ],
+  "recipient": "0x8943545177806ED17B9F23F0a21ee5948eCaa776",
+  "stakingRegistry": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+  "stateView": "0xd89a052862AaA34f0B6cc7f3B6a9D080584a43FB",
+  "poolManager": "0x6bF9Aa9c04fd001385742d61f6818C3236429848",
+  "uniswapCodeHashes": {
+    "stateView": "0xa0ef20cd92d4b7fede36b2291bc7295146efb4a2f949c2e701d676888c29a1fe",
+    "poolManager": "0x7e6f74167f749db1dd7da71fe8da91a6e7484dea8f2eab11a3211536b26b90f8"
+  },
+  "poolId": "0x784bd7879f8155eda79b7834d53c2f19ace60aed221fe33ef03ce660eff60648",
+  "paymasters": {
+    "basic": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+    "staked": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+    "unstaked": "0x3d66c53105be7930fd89571157a41137c12b003f"
+  },
+  "paymasterCodeHashes": {
+    "basic": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+    "staked": "0x2ac1dce1c1843e82101b1f6732da8fb3cf46a21438d7f6a90d5ba0cfef1ce5ac",
+    "unstaked": "0xa5e5c558645d99b864453e7db878d54339cabe62eb8e9be97a72f18b31caa17e"
+  },
+  "minSponsorBalanceWei": "1000000000000000",
+  "minStakeWei": "10000000000000000",
+  "provenance": {
+    "workshopCommit": "bcfe02a196ca97b6fb0d1044db9d0b4c673831fc",
+    "sidecarSourceReviewed": "2e22ff0a2898e69ea4bf5275bce1be8581a8582a",
+    "deployedSidecarCommit": null,
+    "executionCommit": "9aa3645d795945c64400f41a70aace0edfa7f383",
+    "source": "Supplied framefuzz-poc.zip fast_gate_rerun.ts and PAYMASTER_FEASIBILITY.md; live code/stake/balance checked"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "version": "framefuzz.self-funded.v1",
+  "chainId": 1337,
+  "profile": "ethrex-eip8141-tracer",
+  "layout": "VERIFY(EXECUTION_AND_PAYMENT,sender) -> SENDER(ActionRecorder)",
+  "verificationData": "0x01",
+  "verificationExecutionGas": 60000,
+  "actionExecutionGas": 150000,
+  "actionStateGas": 200000,
+  "maxTotalGas": 500000,
+  "maxFeePerGasWei": "2000000000",
+  "maxFeePerSenderWei": "1000000000000000",
+  "originalModelReport": "evidence/investigator/2026-11-06/sonnet-retry-2.json",
+  "originalVariant": 1,
+  "originalDescriptorDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76",
+  "executionAuthorized": false,
+  "runtimeCompatibility": "UNVERIFIED"
+}

@@ -1,0 +1,22 @@
+{
+  "status": "PUBLISHED_AND_VERIFIED",
+  "intentDigest": "be8bb848e49f63f3d14c3418e239d3b1eccd8b6360eb1c326ec192a5ddd40ff4",
+  "transactionHash": "0x007bd10f4d720a124c4dd0b44449f235b32f364a4b68e7657917f1717a307c00",
+  "entityKey": "0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1",
+  "blockNumber": "302519",
+  "receiptStatus": "success",
+  "creator": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+  "owner": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+  "expiresAtBlock": "345303",
+  "contentDigest": "0f7f014559fbfb6ea828820cc954401f1562937b66c2fe24360959dcb5196b25",
+  "feePaidEther": "0.000278489",
+  "feePaidWei": "278489000000000",
+  "gasUsed": "278489",
+  "effectiveGasPrice": "1000000000",
+  "approvedMaxFeeEther": "0.001",
+  "withinApprovedCeiling": true,
+  "importPreview": "evidence/arkiv/2026-11-07/unsigned-import-preview.json",
+  "freshFetch": "evidence/arkiv/2026-11-07/fresh-fetch.json",
+  "explorerUrl": null,
+  "explorerNote": "No verified public Rabdi transaction explorer URL is pinned in this repository; do not invent one."
+}

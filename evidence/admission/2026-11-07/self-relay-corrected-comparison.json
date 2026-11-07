@@ -1,0 +1,345 @@
+{
+  "schema": "framefuzz.admission-comparison.v1",
+  "classification": "LIVE",
+  "capturedAt": "2026-11-06T21:57:56.813Z",
+  "transactionIdentity": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+  "preflight": {
+    "observedAt": "2026-11-06T21:57:55.513Z",
+    "routing": {
+      "canonical": {
+        "role": "CANONICAL_EXECUTION",
+        "clientFamily": "ethrex",
+        "submissionMethod": "eth_sendRawTransaction",
+        "parameterShape": "SIGNED_TYPE_0X06_BYTES"
+      },
+      "alternative": {
+        "role": "ALTERNATIVE_SIDECAR",
+        "clientFamily": "skandha",
+        "submissionMethod": "eth_sendFrameTransaction",
+        "parameterShape": "STRUCTURED_SIGNED_FRAME",
+        "healthy": true
+      }
+    },
+    "sender": {
+      "address": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+      "balanceWei": "459796000000000",
+      "pendingNonce": "1",
+      "code": "0x"
+    },
+    "gasPriceWei": "7166380",
+    "candidate": {
+      "hash": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+      "rawIdentity": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+      "maximumSenderSpendWei": "206508000000000",
+      "operatorCeilingWei": "210000000000000"
+    },
+    "prior": {
+      "canonicalReceipt": null,
+      "sidecar": "FRAME_TRANSACTION_NOT_FOUND"
+    },
+    "status": "READY"
+  },
+  "ordering": "ALTERNATIVE_INITIATED_FIRST_THEN_CANONICAL_IMMEDIATELY_WITHOUT_AWAIT",
+  "requests": {
+    "alternative": {
+      "endpoint": "https://altmempool.forshtat.com/rpc/",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 13,
+        "method": "eth_sendFrameTransaction",
+        "params": [
+          {
+            "chainId": "0x539",
+            "nonceKeys": [
+              "0x0"
+            ],
+            "nonceSeq": "0x1",
+            "sender": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+            "frames": [
+              {
+                "mode": 1,
+                "flags": 3,
+                "target": null,
+                "limits": {
+                  "execution": "0x7530",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x"
+              },
+              {
+                "mode": 2,
+                "flags": 0,
+                "target": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+                "limits": {
+                  "execution": "0xc350",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x"
+              }
+            ],
+            "signatures": [
+              {
+                "scheme": 1,
+                "signer": "0x",
+                "msg": "0x",
+                "signature": "0x0132757279e86860fc213b682a0523b602dce675faf70d4d4c8371fde6b95a43746813791ef632071b2a7bada10be422626bad66788b18ceafe4073eee130ea7cb"
+              }
+            ],
+            "fees": {
+              "maxPriorityFeePerGas": "0x77359400",
+              "maxFeePerGas": "0x77359400",
+              "maxFeePerBlobGas": "0x0"
+            },
+            "blobVersionedHashes": [],
+            "recentRootReferences": []
+          }
+        ]
+      },
+      "startedAt": "2026-11-06T21:57:55.513Z",
+      "completedAt": "2026-11-06T21:57:56.510Z",
+      "httpStatus": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 13,
+        "error": {
+          "message": "Invalid Transaction: Nonce mismatch: expected 2, got 1",
+          "code": -32500
+        }
+      }
+    },
+    "canonical": {
+      "endpoint": "https://altmempool.forshtat.com",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 14,
+        "method": "eth_sendRawTransaction",
+        "params": [
+          "0x06f89e820539c1800194366e6203603c39eec1e75b3be6f078911447f235eaca010380c4827530808080de028094366e6203603c39eec1e75b3be6f078911447f235c482c350808080f848f846018080b8410132757279e86860fc213b682a0523b602dce675faf70d4d4c8371fde6b95a43746813791ef632071b2a7bada10be422626bad66788b18ceafe4073eee130ea7cbcb8477359400847735940080c0c0"
+        ]
+      },
+      "startedAt": "2026-11-06T21:57:55.513Z",
+      "completedAt": "2026-11-06T21:57:55.765Z",
+      "httpStatus": 200,
+      "response": {
+        "id": 14,
+        "jsonrpc": "2.0",
+        "result": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510"
+      }
+    }
+  },
+  "observations": {
+    "canonicalReceipt": {
+      "endpoint": "https://altmempool.forshtat.com",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 15,
+        "method": "eth_getTransactionReceipt",
+        "params": [
+          "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510"
+        ]
+      },
+      "startedAt": "2026-11-06T21:57:56.510Z",
+      "completedAt": "2026-11-06T21:57:56.760Z",
+      "httpStatus": 200,
+      "response": {
+        "id": 15,
+        "jsonrpc": "2.0",
+        "result": {
+          "blockHash": "0x2ca19c494a121ad3b12f76087e1d0647f1f64ef0b02b28cee115bfbf5f07024b",
+          "blockNumber": "0x243f",
+          "contractAddress": null,
+          "cumulativeGasUsed": "0x4e86",
+          "effectiveGasPrice": "0x77359400",
+          "frameReceipts": [
+            {
+              "gasUsed": "0x64",
+              "logs": [],
+              "stateGasUsed": "0x0",
+              "status": "0x1"
+            },
+            {
+              "gasUsed": "0x64",
+              "logs": [],
+              "stateGasUsed": "0x0",
+              "status": "0x1"
+            }
+          ],
+          "from": "0x366e6203603c39eec1e75b3be6f078911447f235",
+          "gasUsed": "0x4e86",
+          "logs": [],
+          "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+          "payer": "0x366e6203603c39eec1e75b3be6f078911447f235",
+          "status": "0x1",
+          "to": "0x366e6203603c39eec1e75b3be6f078911447f235",
+          "transactionHash": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+          "transactionIndex": "0x0",
+          "type": "0x6"
+        }
+      }
+    },
+    "sidecarAdmissionReport": {
+      "endpoint": "https://altmempool.forshtat.com/rpc/",
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 16,
+        "method": "skandha_explorer_getTransaction",
+        "params": [
+          "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510"
+        ]
+      },
+      "startedAt": "2026-11-06T21:57:56.510Z",
+      "completedAt": "2026-11-06T21:57:56.813Z",
+      "httpStatus": 200,
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 16,
+        "result": {
+          "hash": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+          "entry": null,
+          "admission": {
+            "id": 1593,
+            "txHash": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+            "sender": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+            "nonce": "0x1",
+            "nonceKeys": [
+              "0x0"
+            ],
+            "at": 1794002274603,
+            "source": "rpc",
+            "outcome": "rejected",
+            "errorCode": -32500,
+            "checks": [
+              {
+                "rule": "gas-limit",
+                "verdict": "pass"
+              },
+              {
+                "rule": "recent-root",
+                "verdict": "pass"
+              },
+              {
+                "rule": "prefix",
+                "verdict": "pass"
+              },
+              {
+                "rule": "structure",
+                "verdict": "pass"
+              },
+              {
+                "rule": "signature",
+                "verdict": "pass"
+              },
+              {
+                "rule": "simulation",
+                "verdict": "fail",
+                "detail": "Invalid Transaction: Nonce mismatch: expected 2, got 1"
+              },
+              {
+                "rule": "trace-alignment",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "OP-061",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "execution",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "mempool",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "out-of-gas",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "OP-011",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "create",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "storage",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "COD-010",
+                "verdict": "skipped"
+              },
+              {
+                "rule": "entrypoint-access",
+                "verdict": "skipped"
+              }
+            ],
+            "frames": [
+              {
+                "mode": 1,
+                "flags": 3,
+                "target": null,
+                "limits": {
+                  "execution": "0x7530",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x"
+              },
+              {
+                "mode": 2,
+                "flags": 0,
+                "target": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+                "limits": {
+                  "execution": "0xc350",
+                  "state": "0x0"
+                },
+                "value": "0x0",
+                "data": "0x"
+              }
+            ],
+            "frameStatuses": [
+              "not-run",
+              "not-run"
+            ]
+          },
+          "events": [
+            {
+              "seq": 5068,
+              "txHash": "0xc05703acca2def2f89567ac33618b48a44b7eb021c2db0023e5f3b90227ba510",
+              "at": 1794002274643,
+              "kind": "rejected",
+              "reason": "Invalid Transaction: Nonce mismatch: expected 2, got 1"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "classificationResult": {
+    "canonicalAdmission": "ACCEPTED",
+    "canonicalInclusion": "INCLUDED_SUCCESS",
+    "execution": "SUCCESS_BOTH_FRAMES",
+    "alternativeAdmission": "REJECTED_NONCE_RACE",
+    "comparison": "INCONCLUSIVE_SHARED_STATE_RACE",
+    "policyDiscrepancy": false
+  },
+  "postState": {
+    "observedHead": 9282,
+    "senderBalanceWei": "419592000000000",
+    "senderPendingNonce": "2",
+    "senderCode": "0x",
+    "actualGasUsed": "20102",
+    "effectiveGasPriceWei": "2000000000",
+    "actualSenderExpenditureWei": "40204000000000"
+  },
+  "retryCount": 0,
+  "notes": [
+    "No submission retry occurred.",
+    "Duplicate, known, timeout and nonce-conflict responses remain path-inconclusive.",
+    "Canonical inclusion and sidecar admission are classified independently."
+  ]
+}

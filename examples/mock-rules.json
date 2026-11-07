@@ -1,0 +1,24 @@
+{
+  "status": "MOCK",
+  "sidecarVersion": "in-process-test-double-1",
+  "reference": "examples/mock-demo.mjs; fictional test model, not deployed admission rules",
+  "verifiedAt": "2026-11-06",
+  "verificationGas": {
+    "boundary": 100000,
+    "acceptedSide": "at-or-below",
+    "rejectionRule": "MockVerificationGasLimit"
+  },
+  "paymaster": {
+    "basic": { "paths": { "public": { "expected": "accepted" }, "alt": { "expected": "accepted" } } },
+    "unstaked-pool-read": {
+      "stateView": "0x1111111111111111111111111111111111111111",
+      "poolId": "0x2222222222222222222222222222222222222222222222222222222222222222",
+      "paths": { "public": { "expected": "rejected", "expectedRule": "MockForeignStorage" }, "alt": { "expected": "rejected", "expectedRule": "MockForeignStorage" } }
+    },
+    "staked-pool-read": {
+      "stateView": "0x1111111111111111111111111111111111111111",
+      "poolId": "0x2222222222222222222222222222222222222222222222222222222222222222",
+      "paths": { "public": { "expected": "rejected", "expectedRule": "MockForeignStorage" }, "alt": { "expected": "accepted" } }
+    }
+  }
+}

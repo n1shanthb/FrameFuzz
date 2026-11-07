@@ -1,0 +1,430 @@
+
+> framefuzz-starter@0.1.0 test
+> node --test
+
+TAP version 13
+# Subtest: adapter builds independent signed variants and exports allowlisted replay metadata
+ok 1 - adapter builds independent signed variants and exports allowlisted replay metadata
+  ---
+  duration_ms: 4.5092
+  ...
+# Subtest: adapter executes setup before querying pending nonce and signing
+ok 2 - adapter executes setup before querying pending nonce and signing
+  ---
+  duration_ms: 3.5302
+  ...
+# Subtest: adapter fails closed on setup errors, unsafe sender reuse, invalid bytes, and missing hooks
+ok 3 - adapter fails closed on setup errors, unsafe sender reuse, invalid bytes, and missing hooks
+  ---
+  duration_ms: 3.3171
+  ...
+# Subtest: adapter rejects mainnet before calling any setup or signer
+ok 4 - adapter rejects mainnet before calling any setup or signer
+  ---
+  duration_ms: 0.7148
+  ...
+# Rabdi: no access key, so requests go to the public endpoint, which is heavily rate limited. Get a free key at https://hub.arkiv.network/access-keys and pass it as rabdi({ accessKey }).
+# Subtest: publisher projection excludes raw signatures, local paths, credentials and arbitrary metadata
+ok 5 - publisher projection excludes raw signatures, local paths, credentials and arbitrary metadata
+  ---
+  duration_ms: 40.6648
+  ...
+# Subtest: digest, schema and semantic tampering fail closed even with a recomputed content digest
+ok 6 - digest, schema and semantic tampering fail closed even with a recomputed content digest
+  ---
+  duration_ms: 92.5378
+  ...
+# Subtest: query crosses owners, quarantines invalid metadata, and excludes expired entities
+ok 7 - query crosses owners, quarantines invalid metadata, and excludes expired entities
+  ---
+  duration_ms: 95.8359
+  ...
+# Subtest: creator binding, network isolation and filter validation are enforced
+ok 8 - creator binding, network isolation and filter validation are enforced
+  ---
+  duration_ms: 18.8591
+  ...
+# Subtest: import freshly retrieves and regenerates unsigned semantics without transport or signing
+ok 9 - import freshly retrieves and regenerates unsigned semantics without transport or signing
+  ---
+  duration_ms: 28.8629
+  ...
+# Subtest: publish requires a distinct Rabdi wallet, explicit submission and successful receipt
+ok 10 - publish requires a distinct Rabdi wallet, explicit submission and successful receipt
+  ---
+  duration_ms: 23.9391
+  ...
+# Subtest: official SDK fetch uses mocked JSON-RPC transport and validates the typed onchain row
+ok 11 - official SDK fetch uses mocked JSON-RPC transport and validates the typed onchain row
+  ---
+  duration_ms: 55.2023
+  ...
+# Subtest: dashboard exposes direct registry reads and import but rejects community broadcast overrides
+ok 12 - dashboard exposes direct registry reads and import but rejects community broadcast overrides
+  ---
+  duration_ms: 331.7151
+  ...
+# Subtest: CLI runs full mock demo, documents flags, and returns nonzero for incomplete runs
+ok 13 - CLI runs full mock demo, documents flags, and returns nonzero for incomplete runs
+  ---
+  duration_ms: 4705.4965
+  ...
+# Subtest: dashboard runs selected mutation through configured adapter and rejects cross-origin POST
+ok 14 - dashboard runs selected mutation through configured adapter and rejects cross-origin POST
+  ---
+  duration_ms: 94.4908
+  ...
+# Subtest: separate paths use separate checked endpoints and capture independent receipt success
+ok 15 - separate paths use separate checked endpoints and capture independent receipt success
+  ---
+  duration_ms: 14.2012
+  ...
+# Subtest: preflight mismatch prevents ALL builders, setup and submissions
+ok 16 - preflight mismatch prevents ALL builders, setup and submissions
+  ---
+  duration_ms: 1.4413
+  ...
+# Subtest: duplicate static signed bytes and sender/nonces are blocked before any submission
+ok 17 - duplicate static signed bytes and sender/nonces are blocked before any submission
+  ---
+  duration_ms: 3.9201
+  ...
+# Subtest: preview never invokes prepare; receipt RPC errors preserve accepted admission
+ok 18 - preview never invokes prepare; receipt RPC errors preserve accepted admission
+  ---
+  duration_ms: 1.9163
+  ...
+# Subtest: receipt revert and pending remain independent of matching admission
+ok 19 - receipt revert and pending remain independent of matching admission
+  ---
+  duration_ms: 13.4377
+  ...
+# Subtest: comparison distinguishes verdicts and avoids funding/nonce/malformed false positives
+ok 20 - comparison distinguishes verdicts and avoids funding/nonce/malformed false positives
+  ---
+  duration_ms: 1.5653
+  ...
+# Subtest: preflight transport failure produces exportable evidence and prevents all builders
+ok 21 - preflight transport failure produces exportable evidence and prevents all builders
+  ---
+  duration_ms: 1.2169
+  ...
+# Subtest: comparative raw fixtures without nonce metadata are not submitted
+ok 22 - comparative raw fixtures without nonce metadata are not submitted
+  ---
+  duration_ms: 2.3878
+  ...
+# Subtest: MOCK adapters and MOCK replay metadata cannot target remote gateways
+ok 23 - MOCK adapters and MOCK replay metadata cannot target remote gateways
+  ---
+  duration_ms: 1.5293
+  ...
+# Subtest: mismatched receipt cannot claim inclusion or erase the admission verdict
+ok 24 - mismatched receipt cannot claim inclusion or erase the admission verdict
+  ---
+  duration_ms: 1.664
+  ...
+# Subtest: complete mock demo exports honest evidence and dashboard serves selection and downloads
+ok 25 - complete mock demo exports honest evidence and dashboard serves selection and downloads
+  ---
+  duration_ms: 621.3955
+  ...
+# Subtest: same seed regenerates the identical semantic sequence and descriptors
+ok 26 - same seed regenerates the identical semantic sequence and descriptors
+  ---
+  duration_ms: 23.8758
+  ...
+# Subtest: different seeds change sampled values beyond the boundary anchor set
+ok 27 - different seeds change sampled values beyond the boundary anchor set
+  ---
+  duration_ms: 9.3534
+  ...
+# Subtest: verified total gas model derives below/at/above without per-value expectations
+ok 28 - verified total gas model derives below/at/above without per-value expectations
+  ---
+  duration_ms: 2.1266
+  ...
+# Subtest: insufficient validation gas is a precondition; acceptance below evidenced sufficient floor is inferred
+ok 29 - insufficient validation gas is a precondition; acceptance below evidenced sufficient floor is inferred
+  ---
+  duration_ms: 1.4274
+  ...
+# Subtest: nonce, funds, malformed input and out-of-gas never become mutation policy bugs
+ok 30 - nonce, funds, malformed input and out-of-gas never become mutation policy bugs
+  ---
+  duration_ms: 2.2425
+  ...
+# Subtest: one storage specification generates three setup states and intentional path divergence
+ok 31 - one storage specification generates three setup states and intentional path divergence
+  ---
+  duration_ms: 12.0723
+  ...
+# Subtest: unsupported dimensions, unsafe counts, credentials and malformed seeds are rejected
+ok 32 - unsupported dimensions, unsafe counts, credentials and malformed seeds are rejected
+  ---
+  duration_ms: 4.3303
+  ...
+# Subtest: missing provenance produces UNKNOWN and cannot produce a discrepancy
+ok 33 - missing provenance produces UNKNOWN and cannot produce a discrepancy
+  ---
+  duration_ms: 1.7693
+  ...
+# Subtest: replay descriptors contain unsigned inputs, seed, setup and no credential material
+ok 34 - replay descriptors contain unsigned inputs, seed, setup and no credential material
+  ---
+  duration_ms: 3.1273
+  ...
+# Subtest: bounded shrinking moves toward nearest still-reproducing boundary without autonomous networking
+ok 35 - bounded shrinking moves toward nearest still-reproducing boundary without autonomous networking
+  ---
+  duration_ms: 1.8805
+  ...
+# Subtest: offline preview never touches an adapter or RPC and exposes generated coverage
+ok 36 - offline preview never touches an adapter or RPC and exposes generated coverage
+  ---
+  duration_ms: 48.9803
+  ...
+# Subtest: submission requires explicit test chain and enforces controlled batch size
+ok 37 - submission requires explicit test chain and enforces controlled batch size
+  ---
+  duration_ms: 15.8104
+  ...
+# Subtest: loaded verified model checks the historical evidence digest without changing it
+ok 38 - loaded verified model checks the historical evidence digest without changing it
+  ---
+  duration_ms: 10.0615
+  ...
+# Subtest: campaign re-signs each generated path through the real codec and keeps accounts isolated
+ok 39 - campaign re-signs each generated path through the real codec and keeps accounts isolated
+  ---
+  duration_ms: 277.6294
+  ...
+# Subtest: wrong rule class and verified outcome mismatches are distinguished
+ok 40 - wrong rule class and verified outcome mismatches are distinguished
+  ---
+  duration_ms: 1.1332
+  ...
+# Subtest: storage generator applies stake/read setup conditions before signing all six path variants
+ok 41 - storage generator applies stake/read setup conditions before signing all six path variants
+  ---
+  duration_ms: 26.2242
+  ...
+# Subtest: CLI generates and replays offline mutations with deterministic semantics and no signing
+ok 42 - CLI generates and replays offline mutations with deterministic semantics and no signing
+  ---
+  duration_ms: 4502.1091
+  ...
+# Subtest: dashboard previews generated cases and exports reproduction while rejecting unauthorized live campaigns
+ok 43 - dashboard previews generated cases and exports reproduction while rejecting unauthorized live campaigns
+  ---
+  duration_ms: 107.8833
+  ...
+# Subtest: rule evidence digest mismatch and altered fixture bindings downgrade expectations to UNKNOWN
+ok 44 - rule evidence digest mismatch and altered fixture bindings downgrade expectations to UNKNOWN
+  ---
+  duration_ms: 7.6108
+  ...
+# Subtest: historical LIVE evidence still loads and exports without generated coverage or relabeling
+ok 45 - historical LIVE evidence still loads and exports without generated coverage or relabeling
+  ---
+  duration_ms: 26.2815
+  ...
+# Subtest: read-only refresh keeps mutation oracle taxonomy and recomputes rule coverage
+ok 46 - read-only refresh keeps mutation oracle taxonomy and recomputes rule coverage
+  ---
+  duration_ms: 2.4963
+  ...
+# Subtest: numeric boundary generator constructs three separately signed variants
+ok 47 - numeric boundary generator constructs three separately signed variants
+  ---
+  duration_ms: 5.9254
+  ...
+# Subtest: mutator rejects missing signer rather than corrupting signed payload bytes
+ok 48 - mutator rejects missing signer rather than corrupting signed payload bytes
+  ---
+  duration_ms: 1.6017
+  ...
+# Subtest: mock RPC admissions and rejects produce evidence without claiming real execution
+ok 49 - mock RPC admissions and rejects produce evidence without claiming real execution
+  ---
+  duration_ms: 273.6842
+  ...
+# Subtest: preview never submits transactions
+ok 50 - preview never submits transactions
+  ---
+  duration_ms: 34.7072
+  ...
+# Subtest: explicit chain allowlist prevents accidental cross-chain broadcast
+ok 51 - explicit chain allowlist prevents accidental cross-chain broadcast
+  ---
+  duration_ms: 16.053
+  ...
+# Subtest: chain ID 1 is prohibited even with matching allowlist
+ok 52 - chain ID 1 is prohibited even with matching allowlist
+  ---
+  duration_ms: 18.8453
+  ...
+# Subtest: saved demonstration copies immutable real reports and blocks all external network routes
+ok 53 - saved demonstration copies immutable real reports and blocks all external network routes
+  ---
+  duration_ms: 377.1652
+  ...
+# Subtest: gas variants cover below/at/above without mutating signed bytes or assuming direction
+ok 54 - gas variants cover below/at/above without mutating signed bytes or assuming direction
+  ---
+  duration_ms: 5.15
+  ...
+# Subtest: mock gas suite re-signs all six independent path variants and compares rule evidence
+ok 55 - mock gas suite re-signs all six independent path variants and compares rule evidence
+  ---
+  duration_ms: 23.1777
+  ...
+# Subtest: paymaster cases require supplied path rules and real-shaped pool configuration
+ok 56 - paymaster cases require supplied path rules and real-shaped pool configuration
+  ---
+  duration_ms: 1.1635
+  ...
+# Subtest: swarm is opt-in and deployment/submit/publish flags fail closed
+ok 57 - swarm is opt-in and deployment/submit/publish flags fail closed
+  ---
+  duration_ms: 3.2312
+  ...
+# Subtest: real solc0.8.28 compiles both owned validators and the action recorder reproducibly
+ok 58 - real solc0.8.28 compiles both owned validators and the action recorder reproducibly
+  ---
+  duration_ms: 4808.0251
+  ...
+# Subtest: version2 changes only action calldata and descriptors reject unsupported fields/tampering
+ok 59 - version2 changes only action calldata and descriptors reject unsupported fields/tampering
+  ---
+  duration_ms: 1.4781
+  ...
+# Subtest: owner authorization for A is retained: unsafe hash ignores B calldata, safe hash changes
+ok 60 - owner authorization for A is retained: unsafe hash ignores B calldata, safe hash changes
+  ---
+  duration_ms: 39.4038
+  ...
+# Subtest: domain separation binds owned account, chain, nonce and signed target
+ok 61 - domain separation binds owned account, chain, nonce and signed target
+  ---
+  duration_ms: 1.0754
+  ...
+# Subtest: current EIP commits to witness length, explicit msg content, and action calldata without circularity
+ok 62 - current EIP commits to witness length, explicit msg content, and action calldata without circularity
+  ---
+  duration_ms: 2.5742
+  ...
+# Subtest: v1 historical mutation definition digest remains byte-for-byte compatible
+ok 63 - v1 historical mutation definition digest remains byte-for-byte compatible
+  ---
+  duration_ms: 8.1725
+  ...
+# Subtest: admission and an outer successful receipt alone never prove unauthorized action
+ok 64 - admission and an outer successful receipt alone never prove unauthorized action
+  ---
+  duration_ms: 0.6914
+  ...
+# Subtest: read-only RPC guard rejects every write method and unauthorized endpoint before transport
+ok 65 - read-only RPC guard rejects every write method and unauthorized endpoint before transport
+  ---
+  duration_ms: 4.5543
+  ...
+# Subtest: preflight produces a conditional five-deployment/four-submission manifest with isolated keyed nonces
+ok 66 - preflight produces a conditional five-deployment/four-submission manifest with isolated keyed nonces
+  ---
+  duration_ms: 4940.3995
+  ...
+# Subtest: preflight stops on wrong chain and reports missing wallet without inventing deployments
+ok 67 - preflight stops on wrong chain and reports missing wallet without inventing deployments
+  ---
+  duration_ms: 9.6195
+  ...
+# Subtest: CLI feature gate and write rejection leave the existing command surface usable
+ok 68 - CLI feature gate and write rejection leave the existing command surface usable
+  ---
+  duration_ms: 3936.7007
+  ...
+# Subtest: Uniswap preflight pins both runtime hashes and manager binding, records zero pool state honestly
+ok 69 - Uniswap preflight pins both runtime hashes and manager binding, records zero pool state honestly
+  ---
+  duration_ms: 12.0205
+  ...
+# Subtest: Uniswap inspection refuses unauthorized endpoints and mainnet before reading contracts
+ok 70 - Uniswap inspection refuses unauthorized endpoints and mainnet before reading contracts
+  ---
+  duration_ms: 0.7713
+  ...
+# Subtest: sidecar disk exhaustion is infrastructure failure, never a rule discrepancy or acceptance
+ok 71 - sidecar disk exhaustion is infrastructure failure, never a rule discrepancy or acceptance
+  ---
+  duration_ms: 2.1876
+  ...
+# Subtest: Uniswap registry case preserves protocol identifiers while replay stays unsigned and untrusted
+ok 72 - Uniswap registry case preserves protocol identifiers while replay stays unsigned and untrusted
+  ---
+  duration_ms: 66.4218
+  ...
+# Subtest: admission hash is accepted but never called an executed receipt
+ok 73 - admission hash is accepted but never called an executed receipt
+  ---
+  duration_ms: 22.1384
+  ...
+# Subtest: JSON-RPC rejection versus transport error is distinguished
+ok 74 - JSON-RPC rejection versus transport error is distinguished
+  ---
+  duration_ms: 3.3036
+  ...
+# Subtest: matches expected rejection and expected rule
+ok 75 - matches expected rejection and expected rule
+  ---
+  duration_ms: 4.4708
+  ...
+# Subtest: intentional public/alt differences are not intrinsically anomalies
+ok 76 - intentional public/alt differences are not intrinsically anomalies
+  ---
+  duration_ms: 0.5936
+  ...
+# Subtest: real workshop encoding roundtrips and recovers the actual sender for each re-signed gas variant
+ok 77 - real workshop encoding roundtrips and recovers the actual sender for each re-signed gas variant
+  ---
+  duration_ms: 222.5169
+  ...
+# Subtest: LIVE plugin checks nonce/funding/stake and runner uses object alt wire versus raw public bytes
+ok 78 - LIVE plugin checks nonce/funding/stake and runner uses object alt wire versus raw public bytes
+  ---
+  duration_ms: 26.0145
+  ...
+# Subtest: LIVE plugin fails closed for wrong chain, unauthorized endpoint, missing sponsor or low funds
+ok 79 - LIVE plugin fails closed for wrong chain, unauthorized endpoint, missing sponsor or low funds
+  ---
+  duration_ms: 3.0398
+  ...
+# Subtest: real gateway policy errors are not mistaken for malformed transactions by their wrappers
+ok 80 - real gateway policy errors are not mistaken for malformed transactions by their wrappers
+  ---
+  duration_ms: 1.9718
+  ...
+# Subtest: reserve deployment signs exact supplied creation data/value and verifies inclusion
+ok 81 - reserve deployment signs exact supplied creation data/value and verifies inclusion
+  ---
+  duration_ms: 6.8372
+  ...
+# Subtest: reserve deployment refuses wrong chain before signing or broadcasting
+ok 82 - reserve deployment refuses wrong chain before signing or broadcasting
+  ---
+  duration_ms: 0.6341
+  ...
+# Subtest: evidence refresh is read-only and preserves original submission hash and replay inputs
+ok 83 - evidence refresh is read-only and preserves original submission hash and replay inputs
+  ---
+  duration_ms: 1.6101
+  ...
+1..83
+# tests 83
+# suites 0
+# pass 83
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 13063.7389

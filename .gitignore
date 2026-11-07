@@ -1,4 +1,5 @@
 node_modules/
+web-ui/node_modules/
 runs/*
 !runs/.gitkeep
 .env
@@ -11,4 +12,8 @@ runs/*
 !.env.example
 *.pem
 *.key
+
+# Raw user-supplied PoC contains embedded devnet keys; import sanitized code only
+/framefuzz-poc/
+/.local/
 

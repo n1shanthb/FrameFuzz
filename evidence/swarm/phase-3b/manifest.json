@@ -1,0 +1,24 @@
+{
+  "schema": "framefuzz.self-funded-feasibility-evidence.v1",
+  "SELF_FUNDED_PATH": "PLAUSIBLE_UNVERIFIED",
+  "tests": {
+    "passed": 107,
+    "failed": 0
+  },
+  "readOnlyRequests": 27,
+  "deployments": 0,
+  "fundingTransfers": 0,
+  "broadcasts": 0,
+  "arkivWrites": 0,
+  "executionAllowlistChanged": false,
+  "additionalModelCalls": 0,
+  "sponsoredCompilerInputUnchanged": true,
+  "originalDescriptorDigest": "0a7d359e26f6d10337c4c36b6e560d99abfa1f6fdb7893d53d7501e76c1dfe76",
+  "sha256": {
+    "devnet-first.json": "50d30226758f33504d1d6fba096cc2201fb7c3a95d9b7c4b6b6833443a2f3b5d",
+    "devnet-second.json": "bc58c20ce6fb56d9665e52c4154752ca7704aec6fa3cea6790723f1b659fc537",
+    "self-funded-readiness.json": "f43f5b36b46db9fc7c233cacd4005296dd58f08989e168708171f16c8b3c4359",
+    "self-verify-source.json": "9e815357dec0f0c6755359c2ffd67afb27daccdb60ce22e50db50702df934e23",
+    "test-result.json": "b3b4040c02ed11fffb184c3df83a76b49ff1304292c5e376f91ba816e647a29a"
+  }
+}

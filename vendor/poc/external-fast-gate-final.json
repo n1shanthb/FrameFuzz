@@ -1,0 +1,119 @@
+{
+  "gateway": "https://altmempool.forshtat.com/rpc",
+  "plainPaymaster": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+  "reservePaymaster": "0x552e75d45ee70f09ff69f465ddc4264e6ee31396",
+  "balances": {
+    "plain": "149945012000000000",
+    "reserve": "150000000000000000"
+  },
+  "plainResult": {
+    "name": "plain",
+    "alt": {
+      "label": "plain",
+      "path": "alt",
+      "ok": true,
+      "hash": "0xc9b27a980b3741b299e54d0053fa91871db6b929b4b8e3222860a502d8c65132",
+      "computed": "0xc9b27a980b3741b299e54d0053fa91871db6b929b4b8e3222860a502d8c65132",
+      "admission": "accepted",
+      "receipt": null
+    },
+    "canonical": {
+      "label": "plain",
+      "path": "raw",
+      "ok": true,
+      "hash": "0xc9b27a980b3741b299e54d0053fa91871db6b929b4b8e3222860a502d8c65132",
+      "computed": "0xc9b27a980b3741b299e54d0053fa91871db6b929b4b8e3222860a502d8c65132",
+      "admission": "accepted",
+      "receipt": null
+    }
+  },
+  "reserveUnstaked": {
+    "name": "reserve-unstaked",
+    "alt": {
+      "label": "reserve-unstaked",
+      "path": "alt",
+      "ok": false,
+      "computed": "0x968ca3aa848c60febf364f5c8f6f652243f23493eb992f4bddf102fd0a697501",
+      "error": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404",
+      "rule": "STO"
+    },
+    "canonical": {
+      "label": "reserve-unstaked",
+      "path": "raw",
+      "ok": false,
+      "computed": "0x968ca3aa848c60febf364f5c8f6f652243f23493eb992f4bddf102fd0a697501",
+      "error": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+      "rule": "STO"
+    }
+  },
+  "stakeResult": {
+    "label": "stake",
+    "path": "alt",
+    "ok": true,
+    "hash": "0xdc7d5fca492f3b4ca238bee64180e9f24c3778bad7f39ddee4e7a69aa22f5383",
+    "computed": "0xdc7d5fca492f3b4ca238bee64180e9f24c3778bad7f39ddee4e7a69aa22f5383",
+    "admission": "accepted",
+    "receipt": null
+  },
+  "registryStake": {
+    "amount": "0",
+    "unstakeDelay": 0,
+    "withdrawTime": 0
+  },
+  "reserveStaked": {
+    "name": "reserve-staked",
+    "alt": {
+      "label": "reserve-staked",
+      "path": "alt",
+      "ok": false,
+      "computed": "0x432d81c8affe7bbc95643a915530fc4799c80551e31805e9977de5e0cfbf76dd",
+      "error": "unstaked payer accessed 0x6bf9aa9c04fd001385742d61f6818c3236429848 slot 0xf6a862ad9e4b3f79dd2626ae081b3a49de5d55002e5339e1bdff7d8f5e202404",
+      "rule": "STO"
+    },
+    "canonical": {
+      "label": "reserve-staked",
+      "path": "raw",
+      "ok": false,
+      "computed": "0x432d81c8affe7bbc95643a915530fc4799c80551e31805e9977de5e0cfbf76dd",
+      "error": "Invalid params: Frame transaction validation-prefix simulation failed: StorageReadNonSender",
+      "rule": "STO"
+    }
+  },
+  "plainReceipt": {
+    "blockHash": "0x555329f73af2c0dad8027318943b29f43c00d0ad309b7dabba07a31dfd84c7e5",
+    "blockNumber": "0x63404",
+    "contractAddress": null,
+    "cumulativeGasUsed": "0x6b66",
+    "effectiveGasPrice": "0x77359400",
+    "frameReceipts": [
+      {
+        "gasUsed": "0x64",
+        "logs": [],
+        "stateGasUsed": "0x0",
+        "status": "0x1"
+      },
+      {
+        "gasUsed": "0x1bb5",
+        "logs": [],
+        "stateGasUsed": "0x0",
+        "status": "0x1"
+      },
+      {
+        "gasUsed": "0xbb8",
+        "logs": [],
+        "stateGasUsed": "0x0",
+        "status": "0x1"
+      }
+    ],
+    "from": "0x4396600adc2e3c18a157514b546ac802f66309cf",
+    "gasUsed": "0x6b66",
+    "logs": [],
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+    "payer": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+    "status": "0x1",
+    "to": "0x4396600adc2e3c18a157514b546ac802f66309cf",
+    "transactionHash": "0xc9b27a980b3741b299e54d0053fa91871db6b929b4b8e3222860a502d8c65132",
+    "transactionIndex": "0x0",
+    "type": "0x6"
+  }
+}

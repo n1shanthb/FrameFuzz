@@ -1,0 +1,9 @@
+{
+  "schema": "framefuzz.test-checkpoint.v1",
+  "command": "npm test",
+  "passed": 185,
+  "failed": 0,
+  "skipped": 0,
+  "observedAt": "2026-11-06",
+  "scope": "Node suite including Stage A capability, manifest and bounded-read safety tests; browser validation reported separately"
+}

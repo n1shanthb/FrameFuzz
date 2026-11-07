@@ -1,0 +1,15 @@
+# Integration friction and limits
+
+Validated against the current official [Arkiv documentation](https://docs.arkiv.network) and exact SDK `@arkiv-network/sdk@1.0.1`, using Node 22.13.0. The SDK now uses `defineSchema`, typed attributes, `createEntity(schema, values, options)` and typed query rows. Older examples of generic payload/attribute APIs are not interchangeable.
+
+The public Rabdi RPC works without an access key but the SDK warns that it is heavily rate limited. `ARKIV_ACCESS_KEY` is optional and passed only to the SDK chain configuration; never place it in fixtures. Query results are limited to 20 per call in this MVP. No pagination, cache, retries beyond the transport's single retry, moderation or production availability guarantee is provided.
+
+The official faucet at https://hub.arkiv.network/faucet requires a connected wallet. A separate test writer was generated in memory; the developer funded it with test tGLM. Before publishing, its balance was 9.5 tGLM. The writer is not an EIP-8141 funding wallet. Its private key was not saved, printed or committed; later publishes require an independently configured funded `ARKIV_PRIVATE_KEY` wallet. Existing public cases require no signing key to query/import.
+
+This agent environment isolates the process holding that in-memory key from outbound networking. During the real CLI publish, an ignored local loader passed only public JSON-RPC requests and signed transactions through a file relay to an approved network process, which forwarded them exclusively to the official Rabdi RPC. No private key crossed the relay. The product itself needs no relay in an ordinary network-enabled shell; fresh-process query and dashboard reads used the SDK directly.
+
+The real creation receipt reported success, gas used 314427 and effective gas price 1 gwei. Expiration is block-based, not a guaranteed wall-clock deadline. Testnet availability, indexing, expiration and wallet funding are external dependencies.
+
+Arkiv ownership proves who created/owns a record, not that a LIVE label or admission claim is true. Full historical reports and receipt logs remain offchain in this repository. The onchain record holds their digest and selected summaries, plus the actual semantic reproduction descriptor. Imports deliberately reset rule confidence to UNKNOWN and do not rerun live admission. Local evidence verification and fresh signing are prerequisites for any later separately authorized live experiment.
+
+Final checkpoint: two fixtures were successfully published and both could be retrieved/imported again without a funded reader wallet. The optional further rejection-case publish was skipped because the in-memory signing session ended and no funded signing environment remained configured. The separate EIP-8141 sidecar's disk failure does not establish an Arkiv outage; its actual failed result is published honestly in the Uniswap fixture. Offline demonstration deliberately shows archived proof and disables live registry actions rather than silently substituting cached results for Arkiv.

@@ -41,23 +41,30 @@ export async function rpc(url, method, params = [], { timeoutMs = 15000, fetchIm
   return data.result;
 }
 
-export async function getChainId(url, options = {}) {
-  const result = await rpc(url, 'eth_chainId', [], options);
+export async function getChainId(url, { rpcFn = rpc, ...options } = {}) {
+  const result = await rpcFn(url, 'eth_chainId', [], options);
   if (typeof result !== 'string' || !/^0x[0-9a-f]+$/i.test(result)) throw new Error('Invalid chain ID from RPC');
   return Number.parseInt(result, 16);
 }
 
-export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutMs = 12000 } = {}) {
+export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutMs = 12000, rpcFn = rpc } = {}) {
   const deadline = Date.now() + waitMs;
   do {
     try {
-      const receipt = await rpc(url, 'eth_getTransactionReceipt', [hash], { timeoutMs });
+      const receipt = await rpcFn(url, 'eth_getTransactionReceipt', [hash], { timeoutMs });
+      if (receipt && (String(receipt.transactionHash).toLowerCase() !== hash.toLowerCase() || !/^0x[\da-f]+$/i.test(receipt.blockNumber ?? ''))) return { state: 'receipt_rpc_error', message: 'Malformed receipt or transaction hash mismatch; inclusion not proven' };
       if (receipt) return {
         state: receipt.status === '0x1' ? 'included_success' : receipt.status === '0x0' ? 'included_reverted' : 'included_unknown',
         blockNumber: receipt.blockNumber ?? null,
         transactionHash: receipt.transactionHash ?? hash,
         status: receipt.status ?? null,
         gasUsed: receipt.gasUsed ?? null,
+        payer: receipt.payer ?? null,
+        frameReceipts: receipt.frameReceipts ?? null,
+        frames: summarizeFrames(receipt.frameReceipts),
+        actionStateProof: 'not_collected',
+        checkedAt: new Date().toISOString(),
+        raw: receipt,
       };
     } catch (error) {
       return { state: 'receipt_rpc_error', message: error.message };
@@ -71,4 +78,12 @@ export async function getReceipt(url, hash, { pollMs = 800, waitMs = 0, timeoutM
 export function sanitizedRpcLabel(url) {
   try { const x = new URL(url); return `${x.protocol}//${x.hostname}${x.port ? `:${x.port}` : ''}`; }
   catch { return '[unrecognized endpoint]'; }
+}
+
+// Frame success is a receipt observation, never proof of a particular state effect.
+export function summarizeFrames(frames) {
+  if (!Array.isArray(frames)) return {state:'unavailable',items:[]};
+  return {state:'reported',items:frames.map((frame,index)=>({index,status:frame?.status??null,
+    state:frame?.status==='0x1'?'success':frame?.status==='0x0'?'reverted':'unknown',
+    gasUsed:frame?.gasUsed??null}))};
 }

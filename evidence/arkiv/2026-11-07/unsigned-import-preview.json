@@ -1,0 +1,44 @@
+{
+  "source": "PREVIEW_COMMUNITY — UNTRUSTED, NO BROADCAST",
+  "submissions": 0,
+  "communityOrigin": {
+    "chainId": 7794095,
+    "entityKey": "0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1",
+    "publisher": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+    "owner": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+    "creator": "0x20370BE5BA867Ab4779ad0686963A55ADc0722b1",
+    "expiresAtBlock": "345303",
+    "contentDigest": "0f7f014559fbfb6ea828820cc954401f1562937b66c2fe24360959dcb5196b25",
+    "originalEvidenceClassification": "LIVE",
+    "originalOutcomes": {
+      "public": {
+        "expected": "accepted",
+        "confidence": "VERIFIED",
+        "admission": "accepted",
+        "verdict": "EXPECTED_ACCEPT",
+        "returnedHash": "0xef7bec20e34df87fdf264d9f5fe65934e53a5e6fc65b38b7db78ad8981c50cbd",
+        "computedHash": "0xef7bec20e34df87fdf264d9f5fe65934e53a5e6fc65b38b7db78ad8981c50cbd",
+        "receipt": {
+          "state": "included_success",
+          "status": "0x1",
+          "blockNumber": "0x63a06"
+        }
+      },
+      "alt": {
+        "expected": "accepted",
+        "confidence": "VERIFIED",
+        "admission": "accepted",
+        "verdict": "EXPECTED_ACCEPT",
+        "returnedHash": "0xbe6c43a9740e0e04eb080a23957df96ab7259cb1fe6f49c9fe18dc8ea4c63b2d",
+        "computedHash": "0xbe6c43a9740e0e04eb080a23957df96ab7259cb1fe6f49c9fe18dc8ea4c63b2d",
+        "receipt": {
+          "state": "included_success",
+          "status": "0x1",
+          "blockNumber": "0x63a0d"
+        }
+      }
+    },
+    "protocolMetadata": null,
+    "notice": "Original outcomes are publisher claims. This imported run is a new unsigned preview, not a live reproduction."
+  }
+}

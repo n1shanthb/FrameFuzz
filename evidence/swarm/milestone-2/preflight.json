@@ -1,0 +1,369 @@
+{
+  "schema": "framefuzz.swarm-preflight.v1",
+  "milestone": 2,
+  "generatedAt": "2026-11-06T04:17:21.096Z",
+  "source": "READ_ONLY_DEVNET_PREFLIGHT — NO DEPLOYMENT OR BROADCAST",
+  "chainId": 1337,
+  "endpoint": "https://altmempool.forshtat.com/rpc",
+  "executionClient": "ethrex/v23.0.0-eip8141-tracer-9aa3645d795945c64400f41a70aace0edfa7f383/x86_64-unknown-linux-gnu/rustc-v1.93.1",
+  "sidecar": {
+    "protocolVersion": 1,
+    "chainId": 1337,
+    "version": "v4.1.1",
+    "commit": "",
+    "bundlingMode": "auto",
+    "p2pEnabled": true,
+    "latestSeq": 5421,
+    "oldestSeq": 1,
+    "historyCapacity": 10000,
+    "bootId": "64ff763ea9e08373",
+    "minInclusionDenominator": 10,
+    "throttlingSlack": 10,
+    "banSlack": 50
+  },
+  "latestBlock": {
+    "number": "0x63ac6",
+    "timestamp": "0x6aed0a26",
+    "ageSeconds": 19114
+  },
+  "sponsor": {
+    "address": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+    "codeHash": "0x9e6b5997a6014b4593d16a2c94beb18ba375ffc97523b5d380f2b96f3b72ea69",
+    "balanceWei": "149175156000000000",
+    "scope": "PAYMENT_ONLY"
+  },
+  "nonceManagerProbe": {
+    "address": "0x0000000000000000000000000000000000008250",
+    "referenceSender": "0x346408e66ff4446c5d5f1ab0155ce7e3d319ea30",
+    "slot": "0x47fedc9ed9e9640bf92b4ac95ccc3caa4092489f9772feac359d4bcb86a60963",
+    "nextSequence": "0",
+    "meaning": "Read-only protocol storage probe, not an owned validator deployment"
+  },
+  "wallet": {
+    "deployer": null,
+    "owner": null,
+    "secureKeyConfigured": false,
+    "balanceWei": null
+  },
+  "deploymentPlan": {
+    "status": "UNRESOLVED_WALLET_CONTEXT",
+    "compilerInputDigest": "2c014bf67354663c1bcad20c7d6d9122840868abe8950314beee25c87cdb9d70",
+    "deployments": [
+      {
+        "role": "action",
+        "contract": "ActionRecorder",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": [],
+        "constructorTemplate": [],
+        "creationBytecodeHash": "0x607ee6be8b39717320d707606f5848c39c76da9aa599af2c32f8275eb411eeab",
+        "initCode": "0x6080604052348015600e575f5ffd5b506101e08061001c5f395ff3fe608060405234801561000f575f5ffd5b5060043610610034575f3560e01c8063377144a614610038578063b776f5691461004d575b5f5ffd5b61004b610046366004610138565b61009a565b005b61007b61005b366004610158565b5f6020819052908152604090208054600182015460029092015490919083565b6040805193845260208401929092529082015260600160405180910390f35b335f908152602081905260408120600201546100b7906001610185565b60408051606080820183528682526020808301878152838501868152335f8181528085528790209551865591516001860155516002909401939093558351888152908101879052928301849052929350917fb003503c697b65f2f6759cb58a503490ec5958d71bb7dd635d01b007a41a6224910160405180910390a2505050565b5f5f60408385031215610149575f5ffd5b50508035926020909101359150565b5f60208284031215610168575f5ffd5b81356001600160a01b038116811461017e575f5ffd5b9392505050565b808201808211156101a457634e487b7160e01b5f52601160045260245ffd5b9291505056fea2646970667358221220cd86420e0c6359136223d0369a0f49cdabd2477cda5600ede9460e411155076364736f6c634300081c0033",
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null
+      },
+      {
+        "role": "unsafe_authorized",
+        "contract": "SenderValidatorUnsafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0xf10499a79a8c3654a7dd3f5e3f4a59461bad2be5f07edd6f2ccd934d82d3f275",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null
+      },
+      {
+        "role": "unsafe_tampered",
+        "contract": "SenderValidatorUnsafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0xf10499a79a8c3654a7dd3f5e3f4a59461bad2be5f07edd6f2ccd934d82d3f275",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null
+      },
+      {
+        "role": "safe_authorized",
+        "contract": "SenderValidatorSafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0x24bc3802c9cec84d58b1334cccdc00c41243d2b125c757b8140b7770c2d190d3",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null
+      },
+      {
+        "role": "safe_tampered",
+        "contract": "SenderValidatorSafe",
+        "predictedAddress": null,
+        "nonce": null,
+        "constructorArguments": null,
+        "constructorTemplate": [
+          "OWNER",
+          "OWNED_ACTION_ADDRESS",
+          "PINNED_BASIC_PAYER"
+        ],
+        "creationBytecodeHash": "0x24bc3802c9cec84d58b1334cccdc00c41243d2b125c757b8140b7770c2d190d3",
+        "initCode": null,
+        "gasLimit": "6000000",
+        "maxFeePerGas": "2000000000",
+        "valueWei": "0",
+        "context": null
+      }
+    ],
+    "totalDeploymentFeeBoundWei": "60000000000000000",
+    "feeBoundMeaning": "Five deployments capped at6m gas each and2gwei, excluding later frame fees; not a gas estimate",
+    "submissions": [
+      {
+        "role": "unsafe_authorized",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "ACTION_EXECUTED_UNVERIFIED"
+      },
+      {
+        "role": "unsafe_tampered",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 2,
+          "parameter": 999
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "ACTION_EXECUTED_UNVERIFIED"
+      },
+      {
+        "role": "safe_authorized",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "ACTION_EXECUTED_UNVERIFIED"
+      },
+      {
+        "role": "safe_tampered",
+        "sender": null,
+        "authorizedIntent": {
+          "operation": 1,
+          "parameter": 10
+        },
+        "submittedAction": {
+          "operation": 2,
+          "parameter": 999
+        },
+        "path": "alternative",
+        "method": "eth_sendFrameTransaction",
+        "nonceKeys": [
+          "0"
+        ],
+        "nonceSeq": "0",
+        "frameModes": [
+          1,
+          1,
+          2
+        ],
+        "frameFlags": [
+          2,
+          1,
+          0
+        ],
+        "arbitraryWitness": {
+          "scheme": 0,
+          "signer": "0x",
+          "msg": "0x",
+          "bytes": 65
+        },
+        "limits": {
+          "senderVerification": 40000,
+          "payerVerification": 50000,
+          "actionExecution": 150000,
+          "actionState": 200000
+        },
+        "expected": "AUTHORIZATION_REJECTED"
+      }
+    ],
+    "independentReproduction": "Requires a separately approved fresh deployment set and four fresh isolated submissions; not included in the first batch",
+    "verification": "Require authorized baseline, correct retained witness and sender/nonce isolation, ActionRecorded event/state for B with actual caller and successful action-frame receipt, plus absence of B on safe rejection"
+  },
+  "readMethods": [
+    "eth_chainId",
+    "web3_clientVersion",
+    "skandha_explorer_info",
+    "eth_getBlockByNumber",
+    "eth_getCode",
+    "eth_getBalance",
+    "eth_getStorageAt"
+  ],
+  "requestCount": 8,
+  "observations": [
+    {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "method": "eth_chainId"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com",
+      "method": "eth_chainId"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com",
+      "method": "web3_clientVersion"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "method": "skandha_explorer_info"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com",
+      "method": "eth_getBlockByNumber"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "method": "eth_getCode"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "method": "eth_getBalance"
+    },
+    {
+      "endpoint": "https://altmempool.forshtat.com/rpc",
+      "method": "eth_getStorageAt"
+    }
+  ],
+  "realLLMCalls": 0,
+  "liveExecutions": 0,
+  "deployments": 0,
+  "unauthorizedActionProven": false,
+  "independentLiveReproduction": false,
+  "writeHealth": "UNVERIFIED_READ_ONLY",
+  "verdict": "STOP_BEFORE_LIVE_APPROVAL",
+  "blockers": [
+    "Latest execution head missing/stale; mining is not established",
+    "No securely configured FRAMEFUZZ_DEPLOYER_KEY; no deployment can be signed",
+    "Owned deployer/owner addresses unresolved; exact constructor data and CREATE addresses remain conditional",
+    "Live canonical TXPARAM(SIG_HASH) compatibility is unverified; workshop and current EIP signing profiles differ",
+    "Write health is unverified by read-only checks; prior sidecar disk-full failure requires operator confirmation",
+    "Separate explicit human deployment/submission approval has not been given"
+  ]
+}
