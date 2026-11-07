@@ -190,12 +190,10 @@ export function PlaygroundPage() {
     if (!consent || !analysis?.analysisId || !analysis.sourceDigest) return;
     setBusy('Starting investigation…'); setError('');
     try {
-      const plan = pgConfig?.investigationBudget?.byoc;
       const job = await api.playground.start({
         analysisId: analysis.analysisId,
         sourceDigest: analysis.sourceDigest,
         authorizeProvider: true,
-        budgetUSD: plan?.allocatedUSD,
       }) as { id: string };
       setJobId(job.id);
       for (;;) {
@@ -299,7 +297,8 @@ export function PlaygroundPage() {
       <Accordion sx={{ mb: 2, border: '1px solid #E2E8F0', boxShadow: 'none' }}>
         <AccordionSummary expandIcon={<ChevronDown size={18} />}><Box><Typography variant="overline">Step C · Optional</Typography><Typography variant="h4">Agent investigation history</Typography><Typography variant="body2">Collapsed for the admission demo · expand to inspect or start paid model sessions</Typography></Box></AccordionSummary>
         <AccordionDetails><Typography variant="body2" sx={{ mb: 2 }}>No paid call until you consent and Start. Historical incomplete or failed sessions are not admission evidence.</Typography>
-        <FormControlLabel control={<Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />} label={`I consent to OpenRouter under the sprint budget (remaining $${Number(pgConfig?.sprintBudget?.remainingUSD ?? 0).toFixed(4)}). No chain/Arkiv writes from Start.`} />
+        <FormControlLabel control={<Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />} label="I consent to this OpenRouter investigation. Provider billing and per-run call/token safety controls apply. No chain or Arkiv writes from Start." />
+        {!pgConfig?.canStart && <Alert severity="warning" sx={{mb:2}}>{pgConfig?.investigationReadiness?.notice || 'Agent investigation is unavailable.'}</Alert>}
         <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
           <Button variant="contained" disabled={!consent || analysis?.status !== 'READY' || !pgConfig?.canStart || Boolean(busy)} onClick={startAgents}>Start Investigation</Button>
           {jobId && <Button variant="outlined" onClick={() => jobId && api.playground.cancel(jobId)}>Cancel</Button>}
