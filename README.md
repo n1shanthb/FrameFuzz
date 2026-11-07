@@ -94,6 +94,10 @@ node bin/framefuzz.mjs saved-demo --results runs/demo --port 4192
 
 UI: React + MUI app in `web-ui/` (build → `web/dist/`). Dev proxy: `npm run ui:dev`.
 
+### Vercel note
+
+FrameFuzz is a long-running local Node server (`127.0.0.1` + localhost Host checks). On Vercel it deploys as **static UI** (`web/dist`) plus a **saved-demo `/api` function** (`api/index.mjs`, offline historical evidence only — no live chain writes). For full `LIVE_READ_ONLY` / `LIVE_AUTHORIZED`, run locally or on a persistent host (Render/Railway).
+
 ### Environment variable **names** (values never in git)
 
 `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENROUTER_ENDPOINT`, `ARKIV_PRIVATE_KEY`, `ARKIV_ACCESS_KEY`, `ARKIV_READER_ADDRESS`, `FRAMEFUZZ_DEPLOYER_KEY`, `FRAMEFUZZ_RPC`, `FRAMEFUZZ_PUBLIC_RPC`, `FRAMEFUZZ_ALT_RPC`, `FRAMEFUZZ_LIVE_CONFIG`, optional `FRAMEFUZZ_SWARM=on` (AI swarm experiments — **not** Ethereum Swarm storage).
