@@ -38,10 +38,23 @@ async function readRequestBody(req) {
   return Buffer.concat(chunks);
 }
 
+function originalApiPath(req) {
+  // Vercel rewrites /api/* → /api; recover the public path when possible.
+  const forwarded = req.headers['x-forwarded-uri'] || req.headers['x-vercel-forwarded-uri'];
+  if (typeof forwarded === 'string' && forwarded.startsWith('/api')) return forwarded;
+  const invoke = req.headers['x-invoke-path'];
+  if (typeof invoke === 'string' && invoke.startsWith('/api')) return invoke;
+  const url = new URL(req.url || '/', `https://${req.headers.host || 'vercel.app'}`);
+  if (url.pathname === '/api' && url.searchParams.has('path')) {
+    return `/api/${url.searchParams.get('path')}${url.searchParams.get('query') ? `?${url.searchParams.get('query')}` : ''}`;
+  }
+  return url.pathname + url.search;
+}
+
 async function proxyToBackend(req, res) {
   const base = backendBase();
-  const incoming = new URL(req.url || '/', `https://${req.headers.host || 'vercel.app'}`);
-  const target = new URL(incoming.pathname + incoming.search, `${base}/`);
+  const pathAndQuery = originalApiPath(req);
+  const target = new URL(pathAndQuery, `${base}/`);
   const headers = {
     accept: req.headers.accept || 'application/json',
     'user-agent': req.headers['user-agent'] || 'framefuzz-vercel-proxy',
@@ -57,7 +70,20 @@ async function proxyToBackend(req, res) {
     init.body = await readRequestBody(req);
   }
 
-  const upstream = await fetch(target, init);
+  let upstream;
+  try {
+    upstream = await fetch(target, init);
+  } catch (error) {
+    res.statusCode = 502;
+    res.setHeader('content-type', 'application/json; charset=utf-8');
+    res.end(JSON.stringify({
+      error: 'OCI backend unreachable from Vercel proxy',
+      message: String(error?.message ?? error),
+      target: String(target),
+      code: 'BACKEND_UNREACHABLE',
+    }));
+    return;
+  }
   const body = Buffer.from(await upstream.arrayBuffer());
   res.statusCode = upstream.status;
   for (const [key, value] of upstream.headers.entries()) {
@@ -65,6 +91,7 @@ async function proxyToBackend(req, res) {
     res.setHeader(key, value);
   }
   res.setHeader('x-framefuzz-proxy', 'oci-backend');
+  res.setHeader('x-framefuzz-proxy-target', String(target));
   res.end(body);
 }
 
