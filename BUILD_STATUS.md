@@ -97,3 +97,11 @@ Evidence verified (same identity, claims ADMISSION_DIVERGENCE=true / INCLUSION=f
 
 ## Premium React UI — 2026-11-07
 Migrated dashboard to Vite + React 18 + TypeScript + MUI + Lucide (`web-ui/` → `web/dist`). Server serves React SPA with SPA fallback; legacy `/css` `/js` retained for smoke. All pages redesigned; Playground flagship wired to real playground APIs. Browser check on :4190 OK. dashboard/saved-demo tests updated. No backend admission rewrite. No chain writes or paid LLM calls.
+## Final Uniswap admission preflight (2026-11-07)
+
+- `node --env-file=.env scripts/step2e-prepare-policy-experiment.mjs` — read-only chain/routing/code/nonce/balance/gas checks; nonce 4, no top-up required, next address empty.
+- `node --env-file=.env scripts/step2e-sign-setup.mjs` — offline-signed deployment and stake only; zero broadcasts.
+- `node scripts/step2e-build-policy-candidate.mjs` — independently generated and signed pool-read candidate; zero broadcasts.
+- `node --test test/step2e-policy.test.mjs test/live-admission.test.mjs test/storage-access-product.test.mjs test/uniswap-state.test.mjs` — 11/11 pass.
+- Full `npm test` completed 239 tests but reported 215 pass / 24 fail, dominated by localhost `fetch failed` server-start failures plus one compiler timeout in this constrained run. This is not a clean full-suite pass and is recorded honestly; the focused admission/source-binding tests pass.
+- No blockchain write, Arkiv write, paid model call or Git push occurred.
