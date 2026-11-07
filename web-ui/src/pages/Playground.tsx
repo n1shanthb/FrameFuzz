@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -32,7 +32,7 @@ import { Mono, shortHash } from '../components/Mono';
 import { api } from '../api/client';
 import { useApp } from '../layout/AppContext';
 import { tokens } from '../theme/tokens';
-import type { Analysis, AdmissionReadiness, LivePrepared, LiveComparison, ComparisonRow } from '../api/types';
+import type { Analysis, AdmissionReadiness, LivePrepared, LiveComparison, ComparisonRow, CapturedUniswapEvidence } from '../api/types';
 
 const AGENTS = [
   { id: 'scout', name: 'Contract Scout' },
@@ -44,6 +44,7 @@ const AGENTS = [
 export function PlaygroundPage() {
   const { pgConfig } = useApp();
   const [source, setSource] = useState('');
+  const [profile, setProfile] = useState('byoc');
   const [contractName, setContractName] = useState('ViolatingWallet');
   const [role, setRole] = useState('SENDER_VALIDATOR');
   const [analysis, setAnalysis] = useState<Analysis | null>(null);
@@ -62,15 +63,24 @@ export function PlaygroundPage() {
   const [jobReport, setJobReport] = useState<Record<string, unknown> | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [detail, setDetail] = useState<ComparisonRow | null>(null);
+  const [captured, setCaptured] = useState<CapturedUniswapEvidence | null>(null);
 
   const liveCapable = Boolean(analysis?.capabilities?.includes('LIVE_STORAGE_ACCESS_ADMISSION'));
+  const uniswapCapable = Boolean(analysis?.capabilities?.includes('LIVE_UNISWAP_ADMISSION_PREPARE'));
   const live = admission?.liveAdmission;
+
+  useEffect(() => {
+    let active = true;
+    api.playground.uniswapCaptured().then((value) => { if (active) setCaptured(value as CapturedUniswapEvidence); }).catch(() => {});
+    return () => { active = false; };
+  }, []);
 
   async function loadScenario() {
     setBusy('Loading supported scenario…'); setError('');
     try {
       const scen = await api.playground.supportedScenario() as { source?: string; contractName?: string; fixtures?: { wallet: string; foreign: string; owner: string }; kind?: string };
       setSource(scen.source || '');
+      setProfile('byoc');
       setContractName(scen.contractName || 'ViolatingWallet');
       setRole('SENDER_VALIDATOR');
       setWallet(scen.fixtures?.wallet || '');
@@ -82,10 +92,20 @@ export function PlaygroundPage() {
     finally { setBusy(''); }
   }
 
+  async function loadUniswap() {
+    setBusy('Loading exact Uniswap paymaster…'); setError('');
+    try {
+      const [scen, evidence] = await Promise.all([api.playground.uniswapSource(), api.playground.uniswapCaptured()]) as [{ source?: string; contractName?: string }, CapturedUniswapEvidence];
+      setSource(scen.source || ''); setContractName(scen.contractName || 'ReserveReadingPaymaster'); setRole('PAYMASTER'); setProfile('uniswap-v4-paymaster'); setCaptured(evidence);
+      setAnalysis(null); setAdmission(null); setPrepared(null); setComparison(null); setSaved(null);
+    } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
+    finally { setBusy(''); }
+  }
+
   async function analyze() {
     setBusy('Analyzing…'); setError(''); setPrepared(null); setComparison(null); setSaved(null);
     try {
-      const a = await api.playground.analyze({ source, role, contractName: contractName || undefined, profile: 'byoc' }) as Analysis;
+      const a = await api.playground.analyze({ source, role, contractName: contractName || undefined, profile }) as Analysis;
       setAnalysis(a);
       if (a.contracts?.length && !a.contractName) setContractName(a.contracts[0]);
       if (a.analysisId) {
@@ -93,11 +113,18 @@ export function PlaygroundPage() {
         if (wallet) q.set('wallet', wallet);
         if (foreign) q.set('foreign', foreign);
         if (owner) q.set('owner', owner);
-        const r = await api.playground.admissionReadiness(q) as AdmissionReadiness;
-        setAdmission(r);
+        if (profile==='byoc') { const r = await api.playground.admissionReadiness(q) as AdmissionReadiness; setAdmission(r); }
       }
     } catch (e) { setError(e instanceof Error ? e.message : String(e)); }
     finally { setBusy(''); }
+  }
+
+  async function prepareUniswap() {
+    if (!analysis?.analysisId || !analysis.sourceDigest) return;
+    setBusy('Preparing fresh source-bound Uniswap candidate…'); setError(''); setComparison(null);
+    try { const p=await api.playground.uniswapPrepare({analysisId:analysis.analysisId,sourceDigest:analysis.sourceDigest,source}) as LivePrepared;setPrepared(p);setLiveJobId(p.id); }
+    catch(e){setError(e instanceof Error?e.message:String(e));}
+    finally{setBusy('');}
   }
 
   async function refreshReadiness() {
@@ -183,6 +210,12 @@ export function PlaygroundPage() {
   }
 
   const rows = comparison?.table ?? [];
+  const displayRows: ComparisonRow[] = rows.length > 0 ? rows : captured ? [{
+    mutation: captured.mutation || 'Uniswap v4 StateView.getSlot0 during PAYMENT verification', publicVerdict: captured.canonical.status,
+    publicReason: captured.canonical.rule, alternativeVerdict: captured.alternative.status, admissionId: captured.alternative.admissionId,
+    divergence: captured.claims?.ADMISSION_DIVERGENCE ? 'POLICY_DIVERGENCE' : 'NO_DIVERGENCE', inclusionStatus: captured.inclusion.status || captured.inclusion.receipt?.status,
+    claims: captured.claims, evidence: {transactionHash:captured.transactionIdentity,sourceDigest:captured.source?.sha256,wallet:captured.bindings?.paymaster,sidecarAdmissionId:captured.alternative.admissionId,rule:captured.canonical.rule,timestamp:captured.capturedAt,provenance:captured.provenance,rpc:captured},
+  }] : [];
   const claims = comparison?.claims ?? rows[0]?.claims;
   const agentCards = useMemo(() => {
     const agents = (jobReport?.agents ?? {}) as Record<string, { state?: string; calls?: number; costUSD?: number; id?: string; objective?: string }>;
@@ -194,7 +227,7 @@ export function PlaygroundPage() {
       <PageHeader
         title="Contract Playground"
         subtitle="Paste Solidity → Analyze → Prepare Admission Test → Run Live Comparison → Inspect Evidence → Save Regression. Public vs alternative mempool comparison is the product."
-        action={<Button variant="outlined" startIcon={<FileCode2 size={16} />} onClick={loadScenario}>Load supported scenario</Button>}
+        action={<Stack direction="row" spacing={1}><Button variant="outlined" startIcon={<FileCode2 size={16} />} onClick={loadScenario}>Storage fixture</Button><Button variant="contained" startIcon={<FileCode2 size={16} />} onClick={loadUniswap}>Uniswap proof</Button></Stack>}
       />
 
       {busy && <LinearProgress sx={{ mb: 2, borderRadius: 1 }} />}
@@ -205,7 +238,7 @@ export function PlaygroundPage() {
         <Typography variant="h3" sx={{ mb: 1.5 }}>Solidity editor</Typography>
         <TextField
           value={source}
-          onChange={(e) => { setSource(e.target.value); setAnalysis(null); setAdmission(null); }}
+          onChange={(e) => { setSource(e.target.value); setAnalysis(null); setAdmission(null); setPrepared(null); }}
           multiline
           minRows={14}
           fullWidth
@@ -214,7 +247,7 @@ export function PlaygroundPage() {
         />
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 2 }}>
           <TextField select size="small" label="Contract" value={contractName} onChange={(e) => setContractName(e.target.value)} sx={{ minWidth: 200 }}>
-            {(analysis?.contracts?.length ? analysis.contracts : ['ViolatingWallet', 'Foreign']).map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
+            {(analysis?.contracts?.length ? analysis.contracts : profile==='uniswap-v4-paymaster'?['ReserveReadingPaymaster']:['ViolatingWallet', 'Foreign']).map((c) => <MenuItem key={c} value={c}>{c}</MenuItem>)}
           </TextField>
           <TextField select size="small" label="Declared role" value={role} onChange={(e) => setRole(e.target.value)} sx={{ minWidth: 200 }}>
             {['UNKNOWN', 'EXECUTION_TARGET', 'SENDER_VALIDATOR', 'PAYMASTER'].map((r) => <MenuItem key={r} value={r}>{r}</MenuItem>)}
@@ -224,6 +257,21 @@ export function PlaygroundPage() {
         </Stack>
         <Typography variant="body2" sx={{ mt: 1 }}>solc 0.8.28 · HegotaSupport imports from local package only · live path = labeled storage-access validator</Typography>
       </Paper>
+
+      {captured && (
+        <Paper sx={{p:{xs:2,md:3},mb:2,border:'2px solid #86EFAC',boxShadow:'0 18px 44px rgba(15,118,110,.12)',background:'linear-gradient(135deg,#ECFDF5 0%,#FFFFFF 58%,#EFF6FF 100%)'}}>
+          <Stack direction={{xs:'column',md:'row'}} justifyContent="space-between" gap={2}>
+            <Box><Typography variant="overline" sx={{color:'#047857',fontWeight:800}}>Public vs alternative admission · chain {captured.chainId}</Typography><Typography variant="h2" sx={{mb:1}}>Uniswap v4 policy divergence</Typography><Typography variant="body2">Flagship result loaded from backend evidence. This is a previously completed record—not a currently running experiment.</Typography></Box>
+            <Box><StatusChip value="CAPTURED LIVE EVIDENCE" /><Typography variant="body2" sx={{mt:1}}>Frames {captured.frameSummary.successful}/{captured.frameSummary.total} successful</Typography></Box>
+          </Stack>
+          <Grid container spacing={2} sx={{mt:1}}>
+            <Grid size={{xs:12,md:6}}><Paper variant="outlined" sx={{p:2,bgcolor:tokens.dangerSoft}}><Typography variant="overline">Canonical ethrex</Typography><Box sx={{my:1}}><StatusChip value={captured.canonical.status}/></Box><Typography fontWeight={700}>{captured.canonical.rule}</Typography></Paper></Grid>
+            <Grid size={{xs:12,md:6}}><Paper variant="outlined" sx={{p:2,bgcolor:tokens.successSoft}}><Typography variant="overline">Alternative Skandha</Typography><Box sx={{my:1}}><StatusChip value={captured.alternative.status}/></Box><Typography fontWeight={700}>Admission #{captured.alternative.admissionId} · receipt {captured.inclusion.receipt?.status}</Typography></Paper></Grid>
+          </Grid>
+          <Typography variant="body2" sx={{mt:2}}>Transaction identity</Typography><Mono copy>{captured.transactionIdentity}</Mono>
+          <Box sx={{overflowX:'auto',mt:2,border:'1px solid #BBF7D0',borderRadius:1,bgcolor:'#FFFFFF'}}><Table size="small" aria-label="Flagship admission comparison"><TableHead><TableRow sx={{bgcolor:'#F0FDF4'}}><TableCell>Mutation</TableCell><TableCell>Canonical</TableCell><TableCell>Alternative</TableCell><TableCell>Outcome</TableCell></TableRow></TableHead><TableBody><TableRow hover onClick={()=>setDetail(displayRows[0])} sx={{cursor:'pointer'}}><TableCell sx={{fontWeight:600}}>{captured.mutation}</TableCell><TableCell><StatusChip value={captured.canonical.status}/><Typography variant="body2">{captured.canonical.rule}</Typography></TableCell><TableCell><StatusChip value={captured.alternative.status}/><Typography variant="body2">admission {captured.alternative.admissionId}</Typography></TableCell><TableCell><StatusChip value="POLICY_DIVERGENCE"/><Typography variant="body2">receipt {captured.inclusion.receipt?.status}</Typography></TableCell></TableRow></TableBody></Table></Box>
+        </Paper>
+      )}
 
       {analysis && (
         <Paper sx={{ p: 2.5, mb: 2 }}>
@@ -248,10 +296,9 @@ export function PlaygroundPage() {
         </Paper>
       )}
 
-      <Paper sx={{ p: 2.5, mb: 2 }}>
-        <Typography variant="overline">Step C · Agent swarm</Typography>
-        <Typography variant="h3" sx={{ mb: 1 }}>Four independent model sessions</Typography>
-        <Typography variant="body2" sx={{ mb: 2 }}>Optional for the live admission demo. No paid call until you consent and Start. ABI-only runs are discouraged.</Typography>
+      <Accordion sx={{ mb: 2, border: '1px solid #E2E8F0', boxShadow: 'none' }}>
+        <AccordionSummary expandIcon={<ChevronDown size={18} />}><Box><Typography variant="overline">Step C · Optional</Typography><Typography variant="h4">Agent investigation history</Typography><Typography variant="body2">Collapsed for the admission demo · expand to inspect or start paid model sessions</Typography></Box></AccordionSummary>
+        <AccordionDetails><Typography variant="body2" sx={{ mb: 2 }}>No paid call until you consent and Start. Historical incomplete or failed sessions are not admission evidence.</Typography>
         <FormControlLabel control={<Checkbox checked={consent} onChange={(e) => setConsent(e.target.checked)} />} label={`I consent to OpenRouter under the sprint budget (remaining $${Number(pgConfig?.sprintBudget?.remainingUSD ?? 0).toFixed(4)}). No chain/Arkiv writes from Start.`} />
         <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
           <Button variant="contained" disabled={!consent || analysis?.status !== 'READY' || !pgConfig?.canStart || Boolean(busy)} onClick={startAgents}>Start Investigation</Button>
@@ -271,7 +318,8 @@ export function PlaygroundPage() {
             </Grid>
           ))}
         </Grid>
-      </Paper>
+        </AccordionDetails>
+      </Accordion>
 
       {liveCapable && (
         <Paper sx={{ p: 2.5, mb: 2 }}>
@@ -280,6 +328,7 @@ export function PlaygroundPage() {
           <Alert severity="info" sx={{ mb: 2 }}>
             {pgConfig?.supportedScenario?.kind || 'SUPPORTED_SCENARIO_NOT_ARBITRARY_BYOC'} · template runtime {shortHash(analysis?.runtimeBytecodeHash)} · server {pgConfig?.liveAuthorized ? 'LIVE_AUTHORIZED' : 'not live-authorized'}
           </Alert>
+          {!pgConfig?.chainBroadcastEnabled && <Alert severity="warning" sx={{mb:2}}><strong>TECHNICALLY READY · OPERATOR AUTHORIZATION REQUIRED</strong><br/>Configure the operator key in <Mono>.env</Mono> and restart with <Mono>node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_AUTHORIZED --results runs --port 4190</Mono> before an operator-reviewed run.</Alert>}
           <Grid container spacing={1.5} sx={{ mb: 2 }}>
             <Grid size={{ xs: 12, md: 4 }}><TextField fullWidth size="small" label="Deployed wallet" value={wallet} onChange={(e) => setWallet(e.target.value.trim())} /></Grid>
             <Grid size={{ xs: 12, md: 4 }}><TextField fullWidth size="small" label="Foreign target" value={foreign} onChange={(e) => setForeign(e.target.value.trim())} /></Grid>
@@ -292,7 +341,7 @@ export function PlaygroundPage() {
             }}>Bind supported fixtures</Button>
             <Button variant="outlined" onClick={refreshReadiness}>Refresh readiness</Button>
             <Button variant="outlined" onClick={prepare} disabled={!wallet || !owner}>Prepare Admission Test</Button>
-            <Button variant="contained" color="primary" startIcon={<Play size={14} />} disabled={!prepared || !pgConfig?.liveAuthorized} onClick={() => setConfirmOpen(true)}>Run Live Comparison</Button>
+            <Button variant="contained" color="primary" startIcon={<Play size={14} />} disabled={!prepared || !pgConfig?.chainBroadcastEnabled} onClick={() => setConfirmOpen(true)}>Run Live Comparison</Button>
             <Button variant="outlined" startIcon={<Save size={14} />} disabled={comparison?.provenance !== 'LIVE'} onClick={saveRegression}>Save Regression</Button>
           </Stack>
           {live && (
@@ -339,10 +388,7 @@ export function PlaygroundPage() {
             </>
           )}
 
-          <Typography variant="h4" sx={{ mb: 1 }}>Comparison table</Typography>
-          {rows.length === 0 ? (
-            <Typography variant="body2">No live rows yet. Table fills only from fresh RPC responses after Run Live Comparison.</Typography>
-          ) : (
+          {rows.length > 0 && (
             <Table size="small">
               <TableHead>
                 <TableRow>
@@ -371,6 +417,21 @@ export function PlaygroundPage() {
           {saved && <Alert severity="success" sx={{ mt: 2 }}>Saved {saved.file} · digest {saved.contentDigest} · Arkiv awaits explicit approval</Alert>}
         </Paper>
       )}
+
+      {uniswapCapable && (
+        <Paper sx={{p:2.5,mb:2}}>
+          <Typography variant="overline">Fresh recording run · operator only</Typography><Typography variant="h3" sx={{mb:1}}>Prepare a new source-bound candidate</Typography>
+          <Alert severity="warning" sx={{mb:2}}>This creates a NEW run ID and signed transaction. Prepare is read-only; Run remains disabled until the operator reviews and confirms the bounded write packet.</Alert>
+          {!pgConfig?.chainBroadcastEnabled && <Alert severity="info" sx={{mb:2}}><strong>TECHNICALLY READY · OPERATOR AUTHORIZATION REQUIRED</strong><br/>Read-only preparation is available now. Configure the operator key in <Mono>.env</Mono> and restart with <Mono>node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_AUTHORIZED --results runs --port 4190</Mono> to execute after review.</Alert>}
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap><Button variant="outlined" onClick={prepareUniswap} disabled={Boolean(busy)||pgConfig?.offlineDemo}>Prepare read-only candidate</Button><Button variant="contained" startIcon={<Play size={14}/>} disabled={!prepared||!pgConfig?.chainBroadcastEnabled} onClick={()=>setConfirmOpen(true)}>Review & run</Button></Stack>
+          {prepared&&<Alert severity="info" sx={{mt:2}}>New run {prepared.id} · hash <Mono copy>{prepared.candidate.hash}</Mono> · maximum fee exposure {prepared.approvalPacket?.maximumFeeExposureEth} test ETH · broadcasts 0</Alert>}
+          {comparison?.provenance==='LIVE'&&<Grid container spacing={2} sx={{mt:2}}><Grid size={{xs:12,md:6}}><Paper variant="outlined" sx={{p:2,bgcolor:tokens.dangerSoft}}><Typography variant="overline">Canonical ethrex</Typography><Box sx={{my:1}}><StatusChip value={comparison.canonical?.status}/></Box><Typography variant="body2">{comparison.canonical?.message}</Typography></Paper></Grid><Grid size={{xs:12,md:6}}><Paper variant="outlined" sx={{p:2,bgcolor:tokens.successSoft}}><Typography variant="overline">Alternative Skandha</Typography><Box sx={{my:1}}><StatusChip value={comparison.alternative?.status}/></Box><Typography variant="body2">Admission {comparison.alternativeReport?.admission?.id??'—'} · inclusion {comparison.inclusionStatus}</Typography></Paper></Grid></Grid>}
+        </Paper>
+      )}
+
+      <Paper sx={{p:{xs:2,md:3},mb:2,border:'2px solid #CBD5E1',boxShadow:'0 12px 34px rgba(15,23,42,.08)'}}><Stack direction={{xs:'column',sm:'row'}} justifyContent="space-between" gap={1} sx={{mb:2}}><Box><Typography variant="overline">Evidence table</Typography><Typography variant="h2">Public vs alternative comparison</Typography></Box><StatusChip value={comparison?.provenance==='LIVE'?'FRESH LIVE RPC':captured?'CAPTURED LIVE EVIDENCE':'NOT RUN'}/></Stack>
+        {displayRows.length===0?<Alert severity="info">Ready to compare. Prepare and authorize a fresh EIP-8141 transaction.</Alert>:<Box sx={{overflowX:'auto'}}><Table size="small" aria-label="Public versus alternative admission evidence"><TableHead><TableRow sx={{bgcolor:'#F8FAFC'}}><TableCell>Mutation</TableCell><TableCell>Canonical ethrex</TableCell><TableCell>Alternative Skandha</TableCell><TableCell>Divergence</TableCell><TableCell>Inclusion</TableCell><TableCell>Evidence</TableCell></TableRow></TableHead><TableBody>{displayRows.map((row,i)=><TableRow key={i} hover sx={{cursor:'pointer','& td':{py:1.75}}} onClick={()=>setDetail(row)}><TableCell sx={{minWidth:240,fontWeight:600}}>{row.mutation}<Typography variant="body2">{row.evidence?.timestamp}</Typography></TableCell><TableCell><StatusChip value={row.publicVerdict||row.canonicalVerdict}/><Typography variant="body2">{row.publicReason||row.evidence?.rule}</Typography></TableCell><TableCell><StatusChip value={row.alternativeVerdict}/><Typography variant="body2">admission {row.admissionId??row.evidence?.sidecarAdmissionId??'n/a'}</Typography></TableCell><TableCell><StatusChip value={row.divergence}/></TableCell><TableCell><StatusChip value={row.inclusionStatus||(row.inclusion?'MINED':'NOT_MINED')}/></TableCell><TableCell><Mono>{shortHash(row.evidence?.transactionHash||row.evidence?.hash)}</Mono><Typography variant="body2">{row.evidence?.provenance}</Typography></TableCell></TableRow>)}</TableBody></Table></Box>}
+      </Paper>
 
       <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Approve bounded LIVE writes?</DialogTitle>

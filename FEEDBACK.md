@@ -1,6 +1,7 @@
 # Uniswap developer feedback — FrameFuzz
 
-Status: prepared from actual implementation and devnet evidence. **The human feedback form has not been submitted.**
+Status: prepared from actual implementation and final devnet evidence.  
+**Uniswap Developer Feedback Form: SUBMITTED** (human-confirmed 2026-11-07) via https://developers.uniswap.org/hackathon-feedback
 
 ## What we built and actually used
 
@@ -20,18 +21,16 @@ The [StateView guide](https://developers.uniswap.org/docs/protocols/v4/guides/st
 - **Validation versus execution:** successful `eth_call` does not prove the read is admissible in a verification frame. An integration guide should distinguish ordinary read simulation, public admission restrictions, stake-dependent alternative admission and eventual inclusion. This helps wallets avoid promising sponsorship for transactions the public path will refuse.
 - **Actionable infrastructure errors:** this generated campaign's alternative storage validation passed for the staked payer, but the sidecar could not persist accepted candidates because its disk was full. This is devnet infrastructure friction, not a Uniswap contract defect. Examples should teach users to separate validation reports from gateway storage failures and inclusion receipts.
 
-The highest-impact addition for this use case would be a small AA/paymaster StateView example with an access trace, explicit initialization caveat and stake-aware admission expectations. We did not measure a reliable time-to-first-integration and do not invent a duration or support rating.
+The highest-impact addition for this use case would be a small AA/paymaster StateView example with an access trace, explicit initialization caveat and stake-aware admission expectations.
 
 ## Why wallet/paymaster developers need this
 
 A sponsor may read pool state to bound exposure or decide whether a future token-funded operation is acceptable. Its code can execute correctly and still be rejected during validation because that read reaches external storage. FrameFuzz generates no-read, unstaked-read and staked-read scenarios from one definition, shows where the path-specific policy differs, and publishes the semantic regression through Arkiv. It helps developers test compatibility before promising gas sponsorship. Zero-state reads here prove only the admission dependency, not a safe trading strategy.
 
-## Human submission checklist
+## Submission record
 
-Official form: **https://developers.uniswap.org/hackathon-feedback**, verified November6,2026. The [ETHGlobal Mumbai prize requirements](https://ethglobal.com/events/mumbai/prizes) request a public open-source repository, FEEDBACK.md and a completed feedback form referencing that file.
+Official form: **https://developers.uniswap.org/hackathon-feedback**  
+ETHGlobal Mumbai Uniswap requirements: public open-source repository, this `FEEDBACK.md`, and a completed feedback form linking it ([prize page](https://ethglobal.com/events/mumbai/prizes/uniswap-foundation)).
 
-- Publish the branch/repository only when authorized and verify the actual public FEEDBACK.md URL. Intended branch URL after push: `https://github.com/n1shanthb/ethglobalmumbai/blob/feat/framefuzz-mvp/FEEDBACK.md` (not yet verified as published).
-- Human supplies name, email, Telegram, hackathon, project description and actual integration status. Include the FEEDBACK.md link in the appropriate free-text field.
-- Choose honest time-to-first-success, documentation/support ratings and continuation plans. AI-assisted development is not itself an autonomous trading agent.
-- Describe actual pool-state validation, historical successful receipts, current generated campaign limitations and Arkiv fixture exchange. Do not claim a swap or USDC reimbursement.
-- Human reviews required terms/privacy consent and submits the form. Retain confirmation separately; until confirmed, status remains **NOT SUBMITTED**.
+- Form: **SUBMITTED** (2026-11-07, human-confirmed).
+- Public `FEEDBACK.md` URL still depends on making the GitHub repo anonymously accessible; intended path after publish: `https://github.com/n1shanthb/ethglobalmumbai/blob/feat/framefuzz-mvp/FEEDBACK.md`.
