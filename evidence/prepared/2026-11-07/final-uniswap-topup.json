@@ -1,0 +1,17 @@
+{
+  "schema": "framefuzz.uniswap-topup.v1",
+  "reason": "Observed Skandha included-stake liability remained reserved",
+  "operator": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+  "paymaster": "0x3df63DFD230156C3656Bd4448326482030c31f96",
+  "nonce": "5",
+  "valueWei": "9955055000000000",
+  "gasLimit": "21000",
+  "gasPriceWei": "3000000000",
+  "maximumDebitWei": "10018055000000000",
+  "hash": "0xa86e0a23cf4fe14835cea0cc316af25ce649ca53b4a372bdd21e9000d62839ac",
+  "raw": "0xf86c0584b2d05e00825208943df63dfd230156c3656bd4448326482030c31f9687235e11dcfe960080820a96a0ef34b2fc5f14f2f0a94fbd8237e9be660b57ce3c00be48dd220a02827faa1df3a06c0935c1ca52b3772b0d62d13a34c992e9071f69e595387cc200d3818a22bebe",
+  "candidate": "0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067",
+  "beforeBalanceWei": "2247102000000000",
+  "writes": 0,
+  "broadcasts": 0
+}

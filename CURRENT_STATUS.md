@@ -2,6 +2,13 @@
 
 ## Final Uniswap admission preflight — 2026-11-07
 
+### Live completion
+
+- LIVE policy divergence achieved for candidate `0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067`: canonical ethrex rejected `StorageReadNonSender`; Skandha admission 2065 accepted and included it; receipt status and all three frame statuses are `0x1`.
+- Paymaster `0x3df63DFD230156C3656Bd4448326482030c31f96` deployment `0xddd9925994b02afe443f9804fb2f361aa595e2509b1d98b5339d57b040694032` matches the exact compiled runtime. Corrected nonce-8 stake `0x88f2a4ec59df362a47ee65e20f4430495763e8be567de3ab014d0657ccbed251` is included with 0.01 test ETH and 86400 delay.
+- Skandha initially rejected the candidate for payer funding while retaining the included stake liability. A direct transfer and a 100k-gas force-send reverted; both are preserved as setup failures. Successful force top-up: `0xb9193318f8f17e8d06a8a47c207e6d5b0b0fcd1457d5a020bf01b50675ee310e`.
+- Consolidated immutable evidence: `evidence/live/2026-11-07/uniswap-policy-divergence-final.json`. This proves validation-time `StateView.getSlot0`, not a Uniswap swap or reimbursement.
+
 - Read-only chain refresh resolved the predicted-address collision: `0x6d5bED568904290fCA0b8d4e99Bed2a7F9D44145` is the already-deployed `Foreign` fixture from operator nonce 2, not a reusable ReserveReadingPaymaster.
 - Operator `0x366E6203603C39Eec1e75b3be6f078911447f235` is at pending nonce 4 with `0.962660082` test ETH. No funding transfer is needed.
 - Fresh predicted paymaster: `0x3df63DFD230156C3656Bd4448326482030c31f96` (confirmed empty at preflight).

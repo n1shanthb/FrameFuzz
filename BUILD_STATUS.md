@@ -99,6 +99,14 @@ Evidence verified (same identity, claims ADMISSION_DIVERGENCE=true / INCLUSION=f
 Migrated dashboard to Vite + React 18 + TypeScript + MUI + Lucide (`web-ui/` → `web/dist`). Server serves React SPA with SPA fallback; legacy `/css` `/js` retained for smoke. All pages redesigned; Playground flagship wired to real playground APIs. Browser check on :4190 OK. dashboard/saved-demo tests updated. No backend admission rewrite. No chain writes or paid LLM calls.
 ## Final Uniswap admission preflight (2026-11-07)
 
+### Live result
+
+- Deployment `0xddd9925994b02afe443f9804fb2f361aa595e2509b1d98b5339d57b040694032`: included, runtime hash matched.
+- Stake `0x88f2a4ec59df362a47ee65e20f4430495763e8be567de3ab014d0657ccbed251`: Skandha accepted and included; registry amount 0.01 test ETH, delay 86400.
+- Candidate `0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067`: canonical `REJECTED_POLICY StorageReadNonSender`; Skandha admission 2065 accepted and included; outer receipt `0x1`; three frame receipts `0x1`.
+- Successful bounded force top-up `0xb9193318f8f17e8d06a8a47c207e6d5b0b0fcd1457d5a020bf01b50675ee310e`. Failed direct/under-gassed attempts remain explicit setup failures.
+- Final evidence: `evidence/live/2026-11-07/uniswap-policy-divergence-final.json`.
+
 - `node --env-file=.env scripts/step2e-prepare-policy-experiment.mjs` — read-only chain/routing/code/nonce/balance/gas checks; nonce 4, no top-up required, next address empty.
 - `node --env-file=.env scripts/step2e-sign-setup.mjs` — offline-signed deployment and stake only; zero broadcasts.
 - `node scripts/step2e-build-policy-candidate.mjs` — independently generated and signed pool-read candidate; zero broadcasts.

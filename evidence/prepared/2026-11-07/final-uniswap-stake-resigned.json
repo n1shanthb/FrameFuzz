@@ -1,0 +1,65 @@
+{
+  "schema": "framefuzz.policy-stake-resigned.v1",
+  "classification": "OFFLINE_SIGNED_NOT_SUBMITTED",
+  "reason": "Original nonce-0 stake rejected pre-admission; live newly deployed paymaster nonce is protocol nonce 8",
+  "supersedes": "0x1c9495f21d67ee1ee83fc69b19ea7564d6b0fe8b66f5766fba5e2e33b41ba2b8",
+  "sender": "0x3df63DFD230156C3656Bd4448326482030c31f96",
+  "nonce": "8",
+  "hash": "0x88f2a4ec59df362a47ee65e20f4430495763e8be567de3ab014d0657ccbed251",
+  "raw": "0x06f8e4820539c18008943df63dfd230156c3656bd4448326482030c31f96f85bcb010380c583013880808002f84d028094d51c04d7a0b01124e84de152f4e56d9eecb22d2fc8830249f0830493e0872386f26fc10000a40396cb600000000000000000000000000000000000000000000000000000000000015180f85cf85a0194366e6203603c39eec1e75b3be6f078911447f23580b84100406876e2f2de422b586b16da565aefa976212009bf1b8a9ff84178e251adbaa27df546e08270502976924a8baebc1453314a5067e477872033e44c4b17d4cb90cb84b2d05e0084b2d05e0080c0c0",
+  "wire": {
+    "chainId": "0x539",
+    "nonceKeys": [
+      "0x0"
+    ],
+    "nonceSeq": "0x8",
+    "sender": "0x3df63DFD230156C3656Bd4448326482030c31f96",
+    "frames": [
+      {
+        "mode": 1,
+        "flags": 3,
+        "target": null,
+        "limits": {
+          "execution": "0x13880",
+          "state": "0x0"
+        },
+        "value": "0x0",
+        "data": "0x02"
+      },
+      {
+        "mode": 2,
+        "flags": 0,
+        "target": "0xd51c04d7a0b01124e84de152f4e56d9eecb22d2f",
+        "limits": {
+          "execution": "0x249f0",
+          "state": "0x493e0"
+        },
+        "value": "0x2386f26fc10000",
+        "data": "0x0396cb600000000000000000000000000000000000000000000000000000000000015180"
+      }
+    ],
+    "signatures": [
+      {
+        "scheme": 1,
+        "signer": "0x366E6203603C39Eec1e75b3be6f078911447f235",
+        "msg": "0x",
+        "signature": "0x00406876e2f2de422b586b16da565aefa976212009bf1b8a9ff84178e251adbaa27df546e08270502976924a8baebc1453314a5067e477872033e44c4b17d4cb90"
+      }
+    ],
+    "fees": {
+      "maxPriorityFeePerGas": "0xb2d05e00",
+      "maxFeePerGas": "0xb2d05e00",
+      "maxFeePerBlobGas": "0x0"
+    },
+    "blobVersionedHashes": [],
+    "recentRootReferences": []
+  },
+  "request": {
+    "endpoint": "https://altmempool.forshtat.com/rpc/",
+    "method": "eth_sendFrameTransaction"
+  },
+  "amountWei": "10000000000000000",
+  "unstakeDelaySeconds": 86400,
+  "writes": 0,
+  "broadcasts": 0
+}
