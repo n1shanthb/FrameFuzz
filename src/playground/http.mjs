@@ -135,18 +135,19 @@ export function createPlaygroundRoutes({resultDir,offlineDemo,env,getRunning,set
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/uniswap-prepare'){
    if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot prepare a fresh signed candidate');
-   if(capabilityMode!=='LIVE_AUTHORIZED'||!liveOperatorKey(env))throw new ApiError(403,'OPERATOR_ONLY','Fresh preparation requires LIVE_AUTHORIZED and an operator key on the server');
+   if(!['LIVE_READ_ONLY','LIVE_AUTHORIZED'].includes(capabilityMode))throw new ApiError(403,'LIVE_READ_REQUIRED','Fresh preparation requires LIVE_READ_ONLY or LIVE_AUTHORIZED');
    const input=await readJsonObject(req,['analysisId','sourceDigest','source'],120000);
    const cached=analyses.get(input.analysisId);
    if(!cached||cached.analysis.profile?.id!=='uniswap-v4-paymaster'||cached.analysis.sourceDigest!==input.sourceDigest||Date.now()-cached.at>600000)throw new ApiError(409,'STALE_ANALYSIS','Analyze the exact supported Uniswap source again');
    if(input.sourceDigest!==UNISWAP_SOURCE_SHA256)throw new ApiError(409,'SOURCE_DIGEST_MISMATCH','Editor source does not match the supported ReserveReadingPaymaster');
    let candidate;try{candidate=await prepareFreshUniswapComparison({source:input.source});}catch(e){throw new ApiError(409,'UNISWAP_NOT_READY',e.message);}
    const id=candidate.runId;jobs.set(id,{state:'PREPARED',controller:new AbortController(),timeline:[],report:null,candidate,readiness:candidate.readiness,analysis:cached.analysis,scenario:'uniswap-v4-paymaster'});
-   json(res,200,{id,state:'PREPARED',scenarioKind:'SOURCE_BOUND_UNISWAP_PAYMASTER',candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest},approvalPacket:candidate.approvalPacket,readiness:candidate.readiness,broadcasts:0,notice:'Fresh candidate prepared and signed in memory. Nothing broadcast. A separate operator confirmation is required to run.'});return true;
+   json(res,200,{id,state:'PREPARED',scenarioKind:'SOURCE_BOUND_UNISWAP_PAYMASTER',candidate:{hash:candidate.hash,wallet:candidate.wallet,nonce:candidate.nonce,mutation:candidate.mutation,sourceDigest:candidate.sourceDigest},approvalPacket:candidate.approvalPacket,readiness:candidate.readiness,broadcasts:0,notice:`Fresh candidate prepared and signed in memory. Nothing broadcast.${capabilityMode==='LIVE_AUTHORIZED'?' A separate operator confirmation is required to run.':' Restart in LIVE_AUTHORIZED mode to review and execute writes.'}`});return true;
   }
   if(req.method==='POST'&&url.pathname==='/api/playground/live-run'){
    if(offlineDemo)throw new ApiError(403,'OFFLINE_DEMO','Saved demo cannot broadcast');
    if(capabilityMode!=='LIVE_AUTHORIZED')throw new ApiError(403,'LIVE_AUTHORIZED_REQUIRED','Live comparison requires --mode LIVE_AUTHORIZED');
+   if(!liveOperatorKey(env))throw new ApiError(403,'OPERATOR_KEY_REQUIRED','Live comparison requires FRAMEFUZZ_OWNER_KEY or FRAMEFUZZ_SENDER_KEY on the operator server');
    const input=await readJsonObject(req,['id','confirmHash','authorizeWrites'],2048);
    if(input.authorizeWrites!==true)throw new ApiError(400,'CONSENT','authorizeWrites must be true');
    const job=jobs.get(input.id);
