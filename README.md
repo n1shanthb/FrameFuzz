@@ -1,86 +1,154 @@
 # FrameFuzz
 
-**Reproducible EIP-8141 admission tests and shared semantic regression fixtures.** FrameFuzz changes unsigned models, signs isolated transactions when explicitly authorized, compares public/alternative admission decisions and tracks inclusion separately from action execution. Intended policy differences are not vulnerabilities.
+**Break the tx before the mempool does**
 
-[Canonical current capabilities and limits](docs/CURRENT_CAPABILITIES.md) · [Latest executed checkpoint](CURRENT_STATUS.md) · [Pass2 report](docs/PASS2_REPORT.md) · [90-second demo](docs/DEMO_90_SECONDS.md) · [Delivery checklist](docs/DELIVERY_PASS2.md)
+FrameFuzz is an EIP-8141 **admission comparison lab**: it constructs signed type-`0x06` frame transactions, submits the **same transaction identity** to the **public/canonical ethrex** path and the **alternative Skandha** mempool, and records policy divergence separately from inclusion and frame execution.
 
-## Key-free saved demonstration
+Built for [ETHGlobal Mumbai 2026](https://ethglobal.com/events/mumbai). Submission package: [`docs/submission/ETHGLOBAL_SUBMISSION.md`](docs/submission/ETHGLOBAL_SUBMISSION.md).
 
-Requires Node 20.12+ (tested on Node 22; no Node 20 runtime matrix). After installing pinned dependencies:
+```mermaid
+flowchart LR
+  UI[React UI / CLI]
+  API[Server APIs]
+  Codec[Pinned EIP-8141 codec]
+  Ethrex[Canonical ethrex]
+  Skandha[Alternative Skandha]
+  Arkiv[Arkiv Rabdi]
+  Evid[Evidence]
+
+  UI --> API --> Codec
+  Codec --> Ethrex
+  Codec --> Skandha
+  Ethrex --> Evid
+  Skandha --> Evid
+  API --> Arkiv --> Evid
+```
+
+## Problem
+
+Frame transactions add validation-time rules (storage access, verification gas, payers, stake). A contract can compile and simulate yet be **rejected at admission** on the public path while an alternative mempool accepts it. Without dual-path tooling, that looks like RPC noise.
+
+## What works today
+
+| Capability | Status |
+|---|---|
+| Signed EIP-8141 construction (pinned `ethrex-eip8141-tracer` codec) | Supported scenarios |
+| Canonical vs alternative admission comparison | **LIVE** |
+| Flagship policy divergence (`StorageReadNonSender`) | **LIVE** — see below |
+| Solidity analyze + source/runtime binding | Supported scenarios |
+| Feasibility-gated mutations + agent roles (Scout → Mutation → Validator → Critic) | Supported; model calls need keys |
+| Uniswap v4 **StateView.getSlot0** in paymaster validation | **LIVE** evidence (not a swap) |
+| Arkiv publish / query / unsigned import (Rabdi **7794095**) | **LIVE** publish + user-facing reads |
+| Ethereum Swarm **Bee** storage | **Not implemented** |
+
+**Admission ≠ inclusion ≠ successful frame execution.**
+
+### Flagship LIVE policy divergence
+
+| | |
+|---|---|
+| Transaction | [`0xf69e0f4b87827d8d5d295188d10e7672b2bace87e6ac8d09916758bee155e31d`](evidence/live/2026-11-07/storage-access-live.json) |
+| Canonical | `REJECTED_POLICY` — `StorageReadNonSender` |
+| Alternative | `ACCEPTED` — Skandha admission ID **1647** |
+| Later status | **DROPPED** (no inclusion claim) |
+
+Self-funded inclusion hashes `0xd4d6123f…` and `0xc05703ac…` prove canonical inclusion paths; they are **not** a clean dual-path policy difference. Uniswap-path candidate `0x72a82645…` is a separate LIVE StateView divergence (see sponsor docs).
+
+## Judge / sponsor docs
+
+| Doc | Purpose |
+|---|---|
+| [docs/submission/ETHGLOBAL_SUBMISSION.md](docs/submission/ETHGLOBAL_SUBMISSION.md) | Main write-up |
+| [docs/submission/REQUIREMENTS_CHECKLIST.md](docs/submission/REQUIREMENTS_CHECKLIST.md) | Portal checklist |
+| [docs/submission/PROOF_INDEX.md](docs/submission/PROOF_INDEX.md) | Claim → proof map |
+| [docs/submission/CONTRACT_ADDRESSES.md](docs/submission/CONTRACT_ADDRESSES.md) | Addresses & txs |
+| [docs/submission/DEMO_RUNBOOK.md](docs/submission/DEMO_RUNBOOK.md) | Live demo script |
+| [docs/submission/GAP_MATRIX.md](docs/submission/GAP_MATRIX.md) | Missing P0/P1/P2 actions |
+| [docs/sponsors/ETHEREUM_FOUNDATION.md](docs/sponsors/ETHEREUM_FOUNDATION.md) | EF alt mempool evidence map |
+| [docs/sponsors/UNISWAP.md](docs/sponsors/UNISWAP.md) | Uniswap StateView evidence map |
+| [docs/sponsors/ARKIV.md](docs/sponsors/ARKIV.md) | Arkiv write/read evidence map |
+| [docs/sponsors/SWARM.md](docs/sponsors/SWARM.md) | Swarm bonus — not eligible yet |
+| [FEEDBACK.md](FEEDBACK.md) | Uniswap DX feedback (**form not submitted**) |
+| [arkiv/swarm.md](arkiv/swarm.md) | Required Swarm status file |
+
+Recommended partner prizes (≤3): **EF Frame Transaction Alternative Mempool**, **Uniswap Foundation**, **Arkiv Build on Arkiv**. Do **not** select Arkiv+Swarm until Bee exists.
+
+Official deadline: **Saturday 7 November 2026, 09:00 IST** — [event details](https://ethglobal.com/events/mumbai/info/details).
+
+## Quick start
+
+Node **20.12+**. Never commit `.env`.
 
 ```powershell
 npm ci
 npm test
-npm run verify
-npm run run:preview
+npm run ui:build
+node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_READ_ONLY --results runs --port 4190
+```
+
+Saved demo (no keys / no chain writes):
+
+```powershell
 node bin/framefuzz.mjs saved-demo --results runs/demo --port 4192
 ```
 
-Open http://127.0.0.1:4192. Select historical reports in Evidence Explorer, inspect/export actual JSON/Markdown/replay, and generate unsigned previews. Arkiv Registry → Inspect saved registry snapshots shows historical publication ownership/digests with current validity UNKNOWN; Open saved imported PREVIEW views an existing import. Swarm Lab → Load saved investigation shows genuine Sonnet evidence without an API key. Technical Briefing supports presentation mode. Saved-demo disables external chain/registry/provider actions; it does not represent saved results as a fresh execution.
+UI: React + MUI app in `web-ui/` (build → `web/dist/`). Dev proxy: `npm run ui:dev`.
 
-Current test results are recorded in [TEST_CHECKPOINT.json](docs/TEST_CHECKPOINT.json). Briefing facts are generated from canonical evidence and this explicit checkpoint. `node scripts/briefing-facts.mjs --check` detects drift; see [verification limitations](docs/CURRENT_CAPABILITIES.md#verification-limits-and-human-delivery).
+### Environment variable **names** (values never in git)
 
-## Normal launcher and Stage A readiness
+`OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENROUTER_ENDPOINT`, `ARKIV_PRIVATE_KEY`, `ARKIV_ACCESS_KEY`, `ARKIV_READER_ADDRESS`, `FRAMEFUZZ_DEPLOYER_KEY`, `FRAMEFUZZ_RPC`, `FRAMEFUZZ_PUBLIC_RPC`, `FRAMEFUZZ_ALT_RPC`, `FRAMEFUZZ_LIVE_CONFIG`, optional `FRAMEFUZZ_SWARM=on` (AI swarm experiments — **not** Ethereum Swarm storage).
 
-Normal read-only mode loads `.env`, exposes the Live Readiness panel, permits only deliberate bounded chain-ID health checks, and never makes an OpenRouter request:
+Modes: `SAVED_DEMO` · `LIVE_READ_ONLY` · `LIVE_AUTHORIZED` (writes still require explicit approval gates).
 
-```powershell
-node --env-file=.env bin/framefuzz.mjs serve --mode LIVE_READ_ONLY --results runs --port 4177
-```
+## Architecture (short)
 
-Exact supported environment names are `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `OPENROUTER_ENDPOINT`, `ARKIV_PRIVATE_KEY`, `ARKIV_ACCESS_KEY`, `ARKIV_READER_ADDRESS`, `FRAMEFUZZ_DEPLOYER_KEY`, `FRAMEFUZZ_RPC`, `FRAMEFUZZ_PUBLIC_RPC`, `FRAMEFUZZ_ALT_RPC`, `FRAMEFUZZ_LIVE_CONFIG`, and opt-in `FRAMEFUZZ_SWARM=on`. Key presence reports configuration only: it does not authorize paid calls, signing, publication, or broadcast.
+- **Codec:** `src/adapters/workshop-codec.mjs` (`ethrex-eip8141-tracer`)
+- **Compare:** `src/policy-comparison.mjs`
+- **Live product:** `src/playground/live-admission.mjs`, `storage-access-regression.mjs`
+- **Uniswap state checks:** `src/adapters/uniswap-state.mjs` + `vendor/paymaster/ReserveReadingPaymaster.sol`
+- **Arkiv:** `src/arkiv/*`, UI `web-ui/src/pages/Arkiv.tsx`, SDK `@arkiv-network/sdk@1.0.1`
+- **Agents:** feasibility-gated Scout / Mutation / Validator / Critic (see `docs/AGENTIC_FEASIBILITY.md`)
 
-The explicit capability modes are `SAVED_DEMO`, `LIVE_READ_ONLY`, and `LIVE_AUTHORIZED`. `SAVED_DEMO` is irrevocably network/paid/write disabled even when keys exist. Stage A `LIVE_AUTHORIZED` is still write-disabled: it prepares operation-specific manifests and stops at the one-time approval boundary. See [Stage A operations](docs/STAGE_A_OPERATIONS.md).
+## Arkiv (Rabdi)
 
-## What the evidence establishes
+Chain **7794095**. Example LIVE entity (2026-11-07):
 
-- **Gas:** seven generated variants,14 historical real admission decisions,14 matches, eight included-success receipts. Sender VERIFY30000 + payer VERIFY67200 + signature2800 =100000 in the tested workshop profile.
-- **Uniswap v4:** genuine validation-time StateView.getSlot0 read. Basic sponsorship accepted on both paths, unstaked external read rejected on both, staked read rejected publicly and accepted alternatively with historical inclusion. No swap, USDC reimbursement or active-price demonstration is claimed.
-- **Arkiv:** two historical successful publications and a freshly verified premium UI query → retrieve → verify → import unsigned preview journey. One demonstrated publisher; no adoption numbers. Current reads depend on availability/expiry.
-- **Sonnet:** four actual successful-run responses selected record(1,20), then record(2,10); two fresh-process replays reproduced offline ECDSA behavior. Same implementation assumptions remain. No owned-validator EVM execution or protocol vulnerability is proven.
+- Entity `0xf1089c05e4a7ec4d3a66087381c1c78b43728a836e4ae10eb694cfd6ce2a06a1`
+- Tx `0x007bd10f4d720a124c4dd0b44449f235b32f364a4b68e7657917f1717a307c00`
+- Writer `0x20370BE5BA867Ab4779ad0686963A55ADc0722b1`
+- Digest `0f7f014559fbfb6ea828820cc954401f1562937b66c2fe24360959dcb5196b25`
 
-Full captures/digests: [LIVE_EVIDENCE.md](docs/LIVE_EVIDENCE.md), [gas evidence](evidence/mutations/2026-11-06/), [Uniswap evidence](evidence/live/2026-11-06/), [Sonnet evidence](evidence/investigator/2026-11-06/sonnet-retry-2.json). Historical artifacts are immutable. New generated storage testing previously recorded infrastructure errors; those are not policy bugs or successful inclusions.
-
-## Arkiv Community Cases
-
-Network: **Rabdi, chain 7794095**, RPC `https://rpc.rabdi.db-chain.testnet.arkiv.network`, SDK `@arkiv-network/sdk@1.0.1`. This is separate from the experimental EIP-8141 chain 1337 and its transaction format/accounts.
-
-Writer wallet: `0xd4A81a21dBfb0f90b814404Fa64A2e4C8166C715`. Its historical in-memory signing key is not distributed.
-
-- Gas entity: `0x5393e97dda9fec992ad4e792127064fcd17efb30572368a7ea1abbe7326db2e1`; creation tx `0x0158db1bec0a20a8671ba18d0d9776b437a6a5cdb18970948a6c51d8fe5e8388`; successful receipt block 267241; expiry569638.
-- Uniswap entity: `0x6779cf38a4398eb90da94b11885e691b84a6bb09dda59974cf5b8f1a21db773e`; creation tx `0x44f0084455b54724624fffd3e2c186986146d316c5d6bf27207409872acc9ec2`; successful receipt block 268363; expiry570761.
+Additional historical writers/entities are listed in [docs/sponsors/ARKIV.md](docs/sponsors/ARKIV.md). Public query/import needs no writer key.
 
 ```powershell
 node bin/framefuzz.mjs arkiv query --suite verification-gas --rule MAX_VERIFY_GAS
-node bin/framefuzz.mjs serve --results runs/registry --port 4193
 ```
 
-Public reading/import requires no wallet. In the normal dashboard, filter by suite/rule/version/owner, select a case, inspect creator/owner/schema/expiry/digest and import as unsigned PREVIEW. Bounded discovery returns at most 20; possible truncation is explicit. Import rechecks current expiry and regenerates constrained semantic inputs at UNKNOWN confidence, never signatures or broadcasting. Saved snapshots cannot bypass current expiry checks.
+Sponsor criterion files: [arkiv/schema.md](arkiv/schema.md), [friction](arkiv/friction.md), [reach](arkiv/reach.md), [why-arkiv](arkiv/why-arkiv.md), [how-you-use-arkiv](arkiv/how-you-use-arkiv.md).
 
-Arkiv stores the portable fixture, indexed metadata, digest and selected historical outcome summaries. Full reports remain offchain in Git; a digest is not a resolver or proof that publisher outcomes are true. Shared searchable fixtures can be found across developers without knowing a repository layout; ownership gives attribution and expiry removes stale replay candidates. Local JSON and Git retain private/permanent evidence roles. No external adoption is claimed.
+## Uniswap integration pointer
 
-Required sponsor documents: [schema](arkiv/schema.md), [friction](arkiv/friction.md), [reach](arkiv/reach.md), [why Arkiv](arkiv/why-arkiv.md), [how used](arkiv/how-you-use-arkiv.md). Existing explicit publish CLI remains documented there; no new publication is authorized by this sprint.
+Paymaster VERIFY (`0x01`) → `StateView.getSlot0(poolId)` in [`vendor/paymaster/ReserveReadingPaymaster.sol`](vendor/paymaster/ReserveReadingPaymaster.sol). Addresses and LIVE tx: [docs/sponsors/UNISWAP.md](docs/sponsors/UNISWAP.md). No swap / LP / USDC reimbursement claimed.
 
-## Offline experiments and conditional execution
+## Tests
 
-`swarm sponsored-plan` completes deterministic offline sponsored preparation: constructor/init-code digests, optional CREATE predictions, dependencies and unresolved runtime/funding gates. [Preparation instructions](docs/SPONSORED_PREPARATION.md). The isolated self-funded candidate remains [PLAUSIBLE_UNVERIFIED](docs/SELF_FUNDED_FEASIBILITY.md). Neither path deploys or signs with user keys.
+```powershell
+npm test
+```
 
-`swarm verify-action` ingests a strict candidate raw receipt/log/state bundle. It checks consistency but always keeps actionEvidenceVerified=false/liveVerified=false because no actual owned-validator live action receipt or canonical collector exists. [Raw-proof boundaries](docs/RAW_ACTION_PROOF.md).
+Observed **2026-11-07**: **239** tests, **236** pass, **3** fail. Do not claim a fully green suite until failures are fixed. Historical checkpoint: [`docs/TEST_CHECKPOINT.json`](docs/TEST_CHECKPOINT.json).
 
-A new live campaign requires a healthy compatible gateway, valid funded/staked fixtures, exact allowlisted chain/endpoints and separate authorization. Devnet resets can invalidate historical addresses. Only explicit chain 1337 or local 31337 generic execution is allowed; Arkiv uses its separate client. No mainnet, unrelated integrations, automated community broadcast or fabricated evidence. Standalone reserve deployment requires `--submit --allow-chain 1337` and separate authorization; do not run it for the demo.
+## Unsupported / limits
 
-[Mutation/semantic replay instructions](docs/MUTATIONS.md) · [Adapter contract](docs/ADAPTER.md) · [Investigator setup and limits](docs/INVESTIGATOR.md).
+- Arbitrary pasted Solidity does **not** automatically become a complete EIP-8141 executable flow
+- Ethereum Swarm Bee storage not implemented
+- Mainnet / real funds out of scope
+- Public GitHub accessibility and portal video/URL fields are **human** submission steps — this audit saw origin URL HTTP **404** for anonymous access
 
-## License, AI and handoff
+## License & AI
 
-**MIT**: [LICENSE](LICENSE). Imported upstream code retains technical attribution and notices in vendor/. AI assisted implementation, test design, documentation and execution support; the product also has genuine bounded Sonnet requests. Mocked/constructed/preview data is labelled separately from real historical receipts and fresh read-only verification.
+**MIT** ([LICENSE](LICENSE)). AI assisted implementation, tests, docs, and bounded agent calls; distinguish mocked/preview data from LIVE evidence. Specs/prompts retained in-repo where used.
 
-Read AGENTS.md, AUTHORITY.md, CURRENT_STATUS.md and UP_NEXT.md in this same repository when changing IDEs. Older status snapshots are preserved under docs/history/ and dated evidence, rather than treated as current capabilities. Public access, push, video and external submission confirmations remain pending human actions; no submission ID or video is claimed.
+## Security
 
-## Internal contract-analysis foundation
-
-Versioned input/context and semantic-test adapters reuse the existing gas and owned-validator engines. See [foundation scope and executed fixtures](docs/CONTRACT_ANALYSIS_FOUNDATION.md) and [stability verification](docs/STABILITY_FOUNDATION_REPORT.md). This adds no Playground UI or arbitrary Solidity compiler. Saved transcript reading needs no execution opt-in; offline cryptographic execution still requires FRAMEFUZZ_SWARM=on.
-
-## Genuine feasibility-gated agents
-
-[Current agent pipeline and actual evidence](docs/AGENTIC_FEASIBILITY.md): Scout → Mutation → Validator → Executor → Critic through separate Sonnet calls. Two model-selected supported local cases evaluated; Validator advice cannot override deterministic gates. The latest saved investigation includes a local XPASS candidate, gas PREDICTED/observed null, and a Critic-requested matching replay. No live validator action or vulnerability is claimed. Default paid-run ceiling is $0.50/6 calls with explicit consent; saved viewing makes no provider request. The current test count is in `docs/TEST_CHECKPOINT.json`.
+Keys only in environment variables. `.env` is gitignored. Judges must not receive spendable operator wallets. Report secret exposure privately — never paste keys into issues or submission forms.

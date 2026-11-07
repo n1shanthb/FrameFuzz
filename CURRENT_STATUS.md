@@ -1,6 +1,15 @@
 # Current status — premium React UI + live admission product
 
-## Final Uniswap admission preflight — 2026-11-07
+## Submission & sponsor audit — 2026-11-07
+
+- Judge package written under `docs/submission/*` and `docs/sponsors/*`; `arkiv/swarm.md` declares Swarm storage **NOT IMPLEMENTED**.
+- README rewritten for ETHGlobal judges; FEEDBACK.md remains **form NOT SUBMITTED**.
+- Verified evidence in-tree: storage-access `0xf69e0f4b…` (admit 1647 → DROPPED); Uniswap `0x72a82645…` LIVE; Arkiv entity `0xf1089c05…` / tx `0x007bd10f…`.
+- GitHub origin anonymous HEAD → **404** (public access not verified). `npm test` → **236/239** pass.
+- No broadcast, deploy, fund, push, OpenRouter spend, or external form submit in this pass.
+- Next: human portal P0 actions in `UP_NEXT.md` / `docs/submission/GAP_MATRIX.md`.
+
+## Final Uniswap admission — 2026-11-07
 
 ### Live completion
 
@@ -15,7 +24,7 @@
 - Offline-signed identities: deployment `0xddd9925994b02afe443f9804fb2f361aa595e2509b1d98b5339d57b040694032`; stake `0x1c9495f21d67ee1ee83fc69b19ea7564d6b0fe8b66f5766fba5e2e33b41ba2b8`; policy candidate `0x72a82645d0f0d5d1ed2d537976b3580ab92b65720cd07a61e76200a2cc96b067`.
 - Fixed maximum exposure is `0.025337377` test ETH, below the operator's unchanged `0.026087377` ceiling. Writes/broadcasts: zero.
 - Exact source digest, compiler settings, creation data, runtime simulation, StateView binding and signed requests are saved under `runs/final-uniswap-preflight.json` and `evidence/prepared/2026-11-07/final-uniswap-*.json`.
-- The current React Playground live button remains wired only to the already-demonstrated `ViolatingWallet` scenario. The Uniswap packet is valid preparation evidence, but the requested compile/setup/compare sequence is not yet exposed as a single Playground UI flow; do not claim demo readiness until that small wiring is completed.
+- React Playground live button remains wired to the demonstrated `ViolatingWallet` scenario. Uniswap StateView divergence is **LIVE in evidence/scripts**; a single Playground one-click Uniswap flow is still optional P2 wiring, not a blocker for sponsor evidence maps.
 
 FrameFuzz now ships a React + TypeScript + MUI + Lucide product UI while preserving all backend admission APIs.
 

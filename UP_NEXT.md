@@ -1,5 +1,24 @@
 # Up next
 
-1. Load `evidence/live/2026-11-07/uniswap-policy-divergence-final.json` in the existing Playground comparison table for demo recording; do not issue another live transaction.
-2. Wire the already-proven ReserveReadingPaymaster source/runtime binding into the current Playground source panel without redesigning the UI.
-3. Preserve the failed funding-precondition observations alongside the final policy divergence; never relabel them as policy results.
+## P0 — human ETHGlobal submission (deadline 09:00 IST 7 Nov 2026)
+
+1. Make GitHub public; verify anonymous clone/browse (audit saw 404).
+2. Submit Hacker Dashboard project (name FrameFuzz, tagline, repo, description).
+3. Upload demo video + thumbnail using `docs/submission/DEMO_RUNBOOK.md`.
+4. Select ≤3 partners: EF Frame Tx Alt Mempool, Uniswap Foundation, Arkiv Build — **not** Swarm bonus.
+
+## P1 — sponsor eligibility
+
+1. Submit https://developers.uniswap.org/hackathon-feedback linking public `FEEDBACK.md`; then mark FEEDBACK.md as submitted.
+2. Paste explorer/evidence links for `0xf69e0f4b…` and Uniswap `0x72a82645…` into portal EF text.
+3. Confirm README lists all Arkiv writer addresses judges should query.
+
+## P2 — polish
+
+1. Triage Node failures (236/239): StorageAccessValidator compile bind; dashboard preview; supported scenario digest bind.
+2. Optional: one-click Uniswap Playground live wiring (evidence already LIVE via scripts).
+3. Optional public host (Render/Railway).
+
+## Do not start without explicit approval
+
+Broadcast, deploy, fund, stake, OpenRouter spend, Swarm Bee implementation, git push, external form submit (except when user asks).
