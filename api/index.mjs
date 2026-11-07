@@ -39,15 +39,16 @@ async function readRequestBody(req) {
 }
 
 function originalApiPath(req) {
-  // Vercel rewrites /api/* → /api; recover the public path when possible.
+  // Vercel rewrite stores the captured segment as ?path=...
+  const url = new URL(req.url || '/', `https://${req.headers.host || 'vercel.app'}`);
+  if (url.searchParams.has('path')) {
+    const captured = url.searchParams.get('path') || '';
+    url.searchParams.delete('path');
+    const suffix = url.searchParams.toString();
+    return `/api/${captured}${suffix ? `?${suffix}` : ''}`;
+  }
   const forwarded = req.headers['x-forwarded-uri'] || req.headers['x-vercel-forwarded-uri'];
   if (typeof forwarded === 'string' && forwarded.startsWith('/api')) return forwarded;
-  const invoke = req.headers['x-invoke-path'];
-  if (typeof invoke === 'string' && invoke.startsWith('/api')) return invoke;
-  const url = new URL(req.url || '/', `https://${req.headers.host || 'vercel.app'}`);
-  if (url.pathname === '/api' && url.searchParams.has('path')) {
-    return `/api/${url.searchParams.get('path')}${url.searchParams.get('query') ? `?${url.searchParams.get('query')}` : ''}`;
-  }
   return url.pathname + url.search;
 }
 
