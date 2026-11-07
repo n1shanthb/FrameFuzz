@@ -94,3 +94,6 @@ User approved packet `6c55073e…a6b4`. Faucet funded operator; deployed Foreign
 
 ## Storage-access product finish — 2026-11-07
 Evidence verified (same identity, claims ADMISSION_DIVERGENCE=true / INCLUSION=false / EXECUTION_SUCCESS=NOT_OBSERVED). Playground primary path: Load supported scenario → Prepare → Run Live Comparison → Save Regression. Supported scenario labeled not arbitrary BYOC. Local Arkiv-ready descriptor prepared; publish blocked pending approval. Demo sequence in `docs/DEMO_STORAGE_ACCESS.md`. Focused tests 15/15. No broadcast/publish/OpenRouter/push.
+
+## Premium React UI — 2026-11-07
+Migrated dashboard to Vite + React 18 + TypeScript + MUI + Lucide (`web-ui/` → `web/dist`). Server serves React SPA with SPA fallback; legacy `/css` `/js` retained for smoke. All pages redesigned; Playground flagship wired to real playground APIs. Browser check on :4190 OK. dashboard/saved-demo tests updated. No backend admission rewrite. No chain writes or paid LLM calls.

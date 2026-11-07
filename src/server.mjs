@@ -20,7 +20,8 @@ import {createPlaygroundRoutes} from './playground/http.mjs';
 import {approvalStop,boundedReadinessProbe,capabilityModel,prepareStageAManifest} from './live-readiness.mjs';
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', 'web');
-const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2' };
+const DIST_ROOT = path.join(WEB_ROOT, 'dist');
+const STATIC_TYPES = { '.css': 'text/css; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.woff2': 'font/woff2', '.map': 'application/json; charset=utf-8', '.html': 'text/html; charset=utf-8' };
 function json(res, status, value) {
   if(res.destroyed||res.writableEnded)return;
   if(status===408)res.setHeader('connection','close');
@@ -28,13 +29,10 @@ function json(res, status, value) {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
   res.end(JSON.stringify(value));
 }
-async function serveStatic(res, pathname) {
-  const rel = pathname.replace(/^\/+/, '');
+async function serveFile(res, root, rel) {
   if (!rel || rel.includes('..') || path.isAbsolute(rel)) return false;
-  const allowed = /^(css|js|assets)\/[A-Za-z0-9._/-]+$/.test(rel) || rel === 'favicon.svg';
-  if (!allowed) return false;
-  const file = path.resolve(WEB_ROOT, rel);
-  if (!file.startsWith(WEB_ROOT + path.sep) && file !== WEB_ROOT) return false;
+  const file = path.resolve(root, rel);
+  if (!file.startsWith(root + path.sep) && file !== root) return false;
   const ext = path.extname(file).toLowerCase();
   if (!STATIC_TYPES[ext]) return false;
   try {
@@ -43,6 +41,29 @@ async function serveStatic(res, pathname) {
     res.end(body);
     return true;
   } catch { return false; }
+}
+async function serveStatic(res, pathname) {
+  const rel = pathname.replace(/^\/+/, '');
+  // Prefer React build assets when present.
+  if (await serveFile(res, DIST_ROOT, rel)) return true;
+  const allowed = /^(css|js|assets)\/[A-Za-z0-9._/-]+$/.test(rel) || rel === 'favicon.svg';
+  if (!allowed) return false;
+  return serveFile(res, WEB_ROOT, rel);
+}
+async function serveAppIndex(res) {
+  try {
+    const html = await readFile(path.join(DIST_ROOT, 'index.html'));
+    res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+    res.end(html);
+    return true;
+  } catch {
+    try {
+      const html = await readFile(path.join(WEB_ROOT, 'index.html'));
+      res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
+      res.end(html);
+      return true;
+    } catch { return false; }
+  }
 }
 
 export function createDashboardServer({ resultDir = 'runs', casesLocation = 'examples/cases', rpcUrl, rpcUrls = {}, scenario, adapterFile, rulesFile, allowChainId, submit = false, receiptWaitMs = 0,
@@ -64,10 +85,11 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
       if(await swarmRoutes(req,res,route))return;
       if(await playgroundRoutes(req,res,route))return;
       if (req.method === 'GET' && route.pathname === '/') {
-        const html = await readFile(path.join(WEB_ROOT, 'index.html'));
-        res.writeHead(200, { 'content-type': 'text/html; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' });
-        res.end(html);
+        if(!(await serveAppIndex(res))) json(res,500,{error:'UI index missing — build web-ui or restore web/index.html'});
       } else if (req.method === 'GET' && await serveStatic(res, route.pathname)) {
+        return;
+      } else if (req.method === 'GET' && !route.pathname.startsWith('/api/') && !path.extname(route.pathname) && (await serveAppIndex(res))) {
+        // SPA fallback for React Router paths (no file extension) when UI is present.
         return;
       } else if (req.method === 'GET' && route.pathname === '/api/config') {
         json(res, 200, { offlineDemo,defaultRun,rpcConfigured: configured, submitEnabled: enabled, allowChainId: allowChainId ?? null, casesLocation, running,

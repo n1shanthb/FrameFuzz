@@ -10,6 +10,9 @@
   "scripts": {
     "test": "node --test",
     "verify": "node scripts/verify-local.mjs",
+    "ui:install": "npm install --prefix web-ui",
+    "ui:dev": "npm run dev --prefix web-ui",
+    "ui:build": "npm run build --prefix web-ui",
     "start": "node ./bin/framefuzz.mjs serve --cases examples/cases --results runs --port 4177",
     "demo": "node ./bin/framefuzz.mjs demo --results runs",
     "demo:mock": "node ./bin/framefuzz.mjs mock-demo --results runs",

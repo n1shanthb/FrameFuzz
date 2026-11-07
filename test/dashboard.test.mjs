@@ -23,10 +23,13 @@ test('complete mock demo exports honest evidence and dashboard serves selection 
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const base = `http://127.0.0.1:${server.address().port}`;
     const html = await (await fetch(base)).text();
-    assert.match(html, /scenarioSelect/); assert.match(html, /Public expected/);
-    assert.match(html, /css\/app\.css/); assert.match(html, /js\/app\.js/); assert.match(html, /Technical Briefing/);
-    assert.match(html, /Present to EF/); assert.match(html, /Evidence Explorer/);
-    const inline = html.match(/<script>([\s\S]*?)<\/script>/)[1]; new Function(inline); // Syntax check, not a browser substitute.
+    assert.match(html, /id="root"/); assert.match(html, /FrameFuzz/);
+    assert.match(html, /assets\/index-[A-Za-z0-9_-]+\.js/); assert.match(html, /differential admission/i);
+    const asset = html.match(/src="(\/assets\/index-[A-Za-z0-9_-]+\.js)"/)[1];
+    const bundle = await fetch(`${base}${asset}`); assert.equal(bundle.status, 200);
+    const bundleText = await bundle.text();
+    assert.match(bundleText, /Contract Playground|Admission Comparisons|Live Readiness/);
+    assert.doesNotMatch(bundleText, /FRAMEFUZZ_OWNER_KEY|OPENROUTER_API_KEY|0x[a-fA-F0-9]{64}/);
     const css = await fetch(`${base}/css/app.css`); assert.equal(css.status, 200); assert.match(await css.text(), /--accent/);
     const js = await fetch(`${base}/js/utils.js`); assert.equal(js.status, 200); assert.match(await js.text(), /export/);
     assert.equal((await fetch(`${base}/js/not-a-real-file.js`)).status, 404);
