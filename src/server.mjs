@@ -80,7 +80,10 @@ export function createDashboardServer({ resultDir = 'runs', casesLocation = 'exa
     const route = new URL(req.url, 'http://localhost');
     try {
       const requestHost = new URL(`http://${req.headers.host ?? ''}`).hostname;
-      if (!['127.0.0.1', 'localhost', '[::1]'].includes(requestHost)) return json(res, 403, { error: 'Localhost Host header required' });
+      const allowPublicHost = process.env.VERCEL === '1' || process.env.FRAMEFUZZ_ALLOW_PUBLIC_HOST === '1';
+      if (!allowPublicHost && !['127.0.0.1', 'localhost', '[::1]'].includes(requestHost)) {
+        return json(res, 403, { error: 'Localhost Host header required' });
+      }
       if(req.method==='POST'&&req.headers.origin){let valid=false;try{valid=new URL(req.headers.origin).host===req.headers.host;}catch{}if(!valid)return json(res,403,{error:'Invalid Origin',code:'INVALID_ORIGIN'});}
       if(await swarmRoutes(req,res,route))return;
       if(await playgroundRoutes(req,res,route))return;
